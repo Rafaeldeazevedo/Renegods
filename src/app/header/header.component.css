@@ -1,0 +1,54 @@
+.site-header {
+  background-color: #1c1c1c;
+  padding: 10px 0;
+  color: #fff;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Centraliza todos os itens no container */
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.logo {
+  flex: 1; /* Permite que o logo ocupe o espaço disponível */
+}
+
+.logo img {
+  max-height: 50px;
+}
+
+.site-title {
+  font-size: 1.5em;
+  margin: 0;
+  text-align: center; /* Centraliza o texto do título */
+  flex: 2; /* Dá mais espaço ao título */
+}
+
+.site-nav {
+  flex: 1; /* Permite que a navegação ocupe o espaço disponível */
+}
+
+.site-nav ul {
+  list-style: none;
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+
+.site-nav li {
+  margin-left: 20px;
+}
+
+.site-nav a {
+  text-decoration: none;
+  color: #fff;
+  font-weight: bold;
+}
+
+.site-nav a:hover {
+  color: #f39c12;
+}

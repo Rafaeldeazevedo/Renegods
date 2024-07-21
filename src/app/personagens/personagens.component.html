@@ -1,0 +1,8 @@
+<div class="characters-grid">
+  <div *ngFor="let personagem of personagens" class="character-item">
+    <img [src]="personagem.src" [alt]="personagem.nome">
+    <div class="character-overlay">
+      <p>{{ personagem.nome }}</p>
+    </div>
+  </div>
+</div>
