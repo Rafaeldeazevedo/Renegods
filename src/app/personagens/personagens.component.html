@@ -1,8 +1,114 @@
-<div class="characters-grid">
-  <div *ngFor="let personagem of personagens" class="character-item">
-    <img [src]="personagem.src" [alt]="personagem.nome">
-    <div class="character-overlay">
-      <p>{{ personagem.nome }}</p>
+<div class="page">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-icon">T8</div>
+      <div>
+        <h1>Tekken 8</h1>
+        <span>Frame Data Hub</span>
+      </div>
     </div>
-  </div>
+
+    <nav class="menu">
+      <button class="menu-item active">
+        <span>👥</span>
+        Personagens
+      </button>
+
+      <button class="menu-item">
+        <span>⭐</span>
+        Favoritos
+      </button>
+
+      <button class="menu-item">
+        <span>📊</span>
+        Tier List
+      </button>
+
+      <button class="menu-item">
+        <span>📘</span>
+        Guias
+      </button>
+
+      <button class="menu-item">
+        <span>⚙️</span>
+        Configurações
+      </button>
+    </nav>
+
+    <div class="progress-card">
+      <div class="progress-header">
+        <span>Desbloqueados</span>
+        <strong>{{ personagens.length }}/{{ personagens.length }}</strong>
+      </div>
+
+      <div class="progress-bar">
+        <div class="progress-fill"></div>
+      </div>
+
+      <small>Todos os personagens disponíveis</small>
+    </div>
+  </aside>
+
+  <main class="content">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">R4F O BRABO</p>
+        <h2>Personagens</h2>
+      </div>
+
+      <div class="user-box">
+        <div>
+          <strong>Nível 25</strong>
+          <span>Player</span>
+        </div>
+        <div class="avatar">M</div>
+      </div>
+    </header>
+
+    <section class="toolbar">
+      <div class="title-box">
+        <span class="title-line"></span>
+        <h3>Seleção de Personagens</h3>
+      </div>
+
+      <div class="filters">
+        <div class="search-box">
+          <input type="text" placeholder="Buscar personagem..." [(ngModel)]="termoBusca" />
+          <span>🔍</span>
+        </div>
+
+        <button class="filter-button" [class.selected]="filtroAtual === 'todos'" (click)="selecionarFiltro('todos')">
+          Todos
+        </button>
+
+        <button class="filter-button" [class.selected]="filtroAtual === 'favoritos'"
+          (click)="selecionarFiltro('favoritos')">
+          Favoritos {{ totalFavoritos }}
+        </button>
+      </div>
+    </section>
+
+    <section class="characters-grid">
+      <article class="character-card" *ngFor="let personagem of personagensFiltrados">
+        <button class="favorite-button" [class.active]="personagem.favorito" (click)="favoritar(personagem)">
+          ★
+        </button>
+
+        <div class="image-wrapper">
+          <img [src]="personagem.src" [alt]="personagem.nome" />
+        </div>
+
+        <div class="card-footer">
+          <h4>{{ personagem.nome }}</h4>
+          <button class="details-button">
+            Ver frame data
+          </button>
+        </div>
+      </article>
+    </section>
+
+    <div class="empty-state" *ngIf="personagensFiltrados.length === 0">
+      Nenhum personagem encontrado.
+    </div>
+  </main>
 </div>
