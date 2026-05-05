@@ -30,25 +30,17 @@
                     </div>
                 </div>
 
-                <div class="stat-card">
-                    <div class="stat-icon">👤</div>
-                    <div class="stat-text">
-                        <strong>{{ personagemId < 10 ? ('0' + personagemId) : personagemId }}</strong>
-                                <span>ID do personagem</span>
-                    </div>
-                </div>
+                
             </div>
         </div>
 
         <div class="hero-right">
-            <!-- <div class="hero-search">
+            <div class="hero-search">
                 <input type="text" [(ngModel)]="filtro" (input)="filtrar()"
                     placeholder="Buscar comando, startup, observação..." />
-            </div> -->
-
-            <div class="hero-wordmark" *ngIf="obterPrimeiroNome()">
-                {{ obterPrimeiroNome() }}
             </div>
+
+          
 
             <div class="hero-image-wrap" *ngIf="imagemPersonagem">
                 <img [src]="imagemPersonagem" [alt]="personagem?.nome" />
