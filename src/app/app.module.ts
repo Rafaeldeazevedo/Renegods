@@ -8,9 +8,10 @@ import { HomeComponent } from './home/home.component';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import { PersonagensComponent } from './personagens/personagens.component';
-import { FormsModule, } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { LoginComponent } from './login/login.component';
+import { PersonagemFrameDataComponent } from './personagens/personagem-frame-data/personagem-frame-data.component';
 
 
 @NgModule({
@@ -21,6 +22,7 @@ import { LoginComponent } from './login/login.component';
     FooterComponent,
     PersonagensComponent,
     LoginComponent,
+    PersonagemFrameDataComponent
   ],
   imports: [
     BrowserModule,

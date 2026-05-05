@@ -1,0 +1,121 @@
+<div class="frame-data-page">
+
+    <div class="top-actions">
+        <button class="btn-voltar" type="button" (click)="voltar()">
+            ← Voltar
+        </button>
+    </div>
+
+    <section class="hero-personagem">
+
+        <div class="hero-overlay"></div>
+
+        <div class="hero-left">
+            <span class="eyebrow">TEKKEN 8 • FRAME DATA</span>
+
+            <h1 *ngIf="personagem?.nome">
+                {{ personagem.nome }}
+            </h1>
+
+            <p class="hero-description">
+                Dados técnicos, frames, dano, vantagem no block, hit e counter hit.
+            </p>
+
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">⚔</div>
+                    <div class="stat-text">
+                        <strong>{{ frameData.length }}</strong>
+                        <span>Golpes cadastrados</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">👤</div>
+                    <div class="stat-text">
+                        <strong>{{ personagemId < 10 ? ('0' + personagemId) : personagemId }}</strong>
+                                <span>ID do personagem</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-right">
+            <!-- <div class="hero-search">
+                <input type="text" [(ngModel)]="filtro" (input)="filtrar()"
+                    placeholder="Buscar comando, startup, observação..." />
+            </div> -->
+
+            <div class="hero-wordmark" *ngIf="obterPrimeiroNome()">
+                {{ obterPrimeiroNome() }}
+            </div>
+
+            <div class="hero-image-wrap" *ngIf="imagemPersonagem">
+                <img [src]="imagemPersonagem" [alt]="personagem?.nome" />
+            </div>
+        </div>
+
+    </section>
+
+    <section class="moves-section">
+        <div class="moves-header">
+            <div class="moves-title-wrap">
+                <div class="moves-icon">≣</div>
+
+                <div>
+                    <h2>Lista de golpes</h2>
+                    <p>Consulte comandos e propriedades do personagem.</p>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="carregando" class="loading">
+            Carregando frame data...
+        </div>
+
+        <div *ngIf="!carregando && frameDataFiltrado.length === 0" class="empty">
+            Nenhum frame data encontrado.
+        </div>
+
+        <div *ngIf="!carregando && frameDataFiltrado.length > 0" class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Comando</th>
+                        <th>Hit Level</th>
+                        <th>Dano</th>
+                        <th>Startup</th>
+                        <th>Block</th>
+                        <th>Hit</th>
+                        <th>Counter Hit</th>
+                        <th>Observação</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let item of frameDataFiltrado">
+                        <td class="command">{{ item.comando || '-' }}</td>
+                        <td>{{ item.hitLevel || '-' }}</td>
+                        <td>{{ item.dano || '-' }}</td>
+                        <td>{{ item.startup || '-' }}</td>
+
+                        <td [ngClass]="getFrameClass(item.blockFrame)">
+                            {{ item.blockFrame || '-' }}
+                        </td>
+
+                        <td [ngClass]="getFrameClass(item.hitFrame)">
+                            {{ item.hitFrame || '-' }}
+                        </td>
+
+                        <td [ngClass]="getFrameClass(item.counterHitFrame)">
+                            {{ item.counterHitFrame || '-' }}
+                        </td>
+
+                        <td class="obs">{{ item.observacao || '-' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</div>

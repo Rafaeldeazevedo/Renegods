@@ -5,6 +5,7 @@ import { Personagem } from '../model/personagem.model';
 import { UsuarioLogado } from '../model/auth.model';
 
 
+
 @Component({
   selector: 'app-personagens',
   templateUrl: './personagens.component.html',
@@ -65,6 +66,18 @@ export class PersonagensComponent implements OnInit {
       }
     });
   }
+abrirFrameData(personagem: any): void {
+  sessionStorage.setItem('personagemFrameData', JSON.stringify(personagem));
+
+  this.router.navigate(
+    ['/personagens', personagem.id, 'frame-data'],
+    {
+      state: {
+        personagem: personagem
+      }
+    }
+  );
+}
 
 get personagensFiltrados(): Personagem[] {
   return this.personagens.filter(personagem => {
