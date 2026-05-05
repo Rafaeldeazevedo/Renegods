@@ -1,0 +1,38 @@
+<div class="login-page">
+    <div class="login-background-glow"></div>
+
+    <section class="login-card">
+<div class="brand-area">
+    <div class="brand-icon">
+        <img src="assets/logo.png" alt="Logo Renegados">
+    </div>
+
+    <div>
+        <span>TEKKEN 8</span>
+        <h1>Database Renegados</h1>
+    </div>
+</div>
+
+        <form class="login-form" (ngSubmit)="entrar()">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="Digite seu email" [(ngModel)]="loginRequest.email" />
+            </div>
+
+            <div class="form-group">
+                <label>Senha</label>
+                <input type="password" name="senha" placeholder="Digite sua senha" [(ngModel)]="loginRequest.senha" />
+            </div>
+
+            <div class="error-message" *ngIf="erroLogin">
+                {{ erroLogin }}
+            </div>
+
+            <button type="submit" class="login-button" [disabled]="carregando">
+                {{ carregando ? 'Entrando...' : 'Entrar' }}
+            </button>
+        </form>
+
+      
+    </section>
+</div>

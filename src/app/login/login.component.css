@@ -1,0 +1,210 @@
+:host {
+    display: block;
+    min-height: 100vh;
+}
+
+.login-page {
+    min-height: 100vh;
+    background:
+        linear-gradient(135deg,
+            rgba(5, 6, 8, 0.78) 0%,
+            rgba(10, 8, 14, 0.70) 42%,
+            rgba(60, 0, 30, 0.48) 100%),
+        url('/assets/tekken8.jpg');
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 12%;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-background-glow {
+    position: absolute;
+    width: 520px;
+    height: 520px;
+    background: rgba(255, 45, 117, 0.16);
+    filter: blur(90px);
+    border-radius: 50%;
+    top: -160px;
+    right: -120px;
+}
+
+.login-card {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 460px;
+    padding: 34px;
+    border-radius: 24px;
+    background:
+        linear-gradient(180deg, rgba(20, 24, 34, 0.94), rgba(8, 10, 16, 0.96));
+    border: 1px solid rgba(255, 45, 117, 0.28);
+    box-shadow:
+        0 28px 70px rgba(0, 0, 0, 0.55),
+        0 0 42px rgba(255, 45, 117, 0.12);
+}
+
+.brand-area {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 34px;
+}
+
+.brand-icon {
+    width: 90px;
+    height: 90px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.brand-icon img {
+    width: 115%;
+    height: 115%;
+    object-fit: contain;
+}
+.brand-logo {
+    width: 110px;
+    height: 110px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 18px rgba(255, 45, 117, 0.35));
+}
+
+.brand-area span {
+    display: block;
+    color: #ff2d75;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 4px;
+}
+
+.brand-area h1 {
+    margin: 4px 0 0;
+    font-size: 26px;
+    line-height: 1.1;
+}
+
+.login-title {
+    margin-bottom: 28px;
+}
+
+.login-title p {
+    margin: 0 0 8px;
+    color: #ff2d75;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 4px;
+}
+
+.login-title h2 {
+    margin: 0;
+    font-size: 34px;
+    text-transform: uppercase;
+}
+
+.login-title span {
+    display: block;
+    margin-top: 10px;
+    color: #9ca3af;
+    font-size: 15px;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.form-group label {
+    color: #e5e7eb;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.form-group input {
+    height: 54px;
+    padding: 0 16px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(5, 7, 12, 0.82);
+    color: white;
+    outline: none;
+    font-size: 15px;
+    transition: 0.2s ease;
+}
+
+.form-group input::placeholder {
+    color: #6b7280;
+}
+
+.form-group input:focus {
+    border-color: rgba(255, 45, 117, 0.75);
+    box-shadow: 0 0 0 4px rgba(255, 45, 117, 0.12);
+}
+
+.error-message {
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgba(255, 45, 117, 0.12);
+    border: 1px solid rgba(255, 45, 117, 0.35);
+    color: #ff8db4;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.login-button {
+    height: 56px;
+    margin-top: 4px;
+    border: none;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #ff2d75, #ff4f8b);
+    color: white;
+    font-size: 16px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 16px 34px rgba(255, 45, 117, 0.28);
+    transition: 0.2s ease;
+}
+
+.login-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 42px rgba(255, 45, 117, 0.38);
+}
+
+.login-button:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.login-footer {
+    margin-top: 26px;
+    padding: 16px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.04);
+    color: #9ca3af;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.login-footer strong {
+    color: white;
+}

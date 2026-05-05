@@ -9,15 +9,17 @@
     </div>
 
     <nav class="menu">
-      <button class="menu-item active">
+      <button type="button" class="menu-item" [class.active]="filtroAtual === 'todos'" (click)="selecionarFiltro('todos')">
         <span>👥</span>
         Personagens
       </button>
 
-      <button class="menu-item">
-        <span>⭐</span>
-        Favoritos
-      </button>
+  <button type="button" class="menu-item" [class.active]="filtroAtual === 'favoritos'"
+    (click)="selecionarFiltro('favoritos')">
+    <span>⭐</span>
+    Favoritos
+    <small class="menu-count">{{ totalFavoritos }}</small>
+  </button>
 
       <button class="menu-item">
         <span>📊</span>
@@ -26,16 +28,27 @@
 
       <button class="menu-item">
         <span>📘</span>
-        Guias
+        Wavu Wank
       </button>
 
-      <button class="menu-item">
-        <span>⚙️</span>
-        Configurações
-      </button>
+<div class="sidebar-settings">
+  <button type="button" class="menu-item settings-toggle" [class.open]="menuConfiguracoesAberto"
+    (click)="alternarConfiguracoes()">
+    <span>⚙️</span>
+    <span class="menu-text">Configurações</span>
+    <span class="settings-arrow">▾</span>
+  </button>
+
+  <div class="settings-submenu" *ngIf="menuConfiguracoesAberto">
+    <button type="button" class="submenu-item logout-item" (click)="sair()">
+      <span>🚪</span>
+      <span>Sair</span>
+    </button>
+  </div>
+</div>
     </nav>
 
-    <div class="progress-card">
+    <!-- <div class="progress-card">
       <div class="progress-header">
         <span>Desbloqueados</span>
         <strong>{{ personagens.length }}/{{ personagens.length }}</strong>
@@ -46,23 +59,24 @@
       </div>
 
       <small>Todos os personagens disponíveis</small>
-    </div>
+    </div> -->
   </aside>
 
   <main class="content">
     <header class="topbar">
       <div>
-        <p class="eyebrow">R4F O BRABO</p>
         <h2>Personagens</h2>
       </div>
 
-      <div class="user-box">
-        <div>
-          <strong>Nível 25</strong>
-          <span>Player</span>
-        </div>
-        <div class="avatar">M</div>
+    <div class="user-box" *ngIf="usuarioLogado">
+      <div>
+        <span>{{ usuarioLogado?.nickname || usuarioLogado?.nome }}</span>
       </div>
+    
+      <div class="avatar">
+        {{ getInicialUsuario() }}
+      </div>
+    </div>
     </header>
 
     <section class="toolbar">
@@ -95,7 +109,7 @@
         </button>
 
         <div class="image-wrapper">
-          <img [src]="personagem.src" [alt]="personagem.nome" />
+          <img [src]="personagem.imagem" [alt]="personagem.nome" />
         </div>
 
         <div class="card-footer">
