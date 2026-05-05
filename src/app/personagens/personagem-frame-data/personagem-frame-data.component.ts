@@ -86,23 +86,27 @@ export class PersonagemFrameDataComponent implements OnInit {
     );
   }
 
-  getFrameClass(valor: string | null): string {
-    if (!valor) {
-      return '';
-    }
-
-    const valorLimpo = valor.trim();
-
-    if (valorLimpo.startsWith('+')) {
-      return 'positivo';
-    }
-
-    if (valorLimpo.startsWith('-')) {
-      return 'negativo';
-    }
-
-    return '';
+  getFrameColor(valor: any): string {
+  if (valor === null || valor === undefined) {
+    return '#e8e8ef';
   }
+
+  const valorLimpo = String(valor).trim();
+
+  if (valorLimpo.startsWith('+')) {
+    return '#7dff9b'; // verde claro
+  }
+
+  if (valorLimpo.startsWith('-')) {
+    return '#ff5f6d'; // vermelho
+  }
+
+  if (valorLimpo === '0' || valorLimpo.startsWith('0')) {
+    return '#ffffff'; // branco
+  }
+
+  return '#e8e8ef';
+}
 
   obterPrimeiroNome(): string {
     if (!this.personagem?.nome) {
@@ -113,6 +117,6 @@ export class PersonagemFrameDataComponent implements OnInit {
   }
 
   voltar(): void {
-    this.router.navigate(['/personagens']);
+    this.router.navigate(['/personagens']); 
   }
 }

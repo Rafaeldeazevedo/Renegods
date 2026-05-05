@@ -35,10 +35,10 @@
         </div>
 
         <div class="hero-right">
-            <div class="hero-search">
+            <!-- <div class="hero-search">   
                 <input type="text" [(ngModel)]="filtro" (input)="filtrar()"
                     placeholder="Buscar comando, startup, observação..." />
-            </div>
+            </div> -->
 
           
 
@@ -90,19 +90,17 @@
                         <td>{{ item.hitLevel || '-' }}</td>
                         <td>{{ item.dano || '-' }}</td>
                         <td>{{ item.startup || '-' }}</td>
+<td [style.color]="getFrameColor(item.blockFrame)" [style.font-weight]="900">
+    {{ item.blockFrame || '-' }}
+</td>
 
-                        <td [ngClass]="getFrameClass(item.blockFrame)">
-                            {{ item.blockFrame || '-' }}
-                        </td>
+<td [style.color]="getFrameColor(item.hitFrame)" [style.font-weight]="900">
+    {{ item.hitFrame || '-' }}
+</td>
 
-                        <td [ngClass]="getFrameClass(item.hitFrame)">
-                            {{ item.hitFrame || '-' }}
-                        </td>
-
-                        <td [ngClass]="getFrameClass(item.counterHitFrame)">
-                            {{ item.counterHitFrame || '-' }}
-                        </td>
-
+<td [style.color]="getFrameColor(item.counterHitFrame)" [style.font-weight]="900">
+    {{ item.counterHitFrame || '-' }}
+</td>
                         <td class="obs">{{ item.observacao || '-' }}</td>
                     </tr>
                 </tbody>
