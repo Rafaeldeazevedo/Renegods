@@ -1,128 +1,125 @@
-<div class="page">
-  <aside class="sidebar">
-    <div class="brand">
-      <div class="brand-icon">T8</div>
-      <div>
-        <h1>Tekken 8</h1>
-        <span>Frame Data Hub</span>
+<div class="personagens-page">
+
+  <!-- SIDEBAR -->
+  <aside class="side-panel">
+
+    <div class="sidebar-top">
+
+
+      <div class="sidebar-user" *ngIf="usuarioLogado">
+        <div class="sidebar-user-avatar">
+          {{ getInicialUsuario() }}
+        </div>
+
+        <div class="sidebar-user-info">
+          <strong>{{ usuarioLogado.nickname || usuarioLogado.nome }}</strong>
+          <span>Renegado</span>
+        </div>
       </div>
     </div>
 
-    <nav class="menu">
-      <button type="button" class="menu-item" [class.active]="filtroAtual === 'todos'" (click)="selecionarFiltro('todos')">
+    <nav class="side-menu">
+      <button type="button" class="side-item" routerLink="/home">
+        <span>⌂</span>
+        Início
+      </button>
+
+      <button type="button" class="side-item active" (click)="selecionarFiltro('todos')">
         <span>👥</span>
         Personagens
       </button>
 
-  <button type="button" class="menu-item" [class.active]="filtroAtual === 'favoritos'"
-    (click)="selecionarFiltro('favoritos')">
-    <span>⭐</span>
-    Favoritos
-    <small class="menu-count">{{ totalFavoritos }}</small>
-  </button>
+      <button type="button" class="side-item" (click)="selecionarFiltro('favoritos')">
+        <span>⭐</span>
+        Favoritos
+        <strong>{{ totalFavoritos }}</strong>
+      </button>
 
-      <button class="menu-item">
+      <button type="button" class="side-item">
         <span>📊</span>
         Tier List
       </button>
 
-      <button class="menu-item">
+      <button type="button" class="side-item">
         <span>📘</span>
         Wavu Wank
       </button>
 
-<div class="sidebar-settings">
-  <button type="button" class="menu-item settings-toggle" [class.open]="menuConfiguracoesAberto"
-    (click)="alternarConfiguracoes()">
-    <span>⚙️</span>
-    <span class="menu-text">Configurações</span>
-    <span class="settings-arrow">▾</span>
-  </button>
+      <button type="button" class="side-item" routerLink="/jogadores-comunidade">
+        <span>🎮</span>
+        Jogadores Comunidade
+      </button>
 
-  <div class="settings-submenu" *ngIf="menuConfiguracoesAberto">
-    <button type="button" class="submenu-item logout-item" (click)="sair()">
-      <span>🚪</span>
-      <span>Sair</span>
-    </button>
-  </div>
-</div>
+     
     </nav>
 
-    <!-- <div class="progress-card">
-      <div class="progress-header">
-        <span>Desbloqueados</span>
-        <strong>{{ personagens.length }}/{{ personagens.length }}</strong>
-      </div>
-
-      <div class="progress-bar">
-        <div class="progress-fill"></div>
-      </div>
-
-      <small>Todos os personagens disponíveis</small>
-    </div> -->
   </aside>
 
+  <!-- CONTEÚDO -->
   <main class="content">
-    <header class="topbar">
-      <div>
-        <h2>Personagens</h2>
+
+    <section class="topbar">
+      <div class="search-area">
+        <span>⌕</span>
+
+        <input type="text" [(ngModel)]="termoBusca" placeholder="Buscar personagem, golpe ou jogador..." />
       </div>
 
-    <div class="user-box" *ngIf="usuarioLogado">
-      <div>
-        <span>{{ usuarioLogado?.nickname || usuarioLogado?.nome }}</span>
-      </div>
-    
-      <div class="avatar">
-        {{ getInicialUsuario() }}
-      </div>
-    </div>
-    </header>
-
-    <section class="toolbar">
-      <div class="title-box">
-        <span class="title-line"></span>
-        <h3>Seleção de Personagens</h3>
-      </div>
-
-      <div class="filters">
-        <div class="search-box">
-          <input type="text" placeholder="Buscar personagem..." [(ngModel)]="termoBusca" />
-          <span>🔍</span>
-        </div>
-
-        <button class="filter-button" [class.selected]="filtroAtual === 'todos'" (click)="selecionarFiltro('todos')">
+      <div class="filter-actions">
+        <button type="button" [class.active]="filtroAtual === 'todos'" (click)="selecionarFiltro('todos')">
           Todos
         </button>
 
-        <button class="filter-button" [class.selected]="filtroAtual === 'favoritos'"
-          (click)="selecionarFiltro('favoritos')">
-          Favoritos {{ totalFavoritos }}
+        <button type="button" [class.active]="filtroAtual === 'favoritos'" (click)="selecionarFiltro('favoritos')">
+          Favoritos
+          <strong>{{ totalFavoritos }}</strong>
         </button>
       </div>
     </section>
 
-    <section class="characters-grid">
+   
+
+    <section class="section-title">
+      <div>
+        <span></span>
+        <h2>Seleção de personagens</h2>
+      </div>
+
+      <p *ngIf="filtroAtual === 'todos'">
+        Mostrando {{ personagensFiltrados.length }} personagem(ns)
+      </p>
+
+      <p *ngIf="filtroAtual === 'favoritos'">
+        Mostrando {{ personagensFiltrados.length }} favorito(s)
+      </p>
+    </section>
+
+    <section class="loading-card" *ngIf="carregando">
+      Carregando personagens...
+    </section>
+
+    <section class="empty-card" *ngIf="!carregando && personagensFiltrados.length === 0">
+      Nenhum personagem encontrado.
+    </section>
+
+    <section class="characters-grid" *ngIf="!carregando && personagensFiltrados.length > 0">
       <article class="character-card" *ngFor="let personagem of personagensFiltrados">
-        <button class="favorite-button" [class.active]="personagem.favorito" (click)="favoritar(personagem)">
+        <button type="button" class="favorite-btn" [class.active]="personagem.favorito"
+          (click)="favoritar(personagem); $event.stopPropagation()">
           ★
         </button>
 
-        <div class="image-wrapper">
-          <img [src]="personagem.imagem" [alt]="personagem.nome" />
+        <div class="character-image">
+          <img [src]="personagem.imagem" [alt]="personagem.nome"  />
         </div>
 
-        <div class="card-footer">
-          <h4>{{ personagem.nome }}</h4>
-        <button type="button" class="details-button" (click)="abrirFrameData(personagem)">
+        <h3>{{ personagem.nome }}</h3>
+
+        <button type="button" class="frame-btn" (click)="abrirFrameData(personagem)">
           Ver frame data
         </button>
-        </div>
       </article>
     </section>
 
-    <div class="empty-state" *ngIf="personagensFiltrados.length === 0">
-      Nenhum personagem encontrado.
-    </div>
   </main>
 </div>

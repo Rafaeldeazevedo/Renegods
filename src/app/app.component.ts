@@ -18,8 +18,13 @@ export class AppComponent {
       .subscribe((event: any) => {
         const url = event.urlAfterRedirects;
 
-        this.esconderHeader = url.startsWith('/home');
-        this.esconderFooter = url.startsWith('/home');
+        this.esconderHeader =
+          url.startsWith('/home') ||
+          url.startsWith('/personagens');
+
+        this.esconderFooter =
+          url.startsWith('/home') ||
+          url.startsWith('/personagens');
       });
   }
 }
