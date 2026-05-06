@@ -1,0 +1,199 @@
+.page {
+    min-height: 100vh;
+    padding: 36px;
+    background:
+        radial-gradient(circle at top right, rgba(255, 45, 117, 0.16), transparent 28%),
+        radial-gradient(circle at top left, rgba(120, 20, 60, 0.28), transparent 32%),
+        linear-gradient(180deg, #180512 0%, #09080f 45%, #030306 100%);
+    color: #ffffff;
+}
+
+.btn-back {
+    padding: 11px 18px;
+    margin-bottom: 24px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 45, 117, 0.7);
+    background: rgba(255, 45, 117, 0.08);
+    color: #ff5b96;
+    cursor: pointer;
+    font-weight: 800;
+    font-size: 14px;
+}
+
+.btn-back:hover {
+    background: rgba(255, 45, 117, 0.18);
+}
+
+.form-card {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 34px;
+    border-radius: 26px;
+    border: 1px solid rgba(255, 45, 117, 0.25);
+    background:
+        linear-gradient(135deg, rgba(255, 45, 117, 0.12), rgba(10, 12, 20, 0.94)),
+        rgba(10, 12, 20, 0.92);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.38);
+}
+
+.form-card h1 {
+    margin: 0;
+    font-size: 42px;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+}
+
+.form-card p {
+    margin: 10px 0 28px;
+    color: #b8b8c7;
+    font-size: 16px;
+}
+
+.form-card label {
+    display: block;
+    margin: 18px 0 8px;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 14px;
+}
+
+.form-card input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 15px 18px;
+    border-radius: 14px;
+    border: 1px solid #2a2d38;
+    background: #090b12;
+    color: #ffffff;
+    outline: none;
+    font-size: 15px;
+}
+
+.form-card input::placeholder {
+    color: #818494;
+}
+
+.form-card input:focus {
+    border-color: #ff2d75;
+    box-shadow: 0 0 0 3px rgba(255, 45, 117, 0.12);
+}
+
+.characters-select-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 16px;
+    margin-top: 14px;
+}
+
+.character-option {
+    position: relative;
+    min-height: 190px;
+    padding: 14px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background:
+        linear-gradient(180deg, rgba(23, 27, 37, 0.95), rgba(7, 9, 15, 0.96));
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+.character-option:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255, 45, 117, 0.5);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.32);
+}
+
+.character-option.selected {
+    border-color: #ff2d75;
+    background:
+        radial-gradient(circle at top, rgba(255, 45, 117, 0.25), transparent 48%),
+        linear-gradient(180deg, rgba(23, 27, 37, 0.98), rgba(7, 9, 15, 0.98));
+    box-shadow:
+        0 0 0 2px rgba(255, 45, 117, 0.18),
+        0 18px 36px rgba(255, 45, 117, 0.14);
+}
+
+.character-option.selected::after {
+    content: "✓";
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff005c, #ff4f8b);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-weight: 900;
+}
+
+.character-option img {
+    width: 100%;
+    height: 130px;
+    object-fit: contain;
+    object-position: bottom center;
+    filter: drop-shadow(0 18px 20px rgba(0, 0, 0, 0.55));
+}
+
+.character-option span {
+    display: block;
+    margin-top: 12px;
+    text-align: center;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.btn-save {
+    width: 100%;
+    margin-top: 28px;
+    padding: 16px 22px;
+    border: none;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #ff005c, #ff4f8b);
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 17px;
+    font-weight: 900;
+    box-shadow: 0 14px 34px rgba(255, 45, 117, 0.28);
+}
+
+.btn-save:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+}
+
+.btn-save:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+@media (max-width: 800px) {
+    .page {
+        padding: 20px;
+    }
+
+    .form-card {
+        padding: 24px;
+    }
+
+    .form-card h1 {
+        font-size: 32px;
+    }
+
+    .characters-select-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    }
+
+    .character-option {
+        min-height: 165px;
+    }
+
+    .character-option img {
+        height: 105px;
+    }
+}

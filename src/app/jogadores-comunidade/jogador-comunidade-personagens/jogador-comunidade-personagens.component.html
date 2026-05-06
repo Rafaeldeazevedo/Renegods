@@ -1,0 +1,27 @@
+<div class="page">
+
+    <button type="button" class="btn-back" (click)="voltar()">
+        ← Voltar
+    </button>
+
+    <div class="page-header">
+        <div>
+            <h1>{{ jogador?.nome }}</h1>
+            <p>Tekken ID: {{ jogador?.tekkenId }}</p>
+        </div>
+    </div>
+
+    <h2>Personagens do jogador</h2>
+
+    <div *ngIf="carregando" class="loading">
+        Carregando personagens...
+    </div>
+
+    <div class="characters-grid" *ngIf="!carregando">
+        <article class="character-card" *ngFor="let personagem of personagens">
+            <img [src]="personagem.imagem" [alt]="personagem.nome" />
+            <h3>{{ personagem.nome }}</h3>
+        </article>
+    </div>
+
+</div>

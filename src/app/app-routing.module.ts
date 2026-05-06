@@ -4,10 +4,16 @@ import { RouterModule, Routes } from '@angular/router';
 import { PersonagensComponent } from './personagens/personagens.component';
 import { LoginComponent } from './login/login.component';
 import { PersonagemFrameDataComponent } from './personagens/personagem-frame-data/personagem-frame-data.component';
+import { JogadoresComunidadeComponent } from './jogadores-comunidade/jogadores-comunidade.component';
+import { JogadorComunidadeCadastroComponent } from './jogadores-comunidade/jogador-comunidade-cadastro/jogador-comunidade-cadastro.component';
+import { JogadorComunidadePersonagensComponent } from './jogadores-comunidade/jogador-comunidade-personagens/jogador-comunidade-personagens.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'personagens', component: PersonagensComponent },
+   { path: 'jogadores-comunidade', component: JogadoresComunidadeComponent },
+  { path: 'jogadores-comunidade/novo', component: JogadorComunidadeCadastroComponent },
+  { path: 'jogadores-comunidade/:id/personagens', component: JogadorComunidadePersonagensComponent },
   { path: 'personagens/:id/frame-data', component: PersonagemFrameDataComponent },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'login' }

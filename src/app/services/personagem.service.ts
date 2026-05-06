@@ -13,6 +13,10 @@ export class PersonagemService {
 
   constructor(private http: HttpClient) {}
 
+    listar(): Observable<Personagem[]> {
+    return this.http.get<Personagem[]>(this.apiUrl);
+  }
+
   listarPorUsuario(usuarioId: number): Observable<Personagem[]> {
     return this.http.get<Personagem[]>(`${this.apiUrl}/usuario/${usuarioId}`);
   }

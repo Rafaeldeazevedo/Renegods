@@ -12,6 +12,9 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { LoginComponent } from './login/login.component';
 import { PersonagemFrameDataComponent } from './personagens/personagem-frame-data/personagem-frame-data.component';
+import { JogadoresComunidadeComponent } from './jogadores-comunidade/jogadores-comunidade.component';
+import { JogadorComunidadeCadastroComponent } from './jogadores-comunidade/jogador-comunidade-cadastro/jogador-comunidade-cadastro.component';
+import { JogadorComunidadePersonagensComponent } from './jogadores-comunidade/jogador-comunidade-personagens/jogador-comunidade-personagens.component';
 
 
 @NgModule({
@@ -22,7 +25,10 @@ import { PersonagemFrameDataComponent } from './personagens/personagem-frame-dat
     FooterComponent,
     PersonagensComponent,
     LoginComponent,
-    PersonagemFrameDataComponent
+    PersonagemFrameDataComponent,
+    JogadoresComunidadeComponent,
+    JogadorComunidadeCadastroComponent,
+    JogadorComunidadePersonagensComponent
   ],
   imports: [
     BrowserModule,

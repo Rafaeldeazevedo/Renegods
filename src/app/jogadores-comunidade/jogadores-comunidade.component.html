@@ -1,0 +1,39 @@
+<div class="page">
+
+    <div class="page-header">
+        <div>
+            <h1>Jogadores Comunidade</h1>
+            <p>Cadastre jogadores, Tekken ID e personagens utilizados.</p>
+        </div>
+
+        <button type="button" class="btn-primary" (click)="novoJogador()">
+            + Cadastrar jogador
+        </button>
+    </div>
+
+    <div *ngIf="carregando" class="loading">
+        Carregando jogadores...
+    </div>
+
+    <div *ngIf="!carregando && jogadores.length === 0" class="empty">
+        Nenhum jogador cadastrado.
+    </div>
+
+    <div *ngIf="!carregando && jogadores.length > 0" class="players-grid">
+        <article class="player-card" *ngFor="let jogador of jogadores">
+            <div class="player-avatar">
+                {{ jogador.nome?.charAt(0) }}
+            </div>
+
+            <div class="player-info">
+                <h3>{{ jogador.nome }}</h3>
+                <p>Tekken ID: {{ jogador.tekkenId }}</p>
+            </div>
+
+            <button type="button" class="btn-secondary" (click)="visualizarPersonagens(jogador)">
+                Visualizar personagens
+            </button>
+        </article>
+    </div>
+
+</div>
