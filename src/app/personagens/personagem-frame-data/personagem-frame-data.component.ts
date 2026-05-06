@@ -86,26 +86,45 @@ export class PersonagemFrameDataComponent implements OnInit {
     );
   }
 
-  getFrameColor(valor: any): string {
+ getFrameColor(valor: any): string {
   if (valor === null || valor === undefined) {
     return '#e8e8ef';
   }
 
-  const valorLimpo = String(valor).trim();
+  const texto = String(valor).trim();
 
-  if (valorLimpo.startsWith('+')) {
-    return '#7dff9b'; // verde claro
+  if (!texto) {
+    return '#e8e8ef';
   }
 
-  if (valorLimpo.startsWith('-')) {
-    return '#ff5f6d'; // vermelho
+  // pega o primeiro número com sinal que aparecer
+  // exemplos:
+  // "+8" -> +8
+  // "-11" -> -11
+  // "+0d" -> +0
+  // "-9~+6" -> -9
+  // "+21a (+6)" -> +21
+  const match = texto.match(/[+-]?\d+/);
+
+  if (!match) {
+    return '#e8e8ef';
   }
 
-  if (valorLimpo === '0' || valorLimpo.startsWith('0')) {
-    return '#ffffff'; // branco
+  const numero = Number(match[0]);
+
+  if (numero === 0) {
+    return '#e8e8ef';
   }
 
-  return '#e8e8ef';
+  if (numero > 0) {
+    return '#7dff9b'; // verde
+  }
+
+  if (numero >= -9) {
+    return '#ffd166'; // amarelo
+  }
+
+  return '#ff5f6d'; // vermelho (-10 ou menor)
 }
 
   obterPrimeiroNome(): string {
