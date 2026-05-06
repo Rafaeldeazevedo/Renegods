@@ -7,12 +7,17 @@ import { PersonagemFrameDataComponent } from './personagens/personagem-frame-dat
 import { JogadoresComunidadeComponent } from './jogadores-comunidade/jogadores-comunidade.component';
 import { JogadorComunidadeCadastroComponent } from './jogadores-comunidade/jogador-comunidade-cadastro/jogador-comunidade-cadastro.component';
 import { JogadorComunidadePersonagensComponent } from './jogadores-comunidade/jogador-comunidade-personagens/jogador-comunidade-personagens.component';
+import { JogadorComunidadePlayerStyleComponent } from './jogadores-comunidade/jogador-comunidade-player-style/jogador-comunidade-player-style.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'personagens', component: PersonagensComponent },
    { path: 'jogadores-comunidade', component: JogadoresComunidadeComponent },
   { path: 'jogadores-comunidade/novo', component: JogadorComunidadeCadastroComponent },
+  {
+  path: 'jogadores-comunidade/:jogadorId/personagens/:personagemId/player-style',
+  component: JogadorComunidadePlayerStyleComponent
+},
   { path: 'jogadores-comunidade/:id/personagens', component: JogadorComunidadePersonagensComponent },
   { path: 'personagens/:id/frame-data', component: PersonagemFrameDataComponent },
   { path: '', redirectTo: 'login', pathMatch: 'full' },

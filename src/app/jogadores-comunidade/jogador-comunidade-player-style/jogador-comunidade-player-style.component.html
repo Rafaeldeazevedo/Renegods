@@ -1,0 +1,175 @@
+<div class="player-style-page">
+
+    <button type="button" class="btn-back" (click)="voltar()">
+        ← Voltar
+    </button>
+
+    <section class="style-hero">
+
+        <div class="hero-left">
+            <div class="style-player">
+                <img *ngIf="jogador?.foto" [src]="jogador.foto" [alt]="jogador?.nome" />
+
+                <div class="avatar-fallback" *ngIf="!jogador?.foto">
+                    {{ jogador?.nome?.charAt(0) || '?' }}
+                </div>
+            </div>
+
+            <div class="style-info">
+                <span>PLAYER STYLE</span>
+
+                <h1>{{ jogador?.nome || 'Jogador' }}</h1>
+
+                <p>
+                    Tekken ID:
+                    <strong>{{ jogador?.tekkenId || '-' }}</strong>
+                </p>
+
+                <div class="character-chip" *ngIf="personagem">
+                    <img [src]="getImagemProfilePersonagem(personagem)" [alt]="personagem.nome"
+                        (error)="usarImagemPadrao($event, personagem)" />
+
+                    <strong>{{ personagem.nome }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-right">
+            <div class="style-summary-header">
+                <h2>Estilo de jogo</h2>
+
+                <button type="button" class="btn-style-action" (click)="abrirEdicaoEstilo()">
+                    {{ estiloJogo?.trim() ? 'Editar estilo de jogo' : 'Criar estilo de jogo' }}
+                </button>
+            </div>
+
+            <div class="style-summary-box">
+                <p class="style-summary-text" *ngIf="estiloJogo?.trim()">
+                    {{ estiloJogo }}
+                </p>
+
+                <p class="style-summary-empty" *ngIf="!estiloJogo?.trim()">
+                    Nenhum estilo de jogo cadastrado para esse player com esse personagem.
+                </p>
+            </div>
+        </div>
+
+    </section>
+
+    <section class="style-editor-card" *ngIf="editandoEstilo">
+        <div class="editor-header">
+            <div>
+                <h2>
+                    {{ estiloJogo?.trim() ? 'Editar estilo de jogo' : 'Criar estilo de jogo' }}
+                </h2>
+
+                <p>Resumo geral de como esse jogador costuma jogar com esse personagem.</p>
+            </div>
+
+            <button type="button" class="btn-close-editor" (click)="cancelarEdicaoEstilo()">
+                ×
+            </button>
+        </div>
+
+        <textarea [(ngModel)]="estiloJogoEditando"
+            placeholder="Ex: Joga esperando você ficar quieto, fica muito passivo, trava bastante e tem throw break ruim..."
+            rows="5"></textarea>
+
+        <div class="editor-actions">
+            <button type="button" class="btn-create" (click)="salvarPlayerStyle()" [disabled]="salvandoEstilo">
+                {{ salvandoEstilo ? 'Salvando...' : 'Salvar estilo de jogo' }}
+            </button>
+
+            <button type="button" class="btn-cancel" (click)="cancelarEdicaoEstilo()">
+                Cancelar
+            </button>
+        </div>
+    </section>
+
+    <section class="mania-list-card">
+
+        <div class="list-header">
+            <div>
+                <h2>Manias cadastradas</h2>
+                <p>{{ manias.length }} registro(s)</p>
+            </div>
+
+            <button type="button" class="btn-create-mania-header" (click)="abrirCriacaoMania()" *ngIf="!criandoMania">
+                + Criar mania
+            </button>
+        </div>
+
+        <div class="mania-create-box" *ngIf="criandoMania">
+            <div class="editor-header">
+                <div>
+                    <h3>Adicionar mania</h3>
+                    <p>Cadastre hábitos, padrões, vícios ou respostas comuns desse player com esse personagem.</p>
+                </div>
+
+                <button type="button" class="btn-close-editor" (click)="cancelarCriacaoMania()">
+                    ×
+                </button>
+            </div>
+
+            <textarea [(ngModel)]="novaMania" placeholder="Ex: Faz a nóia do 2,1 into orbital..." rows="4"></textarea>
+
+            <div class="editor-actions">
+                <button type="button" class="btn-create" (click)="criarMania()">
+                    + Salvar mania
+                </button>
+
+                <button type="button" class="btn-cancel" (click)="cancelarCriacaoMania()">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+
+        <div *ngIf="carregando" class="state-box">
+            Carregando manias...
+        </div>
+
+        <div *ngIf="!carregando && manias.length === 0" class="state-box">
+            Nenhuma mania cadastrada para esse personagem.
+        </div>
+
+        <div class="mania-list" *ngIf="!carregando && manias.length > 0">
+            <article class="mania-item" *ngFor="let mania of manias; let i = index">
+
+                <div class="mania-number">
+                    {{ i + 1 }}
+                </div>
+
+                <div class="mania-content" *ngIf="maniaEditandoId !== mania.id">
+                    <p>{{ mania.descricao }}</p>
+                </div>
+
+                <div class="mania-edit" *ngIf="maniaEditandoId === mania.id">
+                    <textarea [(ngModel)]="descricaoEditando" rows="3"></textarea>
+                </div>
+
+                <div class="mania-actions" *ngIf="maniaEditandoId !== mania.id">
+                    <button type="button" class="btn-small edit" (click)="iniciarEdicao(mania)">
+                        Editar
+                    </button>
+
+                    <button type="button" class="btn-small delete" (click)="excluirMania(mania)">
+                        Excluir
+                    </button>
+                </div>
+
+                <div class="mania-actions" *ngIf="maniaEditandoId === mania.id">
+                    <button type="button" class="btn-small save" (click)="salvarEdicao(mania)">
+                        Salvar
+                    </button>
+
+                    <button type="button" class="btn-small cancel" (click)="cancelarEdicao()">
+                        Cancelar
+                    </button>
+                </div>
+
+            </article>
+        </div>
+
+    </section>
+
+</div>

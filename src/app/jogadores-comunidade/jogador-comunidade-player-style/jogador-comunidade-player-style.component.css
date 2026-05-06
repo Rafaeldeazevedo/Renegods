@@ -1,0 +1,529 @@
+.player-style-page {
+    min-height: 100vh;
+    padding: 36px 54px;
+    background:
+        radial-gradient(circle at top right, rgba(255, 45, 117, 0.14), transparent 24%),
+        radial-gradient(circle at top left, rgba(129, 16, 62, 0.22), transparent 30%),
+        linear-gradient(180deg, #120510 0%, #08070d 46%, #030306 100%);
+    color: #ffffff;
+}
+
+/* BOTÃO VOLTAR */
+
+.btn-back {
+    padding: 11px 18px;
+    margin-bottom: 24px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 45, 117, 0.7);
+    background: rgba(255, 45, 117, 0.08);
+    color: #ff5b96;
+    cursor: pointer;
+    font-weight: 800;
+}
+
+.btn-back:hover {
+    background: rgba(255, 45, 117, 0.18);
+}
+
+/* HERO */
+
+.style-hero {
+    display: grid;
+    grid-template-columns: minmax(430px, 0.85fr) minmax(520px, 1.15fr);
+    gap: 34px;
+    align-items: flex-start;
+
+    padding: 32px;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 45, 117, 0.32);
+
+    background:
+        radial-gradient(circle at top right, rgba(255, 45, 117, 0.20), transparent 32%),
+        linear-gradient(180deg, rgba(18, 22, 34, 0.96), rgba(7, 9, 15, 0.98));
+
+    box-shadow: 0 20px 54px rgba(0, 0, 0, 0.4);
+}
+
+.hero-left {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+}
+
+.style-player {
+    width: 118px;
+    height: 118px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+
+    border: 2px solid rgba(255, 45, 117, 0.95);
+    box-shadow:
+        0 0 0 4px rgba(255, 45, 117, 0.13),
+        0 16px 28px rgba(0, 0, 0, 0.38);
+}
+
+.style-player img,
+.avatar-fallback {
+    width: 100%;
+    height: 100%;
+}
+
+.style-player img {
+    object-fit: cover;
+    object-position: center top;
+}
+
+.avatar-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #ff005c, #ff4f8b);
+    color: #ffffff;
+    font-size: 42px;
+    font-weight: 900;
+}
+
+.style-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.style-info>span {
+    display: block;
+    color: #ff4f8b;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 2px;
+}
+
+.style-info h1 {
+    margin: 8px 0 8px;
+    font-size: 46px;
+    line-height: 1;
+}
+
+.style-info>p {
+    margin: 0;
+    color: #b8becd;
+    font-size: 16px;
+}
+
+.character-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+
+    margin-top: 18px;
+    padding: 9px 12px;
+
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    background: rgba(7, 10, 18, 0.74);
+}
+
+.character-chip img {
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    object-fit: cover;
+    object-position: center top;
+}
+
+/* ESTILO DE JOGO NA DIREITA */
+
+.hero-right {
+    padding-top: 2px;
+}
+
+.style-summary-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+.style-summary-header h2 {
+    margin: 0;
+    color: #ffffff;
+    font-size: 28px;
+    font-weight: 900;
+}
+
+.style-summary-box {
+    min-height: 118px;
+    padding: 20px 22px;
+
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+
+    background: rgba(6, 9, 16, 0.58);
+}
+
+.style-summary-text {
+    margin: 0;
+    color: #ffffff;
+    line-height: 1.55;
+    white-space: pre-line;
+    font-size: 16px;
+}
+
+.style-summary-empty {
+    margin: 0;
+    color: #8e94a7;
+    line-height: 1.45;
+    font-size: 15px;
+}
+
+.btn-style-action {
+    height: 25px;
+    padding: 0 6px;
+
+    border-radius: 12px;
+    border: 1px solid rgba(255, 45, 117, 0.65);
+
+    background: rgba(255, 45, 117, 0.08);
+    color: #ff4f8b;
+
+    cursor: pointer;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.btn-style-action:hover {
+    background: rgba(255, 45, 117, 0.18);
+}
+
+/* EDITOR DO ESTILO */
+
+.style-editor-card,
+.mania-list-card {
+    margin-top: 26px;
+    padding: 26px;
+
+    border-radius: 22px;
+    border: 1px solid rgba(255, 45, 117, 0.25);
+
+    background:
+        linear-gradient(180deg, rgba(18, 22, 34, 0.96), rgba(7, 9, 15, 0.98));
+}
+
+.editor-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.editor-header h2,
+.mania-list-card h2 {
+    margin: 0;
+    font-size: 28px;
+}
+
+.editor-header p,
+.list-header p {
+    margin: 8px 0 18px;
+    color: #aeb3c2;
+}
+
+.btn-close-editor {
+    width: 42px;
+    height: 42px;
+
+    border-radius: 12px;
+    border: 1px solid rgba(255, 45, 117, 0.55);
+
+    background: rgba(255, 45, 117, 0.08);
+    color: #ff4f8b;
+
+    cursor: pointer;
+    font-size: 28px;
+    line-height: 1;
+}
+
+textarea {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid #2a2d38;
+
+    background: #090b12;
+    color: #ffffff;
+
+    outline: none;
+    resize: vertical;
+    font-size: 15px;
+}
+
+textarea:focus {
+    border-color: #ff2d75;
+    box-shadow: 0 0 0 3px rgba(255, 45, 117, 0.12);
+}
+
+.editor-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+}
+
+.btn-create {
+    padding: 14px 22px;
+
+    border: none;
+    border-radius: 16px;
+
+    background: linear-gradient(135deg, #ff005c, #ff4f8b);
+    color: #ffffff;
+
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 900;
+
+    box-shadow: 0 14px 34px rgba(255, 45, 117, 0.28);
+}
+
+.btn-create:hover {
+    filter: brightness(1.05);
+}
+
+.btn-create:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-cancel {
+    padding: 14px 22px;
+
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 900;
+}
+
+.btn-cancel:hover {
+    background: rgba(255, 255, 255, 0.09);
+}
+
+/* CARD DAS MANIAS */
+
+.mania-list-card {
+    position: relative;
+}
+
+.list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 20px;
+}
+
+.list-header h2 {
+    margin: 0;
+}
+
+.list-header p {
+    margin-bottom: 0;
+}
+
+.btn-create-mania-header {
+    height: 25px;
+    padding: 0 11px;
+
+    border: none;
+    border-radius: 14px;
+
+    background: linear-gradient(135deg, #ff005c, #ff4f8b);
+    color: #ffffff;
+
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 900;
+
+    box-shadow: 0 12px 28px rgba(255, 45, 117, 0.24);
+    white-space: nowrap;
+}
+
+.btn-create-mania-header:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+}
+
+/* FORMULÁRIO DE CRIAR MANIA */
+
+.mania-create-box {
+    margin-bottom: 22px;
+    padding: 22px;
+
+    border-radius: 18px;
+    border: 1px solid rgba(255, 45, 117, 0.28);
+
+    background:
+        radial-gradient(circle at top right, rgba(255, 45, 117, 0.12), transparent 34%),
+        rgba(6, 9, 16, 0.72);
+}
+
+.mania-create-box h3 {
+    margin: 0;
+    color: #ffffff;
+    font-size: 24px;
+    font-weight: 900;
+}
+
+.mania-create-box p {
+    margin: 8px 0 18px;
+    color: #aeb3c2;
+}
+
+/* ESTADOS */
+
+.state-box {
+    padding: 22px;
+    border-radius: 16px;
+    background: rgba(6, 9, 16, 0.72);
+    color: #c7cad6;
+}
+
+/* LISTA DE MANIAS */
+
+.mania-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.mania-item {
+    display: grid;
+    grid-template-columns: 52px 1fr auto;
+    gap: 14px;
+    align-items: start;
+
+    padding: 18px;
+
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+
+    background: rgba(6, 9, 16, 0.72);
+}
+
+.mania-number {
+    width: 38px;
+    height: 38px;
+
+    border-radius: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(255, 45, 117, 0.12);
+    color: #ff4f8b;
+
+    font-weight: 900;
+}
+
+.mania-content p {
+    margin: 6px 0 0;
+    color: #ffffff;
+    line-height: 1.5;
+}
+
+.mania-edit {
+    width: 100%;
+}
+
+.mania-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-small {
+    height: 21px;
+    padding: 0 5px;
+
+    border-radius: 10px;
+    cursor: pointer;
+
+    font-weight: 900;
+}
+
+.btn-small.edit {
+    border: 1px solid rgba(255, 45, 117, 0.65);
+    background: rgba(255, 45, 117, 0.08);
+    color: #ff4f8b;
+}
+
+.btn-small.delete {
+    border: 1px solid rgba(255, 95, 109, 0.65);
+    background: rgba(255, 95, 109, 0.08);
+    color: #ff5f6d;
+}
+
+.btn-small.save {
+    border: 1px solid rgba(125, 255, 155, 0.65);
+    background: rgba(125, 255, 155, 0.08);
+    color: #7dff9b;
+}
+
+.btn-small.cancel {
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.06);
+    color: #ffffff;
+}
+
+/* RESPONSIVO */
+
+@media (max-width: 900px) {
+    .player-style-page {
+        padding: 24px 18px;
+    }
+
+    .style-hero {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-left {
+        flex-direction: column;
+    }
+
+    .style-info h1 {
+        font-size: 36px;
+    }
+
+    .style-summary-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .btn-style-action {
+        width: 100%;
+    }
+
+    .list-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .btn-create-mania-header {
+        width: 100%;
+    }
+
+    .mania-item {
+        grid-template-columns: 1fr;
+    }
+
+    .mania-actions {
+        flex-wrap: wrap;
+    }
+}

@@ -12,6 +12,24 @@
 
         <label>Tekken ID</label>
         <input type="text" [(ngModel)]="tekkenId" placeholder="Ex: 3A7B-9912" />
+<label>Foto do Perfil</label>
+
+<select class="profile-select" [ngModel]="foto" (ngModelChange)="selecionarFotoPeloValor($event)">
+    <option value="">Selecione uma foto de perfil</option>
+
+    <option *ngFor="let personagem of personagens" [value]="getImagemProfilePersonagem(personagem)">
+        {{ personagem.nome }}
+    </option>
+</select>
+
+<div class="profile-preview" *ngIf="foto">
+    <img [src]="foto" alt="Foto de perfil selecionada" />
+
+    <div>
+        <strong>Foto selecionada</strong>
+        <span>{{ nomeFotoSelecionada }}</span>
+    </div>
+</div>
 
         <label>Personagens</label>
 
