@@ -34,13 +34,13 @@
 }
 
 .btn-primary {
-    padding: 16px 26px;
+    padding: 5px 10px;
     border: none;
     border-radius: 18px;
     background: linear-gradient(135deg, #ff005c, #ff4f8b);
     color: #ffffff;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 12px;
     font-weight: 900;
     box-shadow: 0 14px 34px rgba(255, 45, 117, 0.28);
     transition: all 0.22s ease;

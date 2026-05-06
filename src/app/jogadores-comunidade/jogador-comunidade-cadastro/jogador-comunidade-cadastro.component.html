@@ -1,48 +1,160 @@
-<div class="page">
-    <button type="button" class="btn-back" (click)="voltar()">
-        ← Voltar
-    </button>
+<div class="cadastro-page">
 
-    <div class="form-card">
-        <h1>Cadastrar jogador</h1>
-        <p>Informe os dados do jogador da comunidade.</p>
+    <section class="cadastro-header">
+        <div>
+            <span class="page-kicker">TEKKEN 8 • COMMUNITY PLAYER</span>
+            <h1>Cadastrar jogador</h1>
+            <p>Informe os dados do jogador da comunidade e selecione os personagens utilizados.</p>
+        </div>
+    </section>
 
-        <label>Nome do jogador</label>
-        <input type="text" [(ngModel)]="nome" placeholder="Ex: JoãoTK" />
+    <section class="cadastro-layout">
 
-        <label>Tekken ID</label>
-        <input type="text" [(ngModel)]="tekkenId" placeholder="Ex: 3A7B-9912" />
-<label>Foto do Perfil</label>
+        <div class="left-column">
 
-<select class="profile-select" [ngModel]="foto" (ngModelChange)="selecionarFotoPeloValor($event)">
-    <option value="">Selecione uma foto de perfil</option>
+            <section class="form-card">
+                <div class="section-header">
+                    <div>
+                        <span class="section-kicker">Dados básicos</span>
+                        <h2>Informações do jogador</h2>
+                    </div>
+                </div>
 
-    <option *ngFor="let personagem of personagens" [value]="getImagemProfilePersonagem(personagem)">
-        {{ personagem.nome }}
-    </option>
-</select>
+                <div class="form-grid">
 
-<div class="profile-preview" *ngIf="foto">
-    <img [src]="foto" alt="Foto de perfil selecionada" />
+                    <div class="form-group full-width">
+                        <label for="nome">Nome do jogador</label>
+                        <input id="nome" type="text" [(ngModel)]="nome" name="nome" placeholder="Ex: JoãoTK" />
+                    </div>
 
-    <div>
-        <strong>Foto selecionada</strong>
-        <span>{{ nomeFotoSelecionada }}</span>
-    </div>
-</div>
+                    <div class="form-group">
+                        <label for="tekkenId">Tekken ID</label>
+                        <input id="tekkenId" type="text" [(ngModel)]="tekkenId" name="tekkenId"
+                            placeholder="Ex: 3A7B-9912" />
+                    </div>
 
-        <label>Personagens</label>
+                    <div class="form-group">
+                        <label for="foto">Foto do perfil</label>
 
-        <div class="characters-select-grid">
-            <div class="character-option" *ngFor="let personagem of personagens"
-                [class.selected]="estaSelecionado(personagem.id)" (click)="togglePersonagem(personagem.id)">
-                <img [src]="personagem.imagem" [alt]="personagem.nome" />
-                <span>{{ personagem.nome }}</span>
-            </div>
+                        <select id="foto" [(ngModel)]="foto" name="foto"
+                            (ngModelChange)="selecionarFotoPeloValor($event)">
+                            <option value="">Selecione uma foto de perfil</option>
+
+                            <option *ngFor="let personagem of personagens"
+                                [value]="getImagemProfilePersonagem(personagem)">
+                                {{ personagem.nome }}
+                            </option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-primary" (click)="salvar()" [disabled]="salvando || !formularioValido()">
+                        {{ salvando ? 'Salvando...' : 'Cadastrar jogador' }}
+                    </button>
+                </div>
+            </section>
+
+            <section class="personagens-card">
+                <div class="section-header personagens-header">
+                    <div>
+                        <span class="section-kicker">Personagens utilizados</span>
+                        <h2>Selecione os personagens</h2>
+                        <p>Escolha os personagens que esse jogador costuma usar.</p>
+                    </div>
+
+                    <div class="contador-personagens">
+                        {{ personagensSelecionados.length }} personagem(ns) selecionado(s)
+                    </div>
+                </div>
+
+                <div class="search-box">
+                    <input type="text" [(ngModel)]="filtroPersonagem" name="filtroPersonagem"
+                        placeholder="Buscar personagem..." />
+                </div>
+
+                <div class="personagens-grid">
+                    <article class="personagem-card" *ngFor="let personagem of personagensFiltrados"
+                        [class.selected]="estaSelecionado(personagem.id)" (click)="togglePersonagem(personagem.id)">
+                        <div class="personagem-image-wrapper">
+                            <img [src]="personagem.imagem" [alt]="personagem.nome" class="personagem-image"
+                                (error)="usarImagemPadraoPersonagem($event)" />
+                        </div>
+
+                        <strong>{{ personagem.nome }}</strong>
+
+                        <div class="selected-badge" *ngIf="estaSelecionado(personagem.id)">
+                            ✓
+                        </div>
+                    </article>
+                </div>
+            </section>
+
         </div>
 
-        <button type="button" class="btn-save" (click)="salvar()" [disabled]="salvando">
-            {{ salvando ? 'Salvando...' : 'Salvar jogador' }}
-        </button>
-    </div>
+        <aside class="preview-column">
+            <section class="preview-card">
+                <div class="preview-title">
+                    <span>Preview do jogador</span>
+                </div>
+
+                <div class="preview-avatar">
+                    <img *ngIf="foto" [src]="foto" [alt]="nomeFotoSelecionada || nome || 'Foto do jogador'"
+                        (error)="usarImagemPadraoFotoPerfil($event)" />
+
+                    <div class="preview-avatar-fallback" *ngIf="!foto">
+                        {{ nome?.charAt(0) || '?' }}
+                    </div>
+                </div>
+
+                <h2>{{ nome?.trim() || 'Nome do jogador' }}</h2>
+
+                <p class="preview-tekken-id">
+                    {{ tekkenId?.trim() || 'Tekken ID' }}
+                </p>
+
+                <div class="preview-badge">
+                    {{ personagensSelecionados.length }} personagem(ns) selecionado(s)
+                </div>
+
+                <div class="preview-divider"></div>
+
+                <div class="preview-section">
+                    <h3>Foto selecionada</h3>
+
+                    <p *ngIf="nomeFotoSelecionada">
+                        {{ nomeFotoSelecionada }}
+                    </p>
+
+                    <p *ngIf="!nomeFotoSelecionada" class="muted">
+                        Nenhuma foto selecionada
+                    </p>
+                </div>
+
+                <div class="preview-section">
+                    <h3>Personagens selecionados</h3>
+
+                    <div class="preview-personagens" *ngIf="personagensPreview.length > 0">
+                        <div class="preview-personagem" *ngFor="let personagem of personagensPreview">
+                            <img [src]="personagem.imagem" [alt]="personagem.nome"
+                                (error)="usarImagemPadraoPersonagem($event)" />
+
+                            <span>{{ obterNomeCurto(personagem.nome) }}</span>
+                        </div>
+                    </div>
+
+                    <p *ngIf="personagensPreview.length === 0" class="muted">
+                        Nenhum personagem selecionado
+                    </p>
+                </div>
+
+                <div class="preview-info-box">
+                    Essa é uma prévia de como o jogador será exibido para a comunidade.
+                </div>
+            </section>
+        </aside>
+
+    </section>
+
 </div>

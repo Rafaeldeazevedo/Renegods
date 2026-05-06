@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { JogadorComunidadeService } from '../services/jogadorComunidade.service';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-jogadores-comunidade',
@@ -16,7 +17,8 @@ export class JogadoresComunidadeComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private jogadorComunidadeService: JogadorComunidadeService
+    private jogadorComunidadeService: JogadorComunidadeService,
+    private messageService: MessageService,
   ) {}
 
   ngOnInit(): void {
@@ -81,14 +83,19 @@ obterNomeCurto(nome: string): string {
 selecionarPersonagemDoJogador(jogador: any, personagem: any): void {
   this.jogadorSelecionado = jogador;
   this.personagemSelecionado = personagem;
-
-  console.log('Jogador selecionado:', jogador);
-  console.log('Personagem selecionado:', personagem);
 }
 
 visualizarPlayerStyle(jogador: any): void {
   if (!this.personagemSelecionado || this.jogadorSelecionado?.id !== jogador.id) {
-    alert('Selecione um personagem desse jogador primeiro.');
+    console.log('TOAST CHAMADO');
+
+    this.messageService.add({
+      severity: 'warn',
+      summary: 'Personagem não selecionado',
+      detail: 'Selecione um personagem desse jogador antes de abrir o Player Style.',
+      life: 3500
+    });
+
     return;
   }
 

@@ -8,9 +8,10 @@ import { JogadoresComunidadeComponent } from './jogadores-comunidade/jogadores-c
 import { JogadorComunidadeCadastroComponent } from './jogadores-comunidade/jogador-comunidade-cadastro/jogador-comunidade-cadastro.component';
 import { JogadorComunidadePersonagensComponent } from './jogadores-comunidade/jogador-comunidade-personagens/jogador-comunidade-personagens.component';
 import { JogadorComunidadePlayerStyleComponent } from './jogadores-comunidade/jogador-comunidade-player-style/jogador-comunidade-player-style.component';
-
+import { HomeComponent } from './home/home.component';
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
+    { path: 'home', component: HomeComponent },
   { path: 'personagens', component: PersonagensComponent },
    { path: 'jogadores-comunidade', component: JogadoresComunidadeComponent },
   { path: 'jogadores-comunidade/novo', component: JogadorComunidadeCadastroComponent },

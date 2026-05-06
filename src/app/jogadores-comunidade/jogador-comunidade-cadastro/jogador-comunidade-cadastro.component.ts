@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+
 import { JogadorComunidadeService } from '../../services/jogadorComunidade.service';
 import { PersonagemService } from '../../services/personagem.service';
 
@@ -14,10 +15,13 @@ export class JogadorComunidadeCadastroComponent implements OnInit {
   tekkenId = '';
   foto = '';
   nomeFotoSelecionada = '';
-  personagens: any[] = [];
-  personagensSelecionados: number[] = [];
+
+  filtroPersonagem = '';
 
   salvando = false;
+
+  personagens: any[] = [];
+  personagensSelecionados: number[] = [];
 
   constructor(
     private router: Router,
@@ -36,45 +40,98 @@ export class JogadorComunidadeCadastroComponent implements OnInit {
       },
       error: (erro) => {
         console.error('Erro ao carregar personagens:', erro);
+        this.personagens = [];
       }
     });
   }
 
-  selecionarFotoPerfil(foto: string): void {
-  this.foto = foto;
-}
+  get personagensFiltrados(): any[] {
+    const filtro = this.filtroPersonagem.trim().toLowerCase();
 
-fotoSelecionada(foto: string): boolean {
-  return this.foto === foto;
-}
+    if (!filtro) {
+      return this.personagens;
+    }
+
+    return this.personagens.filter(personagem =>
+      personagem.nome?.toLowerCase().includes(filtro)
+    );
+  }
+
+  get personagensPreview(): any[] {
+    return this.personagens
+      .filter(personagem => this.personagensSelecionados.includes(personagem.id))
+      .slice(0, 6);
+  }
+
+  selecionarFotoPeloValor(foto: string): void {
+    this.foto = foto;
+
+    const personagemEncontrado = this.personagens.find(
+      personagem => this.getImagemProfilePersonagem(personagem) === foto
+    );
+
+    this.nomeFotoSelecionada = personagemEncontrado?.nome || '';
+  }
+
+  getImagemProfilePersonagem(personagem: any): string {
+    if (!personagem?.nome) {
+      return personagem?.imagem || '';
+    }
+
+    const slug = this.gerarSlug(personagem.nome);
+    return `assets/profile/${slug}.png`;
+  }
+
+  gerarSlug(nome: string): string {
+    return nome
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
 
   togglePersonagem(personagemId: number): void {
-    const existe = this.personagensSelecionados.includes(personagemId);
+    const jaSelecionado = this.personagensSelecionados.includes(personagemId);
 
-    if (existe) {
-      this.personagensSelecionados = this.personagensSelecionados.filter(id => id !== personagemId);
-    } else {
-      this.personagensSelecionados.push(personagemId);
+    if (jaSelecionado) {
+      this.personagensSelecionados = this.personagensSelecionados.filter(
+        id => id !== personagemId
+      );
+      return;
     }
+
+    this.personagensSelecionados = [
+      ...this.personagensSelecionados,
+      personagemId
+    ];
   }
 
   estaSelecionado(personagemId: number): boolean {
     return this.personagensSelecionados.includes(personagemId);
   }
 
-salvar(): void {
-  if (!this.nome.trim() || !this.tekkenId.trim()) {
-    alert('Informe o nome e o Tekken ID.');
-    return;
+  obterNomeCurto(nome: string): string {
+    if (!nome) {
+      return '';
+    }
+
+    return nome.trim().split(/\s+/)[0];
   }
 
-  if (!this.foto) {
-    alert('Selecione uma foto de perfil.');
-    return;
+  usarImagemPadraoPersonagem(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    img.src = 'assets/Alisa.png';
   }
 
-  if (this.personagensSelecionados.length === 0) {
-    alert('Selecione pelo menos um personagem.');
+  usarImagemPadraoFotoPerfil(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    img.src = 'assets/Alisa.png';
+  }
+
+ salvar(): void {
+  if (!this.formularioValido()) {
+    alert('Preencha nome, Tekken ID, foto de perfil e selecione pelo menos um personagem.');
     return;
   }
 
@@ -92,60 +149,24 @@ salvar(): void {
   this.jogadorComunidadeService.cadastrar(payload).subscribe({
     next: () => {
       this.salvando = false;
-      alert('Jogador cadastrado com sucesso.');
       this.router.navigate(['/jogadores-comunidade']);
     },
     error: (erro) => {
       console.error('Erro ao cadastrar jogador:', erro);
       this.salvando = false;
-
-      const mensagem =
-        erro?.error?.message ||
-        erro?.error?.mensagem ||
-        'Erro ao cadastrar jogador.';
-
-      alert(mensagem);
+      alert('Erro ao cadastrar jogador.');
     }
   });
 }
-  getImagemProfilePersonagem(personagem: any): string {
-  if (!personagem?.nome) {
-    return personagem?.imagem || '';
-  }
 
-  const slug = this.gerarSlug(personagem.nome);
-
-  return `assets/profile/${slug}.png`;
-}
-
-gerarSlug(nome: string): string {
-  return nome
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
-usarImagemPadrao(event: Event, personagem: any): void {
-  const img = event.target as HTMLImageElement;
-  img.src = personagem?.imagem || 'assets/Alisa.png';
-}
-
-selecionarFotoPorPersonagem(personagem: any): void {
-  this.foto = this.getImagemProfilePersonagem(personagem);
-  this.nomeFotoSelecionada = personagem.nome;
-}
-selecionarFotoPeloValor(foto: string): void {
-  this.foto = foto;
-
-  const personagemEncontrado = this.personagens.find(
-    personagem => this.getImagemProfilePersonagem(personagem) === foto
+formularioValido(): boolean {
+  return !!(
+    this.nome.trim() &&
+    this.tekkenId.trim() &&
+    this.foto &&
+    this.personagensSelecionados.length > 0
   );
-
-  this.nomeFotoSelecionada = personagemEncontrado?.nome || '';
 }
-
   voltar(): void {
     this.router.navigate(['/jogadores-comunidade']);
   }

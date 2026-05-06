@@ -65,4 +65,9 @@ excluirMania(maniaId: number) {
     `${this.apiUrl}/manias/${maniaId}`
   );
 }
+
+ contarPlayerStyles(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/player-styles/total`);
+  }
+
 }

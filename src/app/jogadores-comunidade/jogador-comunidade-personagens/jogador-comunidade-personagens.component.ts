@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JogadorComunidadeService } from '../../services/jogadorComunidade.service';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-jogador-comunidade-personagens',
@@ -18,7 +19,8 @@ export class JogadorComunidadePersonagensComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private jogadorComunidadeService: JogadorComunidadeService
+    private jogadorComunidadeService: JogadorComunidadeService,
+    private messagemService: MessageService
   ) {}
 
   ngOnInit(): void {

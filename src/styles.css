@@ -15,3 +15,78 @@ app-root {
   flex-direction: column;
   flex: 1;
 }
+/* TOAST RENEGADOS - CARD SEM ÍCONE */
+
+.p-toast {
+  z-index: 999999 !important;
+}
+
+.p-toast .p-toast-message {
+  width: 420px !important;
+  max-width: calc(100vw - 32px) !important;
+
+  margin: 0 0 12px 0 !important;
+  border-radius: 18px !important;
+  overflow: hidden !important;
+
+  border: 1px solid rgba(255, 45, 117, 0.55) !important;
+
+  background:
+    radial-gradient(circle at top right, rgba(255, 45, 117, 0.24), transparent 38%),
+    linear-gradient(180deg, #151925 0%, #070911 100%) !important;
+
+  color: #ffffff !important;
+
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, 0.65),
+    0 0 28px rgba(255, 45, 117, 0.22) !important;
+
+  backdrop-filter: blur(10px);
+}
+
+.p-toast .p-toast-message-content {
+  display: block !important;
+  padding: 18px 22px !important;
+  color: #ffffff !important;
+}
+
+.p-toast .p-toast-message-icon,
+.p-toast .p-toast-icon-close {
+  display: none !important;
+}
+
+.p-toast .p-toast-message-text {
+  display: block !important;
+  margin: 0 !important;
+}
+
+.p-toast .p-toast-summary {
+  display: block !important;
+  margin: 0 0 6px 0 !important;
+
+  color: #ffffff !important;
+  font-weight: 900 !important;
+  font-size: 16px !important;
+  line-height: 1.2 !important;
+}
+
+.p-toast .p-toast-detail {
+  display: block !important;
+
+  color: #d6d8e2 !important;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+}
+
+/* Força qualquer severity do PrimeNG a usar o mesmo card */
+.p-toast .p-toast-message-warn,
+.p-toast .p-toast-message-info,
+.p-toast .p-toast-message-success,
+.p-toast .p-toast-message-error {
+  background:
+    radial-gradient(circle at top right, rgba(255, 45, 117, 0.24), transparent 38%),
+    linear-gradient(180deg, #151925 0%, #070911 100%) !important;
+
+  border: 1px solid rgba(255, 45, 117, 0.55) !important;
+  color: #ffffff !important;
+}

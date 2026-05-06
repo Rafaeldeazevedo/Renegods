@@ -1,7 +1,9 @@
-<app-header *ngIf="authService.estaLogado()"></app-header>
+<p-toast position="top-right"></p-toast>
+
+<app-header *ngIf="!esconderHeader"></app-header>
 
 <main>
   <router-outlet></router-outlet>
 </main>
 
-<app-footer *ngIf="authService.estaLogado()"></app-footer>
+<app-footer *ngIf="!esconderFooter"></app-footer>

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { AuthService } from './services/auth.service';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -7,5 +8,18 @@ import { AuthService } from './services/auth.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  constructor(public authService: AuthService) {}
+
+  esconderHeader = false;
+  esconderFooter = false;
+
+  constructor(private router: Router) {
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: any) => {
+        const url = event.urlAfterRedirects;
+
+        this.esconderHeader = url.startsWith('/home');
+        this.esconderFooter = url.startsWith('/home');
+      });
+  }
 }
