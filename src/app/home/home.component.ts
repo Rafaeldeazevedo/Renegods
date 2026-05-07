@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 
 import { PersonagemService } from '../services/personagem.service';
 import { JogadorComunidadeService } from '../services/jogadorComunidade.service';
+
+import { Personagem } from '../model/personagem.model';
 import { UsuarioLogado } from '../model/auth.model';
 
 @Component({
@@ -12,20 +14,30 @@ import { UsuarioLogado } from '../model/auth.model';
 })
 export class HomeComponent implements OnInit {
 
+  termoBusca = '';
+
   carregando = false;
 
-  personagens: any[] = [];
-  jogadores: any[] = [];
+  menuConfiguracoesAberto = false;
+  menuPerfilAberto = false;
+  editorPerfilAberto = false;
+
+  nicknameEditado = '';
+  fotoPerfilPreview = '';
+
+  usuarioLogado: UsuarioLogado | null = null;
+
+  personagens: Personagem[] = [];
+  personagensHero: Personagem[] = [];
+  personagensDestaque: Personagem[] = [];
+
+  jogadoresComunidade: any[] = [];
+  ultimosJogadoresComunidade: any[] = [];
 
   totalPersonagens = 0;
   totalFavoritos = 0;
-  totalJogadores = 0;
+  totalJogadoresComunidade = 0;
   totalPlayerStyles = 0;
-
-  personagensDestaque: any[] = [];
-  jogadoresRecentes: any[] = [];
-
-  usuarioLogado: UsuarioLogado | null = null;
 
   private requisicoesFinalizadas = 0;
   private totalRequisicoes = 3;
@@ -55,7 +67,12 @@ export class HomeComponent implements OnInit {
       return;
     }
 
-    this.usuarioLogado = JSON.parse(usuarioStorage);
+    try {
+      this.usuarioLogado = JSON.parse(usuarioStorage);
+    } catch (erro) {
+      console.error('Erro ao ler usuário logado:', erro);
+      this.usuarioLogado = null;
+    }
   }
 
   carregarDadosHome(): void {
@@ -78,17 +95,10 @@ export class HomeComponent implements OnInit {
         this.personagens = personagens || [];
 
         this.totalPersonagens = this.personagens.length;
+        this.totalFavoritos = this.personagens.filter(p => p.favorito === true).length;
 
-        this.totalFavoritos = this.personagens.filter(
-          personagem => personagem.favorito === true
-        ).length;
-
-        this.personagensDestaque = this.personagens
-          .slice(0, 4)
-          .map(personagem => ({
-            ...personagem,
-            imagemTratada: this.getImagemPersonagem(personagem)
-          }));
+        this.definirPersonagensHero();
+        this.definirPersonagensDestaque();
 
         this.finalizarRequisicao();
       },
@@ -96,34 +106,49 @@ export class HomeComponent implements OnInit {
         console.error('Erro ao carregar personagens:', erro);
 
         this.personagens = [];
+        this.personagensHero = [];
+        this.personagensDestaque = [];
+
         this.totalPersonagens = 0;
         this.totalFavoritos = 0;
-        this.personagensDestaque = [];
 
         this.finalizarRequisicao();
       }
     });
   }
 
+  definirPersonagensHero(): void {
+    this.personagensHero = this.pegarAleatorios(this.personagens, 3);
+  }
+
+  definirPersonagensDestaque(): void {
+    this.personagensDestaque = this.pegarAleatorios(this.personagens, 4);
+  }
+
+  pegarAleatorios(lista: Personagem[], quantidade: number): Personagem[] {
+    if (!lista || lista.length === 0) {
+      return [];
+    }
+
+    return [...lista]
+      .sort(() => Math.random() - 0.5)
+      .slice(0, quantidade);
+  }
+
   carregarJogadoresComunidade(): void {
     this.jogadorComunidadeService.listar().subscribe({
       next: (jogadores) => {
-        this.jogadores = jogadores || [];
+        this.jogadoresComunidade = jogadores || [];
 
-        this.totalJogadores = this.jogadores.length;
+        this.totalJogadoresComunidade = this.jogadoresComunidade.length;
 
-        this.jogadoresRecentes = this.jogadores
+        this.ultimosJogadoresComunidade = [...this.jogadoresComunidade]
           .slice(-3)
           .reverse()
           .map(jogador => ({
             ...jogador,
-            fotoTratada: jogador.foto || 'assets/Alisa.png',
-            personagensTratados: (jogador.personagens || [])
-              .slice(0, 3)
-              .map((personagem: any) => ({
-                ...personagem,
-                imagemTratada: this.getImagemProfilePersonagem(personagem)
-              }))
+            foto: jogador.foto || '',
+            personagens: jogador.personagens || []
           }));
 
         this.finalizarRequisicao();
@@ -131,9 +156,9 @@ export class HomeComponent implements OnInit {
       error: (erro) => {
         console.error('Erro ao carregar jogadores da comunidade:', erro);
 
-        this.jogadores = [];
-        this.totalJogadores = 0;
-        this.jogadoresRecentes = [];
+        this.jogadoresComunidade = [];
+        this.ultimosJogadoresComunidade = [];
+        this.totalJogadoresComunidade = 0;
 
         this.finalizarRequisicao();
       }
@@ -170,8 +195,56 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  irPara(rota: string): void {
-    this.router.navigate([rota]);
+  abrirFrameData(personagem: any): void {
+    sessionStorage.setItem('personagemFrameData', JSON.stringify(personagem));
+
+    this.router.navigate(
+      ['/personagens', personagem.id, 'frame-data'],
+      {
+        state: {
+          personagem: personagem
+        }
+      }
+    );
+  }
+
+  favoritar(personagem: Personagem): void {
+    if (!this.usuarioLogado) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    if (personagem.favorito) {
+      this.personagemService
+        .removerFavorito(personagem.id, this.usuarioLogado.id)
+        .subscribe({
+          next: () => {
+            personagem.favorito = false;
+            this.atualizarTotalFavoritos();
+          },
+          error: (erro) => {
+            console.error('Erro ao remover favorito:', erro);
+          }
+        });
+
+      return;
+    }
+
+    this.personagemService
+      .favoritar(personagem.id, this.usuarioLogado.id)
+      .subscribe({
+        next: () => {
+          personagem.favorito = true;
+          this.atualizarTotalFavoritos();
+        },
+        error: (erro) => {
+          console.error('Erro ao favoritar:', erro);
+        }
+      });
+  }
+
+  atualizarTotalFavoritos(): void {
+    this.totalFavoritos = this.personagens.filter(p => p.favorito === true).length;
   }
 
   getInicialUsuario(): string {
@@ -179,8 +252,8 @@ export class HomeComponent implements OnInit {
       return '?';
     }
 
-    const nomeParaAvatar = this.usuarioLogado.nickname || this.usuarioLogado.nome;
-    return nomeParaAvatar.charAt(0).toUpperCase();
+    const nome = this.usuarioLogado.nickname || this.usuarioLogado.nome || '?';
+    return nome.charAt(0).toUpperCase();
   }
 
   getNomeUsuario(): string {
@@ -191,30 +264,96 @@ export class HomeComponent implements OnInit {
     return this.usuarioLogado.nickname || this.usuarioLogado.nome;
   }
 
+  getFotoPerfilUsuario(): string {
+    if (!this.usuarioLogado) {
+      return '';
+    }
+
+    return (this.usuarioLogado as any).fotoPerfil || '';
+  }
+
+  alternarMenuPerfil(): void {
+    this.menuPerfilAberto = !this.menuPerfilAberto;
+  }
+
+  abrirEditorPerfil(): void {
+    if (!this.usuarioLogado) {
+      return;
+    }
+
+    this.menuPerfilAberto = false;
+    this.editorPerfilAberto = true;
+
+    this.nicknameEditado = this.usuarioLogado.nickname || this.usuarioLogado.nome || '';
+    this.fotoPerfilPreview = this.getFotoPerfilUsuario() || '';
+  }
+
+  fecharEditorPerfil(): void {
+    this.editorPerfilAberto = false;
+  }
+
+  selecionarFotoPerfil(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    if (!input.files || input.files.length === 0) {
+      return;
+    }
+
+    const arquivo = input.files[0];
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      this.fotoPerfilPreview = String(reader.result);
+    };
+
+    reader.readAsDataURL(arquivo);
+  }
+
+  salvarPerfil(): void {
+    if (!this.usuarioLogado) {
+      return;
+    }
+
+    const usuarioAtualizado: any = {
+      ...this.usuarioLogado,
+      nickname: this.nicknameEditado.trim() || this.usuarioLogado.nickname || this.usuarioLogado.nome,
+      fotoPerfil: this.fotoPerfilPreview
+    };
+
+    this.usuarioLogado = usuarioAtualizado;
+
+    localStorage.setItem('usuarioLogado', JSON.stringify(usuarioAtualizado));
+
+    this.editorPerfilAberto = false;
+  }
+
+  alternarConfiguracoes(): void {
+    this.menuConfiguracoesAberto = !this.menuConfiguracoesAberto;
+  }
+
+  sair(): void {
+    localStorage.removeItem('usuarioLogado');
+    localStorage.removeItem('token');
+
+    this.menuConfiguracoesAberto = false;
+    this.menuPerfilAberto = false;
+    this.editorPerfilAberto = false;
+
+    this.router.navigate(['/login']);
+  }
+
   getImagemPersonagem(personagem: any): string {
     if (personagem?.imagem) {
       return personagem.imagem;
     }
 
     if (!personagem?.nome) {
-      return 'assets/Alisa.png';
+      return 'assets/personagens/alisa-bosconovitch.png';
     }
 
     const slug = this.gerarSlug(personagem.nome);
-    return `assets/${slug}.png`;
-  }
 
-  getImagemProfilePersonagem(personagem: any): string {
-    if (personagem?.imagem) {
-      return personagem.imagem;
-    }
-
-    if (!personagem?.nome) {
-      return 'assets/Alisa.png';
-    }
-
-    const slug = this.gerarSlug(personagem.nome);
-    return `assets/profile/${slug}.png`;
+    return `assets/personagens/${slug}.png`;
   }
 
   gerarSlug(nome: string): string {
@@ -228,6 +367,11 @@ export class HomeComponent implements OnInit {
 
   usarImagemPadrao(event: Event): void {
     const img = event.target as HTMLImageElement;
-    img.src = 'assets/Alisa.png';
+
+    if (img.src.includes('alisa-bosconovitch.png')) {
+      return;
+    }
+
+    img.src = 'assets/personagens/alisa-bosconovitch.png';
   }
 }

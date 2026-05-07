@@ -20,10 +20,12 @@ export class AppComponent {
 
         this.esconderHeader =
           url.startsWith('/home') ||
+          url.startsWith('/login') ||
           url.startsWith('/personagens');
 
         this.esconderFooter =
           url.startsWith('/home') ||
+          url.startsWith('/login')||
           url.startsWith('/personagens');
       });
   }

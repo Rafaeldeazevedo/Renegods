@@ -1,277 +1,316 @@
 <div class="home-page">
 
-    <aside class="home-sidebar">
-        <div class="sidebar-brand">
-            <div class="brand-icon">T8</div>
+    <!-- SIDEBAR -->
+    <aside class="side-panel">
 
-            <div>
-                <h2>TEKKEN 8</h2>
-                <p>Frame Data Hub</p>
+        <div class="sidebar-top">
+
+            <div class="profile-wrapper" *ngIf="usuarioLogado">
+
+                <button type="button" class="sidebar-user" (click)="alternarMenuPerfil()">
+                    <div class="sidebar-user-avatar">
+                        <img *ngIf="getFotoPerfilUsuario()" [src]="getFotoPerfilUsuario()" alt="Foto de perfil" />
+
+                        <span *ngIf="!getFotoPerfilUsuario()">
+                            {{ getInicialUsuario() }}
+                        </span>
+                    </div>
+
+                    <div class="sidebar-user-info">
+                        <strong>{{ usuarioLogado.nickname || usuarioLogado.nome }}</strong>
+                    </div>
+
+                    <span class="profile-arrow">⌄</span>
+                </button>
+
+                <div class="profile-menu" *ngIf="menuPerfilAberto">
+                    <button type="button" (click)="abrirEditorPerfil()">
+                        Editar perfil
+                    </button>
+
+                    <button type="button" class="logout-option" (click)="sair()">
+                        Sair
+                    </button>
+                </div>
+
             </div>
+
         </div>
 
-        <nav class="sidebar-menu">
+        <nav class="side-menu">
 
-            <button type="button" class="sidebar-item active" (click)="irPara('/home')">
+            <button type="button" class="side-item active" routerLink="/home">
                 <span>⌂</span>
                 Início
             </button>
 
-            <button type="button" class="sidebar-item" (click)="irPara('/personagens')">
+            <button type="button" class="side-item" routerLink="/personagens">
                 <span>👥</span>
                 Personagens
             </button>
 
-            <button type="button" class="sidebar-item" (click)="irPara('/personagens')">
+            <button type="button" class="side-item" routerLink="/personagens">
                 <span>⭐</span>
                 Favoritos
                 <strong>{{ totalFavoritos }}</strong>
             </button>
 
-            <button type="button" class="sidebar-item">
+            <button type="button" class="side-item">
                 <span>📊</span>
                 Tier List
             </button>
 
-            <button type="button" class="sidebar-item">
+            <button type="button" class="side-item">
                 <span>📘</span>
                 Wavu Wank
             </button>
 
-            <button type="button" class="sidebar-item" (click)="irPara('/jogadores-comunidade')">
+            <button type="button" class="side-item" routerLink="/jogadores-comunidade">
                 <span>🎮</span>
                 Jogadores Comunidade
             </button>
-
-            <button type="button" class="sidebar-item">
-                <span>⚙</span>
-                Configurações
-            </button>
-
         </nav>
 
-        <div class="community-box">
-            <h3>Participe da comunidade</h3>
-
-            <p>
-                Cadastre jogadores, estilos de jogo, manias e padrões para ajudar outros jogadores.
-            </p>
-
-            <button type="button" (click)="irPara('/jogadores-comunidade')">
-                Entrar na comunidade
-            </button>
-        </div>
     </aside>
 
-    <main class="home-content">
+    <!-- CONTEÚDO -->
+    <main class="content">
 
-        <section class="top-bar">
-            <div class="user-box">
-                <div class="user-avatar">R</div>
 
-                <div>
-                    <strong>R4F</strong>
-                    <span>Renegado</span>
-                </div>
-            </div>
-        </section>
-
+        <!-- LOADING -->
         <section class="loading-card" *ngIf="carregando">
             Carregando dashboard...
         </section>
 
-        <section class="hero-card" *ngIf="!carregando">
-            <div class="hero-info">
-                <span class="hero-kicker">DATABASE RENEGADOS</span>
+        <ng-container *ngIf="!carregando">
 
-                <h1>
-                    Bem-vindo ao<br />
-                    Database Renegados
-                </h1>
+            <!-- HERO -->
+            <section class="hero-card">
 
-                <h2>Tekken 8 Frame Data Hub</h2>
+                <div class="hero-content">
+                    <span class="hero-tag">DATABASE RENEGADOS</span>
 
-                <p>
-                    Seu centro completo de dados, personagens, favoritos e estilos de jogadores
-                    da comunidade. Explore, aprenda e domine cada matchup.
-                </p>
+                    <h1>Bem-vindo ao Database Renegados</h1>
 
-                <div class="hero-actions">
-                    <button type="button" class="btn-primary" (click)="irPara('/personagens')">
-                        Explorar personagens
-                    </button>
+                    <h2>Tekken 8 Frame Data Hub</h2>
 
-                    <button type="button" class="btn-secondary" (click)="irPara('/jogadores-comunidade')">
-                        Jogadores Comunidade
-                    </button>
-                </div>
-            </div>
+                    <p>
+                        Seu centro completo de dados, personagens, favoritos e estilos de jogadores da
+                        comunidade. Explore, aprenda e domine cada matchup.
+                    </p>
 
-            <div class="hero-art" *ngIf="personagensDestaque.length > 0">
-                <img *ngFor="let personagem of personagensDestaque.slice(0, 3)" [src]="personagem.imagemTratada"
-                    [alt]="personagem.nome" (error)="usarImagemPadrao($event)" />
-            </div>
-        </section>
-
-        <section class="stats-grid" *ngIf="!carregando">
-
-            <article class="stat-card">
-                <div class="stat-icon pink">👥</div>
-
-                <div>
-                    <strong>{{ totalPersonagens }}</strong>
-                    <span>Total de personagens</span>
-                    <p>Todos os lutadores disponíveis</p>
-                </div>
-            </article>
-
-            <article class="stat-card">
-                <div class="stat-icon yellow">⭐</div>
-
-                <div>
-                    <strong>{{ totalFavoritos }}</strong>
-                    <span>Favoritos</span>
-                    <p>Seus personagens favoritos</p>
-                </div>
-            </article>
-
-            <article class="stat-card">
-                <div class="stat-icon pink">🎮</div>
-
-                <div>
-                    <strong>{{ totalJogadores }}</strong>
-                    <span>Jogadores da comunidade</span>
-                    <p>Players cadastrados</p>
-                </div>
-            </article>
-
-            <article class="stat-card">
-                <div class="stat-icon blue">↗</div>
-
-                <div>
-                    <strong>{{ totalPlayerStyles }}</strong>
-                    <span>Player styles</span>
-                    <p>Estilos e manias cadastradas</p>
-                </div>
-            </article>
-
-        </section>
-
-        <section class="dashboard-grid" *ngIf="!carregando">
-
-            <article class="panel-card">
-                <div class="panel-header">
-                    <h2>Personagens em destaque</h2>
-
-                    <button type="button" (click)="irPara('/personagens')">
-                        Ver todos
-                    </button>
-                </div>
-
-                <div class="empty-panel" *ngIf="personagensDestaque.length === 0">
-                    Nenhum personagem encontrado.
-                </div>
-
-                <div class="featured-grid" *ngIf="personagensDestaque.length > 0">
-                    <div class="featured-character" *ngFor="let personagem of personagensDestaque">
-                        <button type="button" class="favorite-button">
-                            ☆
+                    <div class="hero-buttons">
+                        <button type="button" class="primary-btn" routerLink="/personagens">
+                            Explorar personagens
                         </button>
 
-                        <img [src]="personagem.imagemTratada" [alt]="personagem.nome"
-                            (error)="usarImagemPadrao($event)" />
-
-                        <strong>{{ personagem.nome }}</strong>
+                        <button type="button" class="secondary-btn" routerLink="/jogadores-comunidade">
+                            Jogadores Comunidade
+                        </button>
                     </div>
                 </div>
-            </article>
 
-            <article class="panel-card">
-                <div class="panel-header">
-                    <h2>Últimos jogadores da comunidade</h2>
-
-                    <button type="button" (click)="irPara('/jogadores-comunidade')">
-                        Ver todos
-                    </button>
+                <div class="hero-characters" *ngIf="personagensHero.length > 0">
+                    <img *ngFor="let personagem of personagensHero" [src]="getImagemPersonagem(personagem)"
+                        [alt]="personagem.nome" (error)="usarImagemPadrao($event)" />
                 </div>
 
-                <div class="empty-panel" *ngIf="jogadoresRecentes.length === 0">
-                    Nenhum jogador cadastrado ainda.
-                </div>
+            </section>
 
-                <div class="players-list" *ngIf="jogadoresRecentes.length > 0">
-                    <div class="player-row" *ngFor="let jogador of jogadoresRecentes">
-                        <div class="player-left">
-                            <img [src]="jogador.fotoTratada" [alt]="jogador.nome" (error)="usarImagemPadrao($event)" />
+            <!-- CARDS ESTATÍSTICA -->
+            <section class="stats-grid">
 
-                            <div>
-                                <strong>{{ jogador.nome }}</strong>
-                                <span>Tekken ID: {{ jogador.tekkenId }}</span>
+                <article class="stat-card">
+                    <div class="stat-icon">👥</div>
+
+                    <div class="stat-info">
+                        <strong>{{ totalPersonagens }}</strong>
+                        <h3>Total de personagens</h3>
+                        <p>Todos os lutadores disponíveis</p>
+                    </div>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-icon yellow">⭐</div>
+
+                    <div class="stat-info">
+                        <strong>{{ totalFavoritos }}</strong>
+                        <h3>Favoritos</h3>
+                        <p>Seus personagens favoritos</p>
+                    </div>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-icon purple">🎮</div>
+
+                    <div class="stat-info">
+                        <strong>{{ totalJogadoresComunidade }}</strong>
+                        <h3>Jogadores da comunidade</h3>
+                        <p>Players cadastrados</p>
+                    </div>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-icon blue">↗</div>
+
+                    <div class="stat-info">
+                        <strong>{{ totalPlayerStyles }}</strong>
+                        <h3>Player styles</h3>
+                        <p>Estilos e manias cadastradas</p>
+                    </div>
+                </article>
+
+            </section>
+
+            <!-- BLOCOS INFERIORES -->
+            <section class="bottom-grid">
+
+                <!-- PERSONAGENS EM DESTAQUE -->
+                <section class="panel-card">
+
+                    <div class="panel-header">
+                        <h2>Personagens em destaque</h2>
+
+                        <button type="button" routerLink="/personagens">
+                            Ver todos
+                        </button>
+                    </div>
+
+                    <div class="empty-panel" *ngIf="personagensDestaque.length === 0">
+                        Nenhum personagem encontrado.
+                    </div>
+
+                    <div class="featured-grid" *ngIf="personagensDestaque.length > 0">
+
+                        <article class="featured-card" *ngFor="let personagem of personagensDestaque"
+                            (click)="abrirFrameData(personagem)">
+                            <button type="button" class="mini-favorite-btn" [class.active]="personagem.favorito"
+                                (click)="favoritar(personagem); $event.stopPropagation()">
+                                ★
+                            </button>
+
+                            <div class="featured-image">
+                                <img [src]="getImagemPersonagem(personagem)" [alt]="personagem.nome"
+                                    (error)="usarImagemPadrao($event)" />
                             </div>
-                        </div>
 
-                        <div class="player-miniatures" *ngIf="jogador.personagensTratados?.length">
-                            <img *ngFor="let personagem of jogador.personagensTratados" [src]="personagem.imagemTratada"
-                                [alt]="personagem.nome" (error)="usarImagemPadrao($event)" />
-                        </div>
+                            <h3>{{ personagem.nome }}</h3>
+                        </article>
 
-                        <button type="button" class="player-style-button" (click)="irPara('/jogadores-comunidade')">
-                            Player Style
+                    </div>
+
+                </section>
+
+                <!-- ÚLTIMOS JOGADORES -->
+                <section class="panel-card">
+
+                    <div class="panel-header">
+                        <h2>Últimos jogadores da comunidade</h2>
+
+                        <button type="button" routerLink="/jogadores-comunidade">
+                            Ver todos
                         </button>
                     </div>
-                </div>
-            </article>
 
-        </section>
+                    <div class="empty-panel" *ngIf="ultimosJogadoresComunidade.length === 0">
+                        Nenhum jogador cadastrado ainda.
+                    </div>
 
-        <section class="quick-access-card" *ngIf="!carregando">
+                    <div class="players-list" *ngIf="ultimosJogadoresComunidade.length > 0">
 
-            <div class="quick-card" (click)="irPara('/personagens')">
-                <div class="quick-icon">📄</div>
+                        <article class="community-player-card" *ngFor="let jogador of ultimosJogadoresComunidade">
+                            <div class="community-player-left">
 
-                <div>
-                    <h3>Frame Data</h3>
-                    <p>Consulte golpes, frames e propriedades.</p>
-                </div>
+                                <div class="community-avatar">
+                                    <img *ngIf="jogador.foto" [src]="jogador.foto" [alt]="jogador.nome"
+                                        (error)="usarImagemPadrao($event)" />
 
-                <span>→</span>
-            </div>
+                                    <span *ngIf="!jogador.foto">
+                                        {{ jogador.nome?.charAt(0) }}
+                                    </span>
+                                </div>
 
-            <div class="quick-card" (click)="irPara('/personagens')">
-                <div class="quick-icon yellow">⭐</div>
+                                <div class="community-info">
+                                    <strong>{{ jogador.nome }}</strong>
+                                    <span>Tekken ID: {{ jogador.tekkenId }}</span>
+                                </div>
 
-                <div>
-                    <h3>Favoritos</h3>
-                    <p>Acesse rapidamente seus personagens favoritos.</p>
-                </div>
+                            </div>
+                        </article>
 
-                <span>→</span>
-            </div>
+                    </div>
 
-            <div class="quick-card" (click)="irPara('/jogadores-comunidade')">
-                <div class="quick-icon blue">👤</div>
+                </section>
 
-                <div>
-                    <h3>Player Style</h3>
-                    <p>Veja estilos, padrões e manias da comunidade.</p>
-                </div>
+            </section>
 
-                <span>→</span>
-            </div>
-
-            <div class="quick-card">
-                <div class="quick-icon gray">⚙</div>
-
-                <div>
-                    <h3>Configurações</h3>
-                    <p>Personalize sua experiência.</p>
-                </div>
-
-                <span>→</span>
-            </div>
-
-        </section>
+        </ng-container>
 
     </main>
+
+    <!-- MODAL EDITAR PERFIL -->
+    <div class="profile-modal-overlay" *ngIf="editorPerfilAberto">
+
+        <div class="profile-modal">
+
+            <div class="profile-modal-header">
+                <div>
+                    <span>PERFIL</span>
+                    <h2>Editar perfil</h2>
+                </div>
+
+                <button type="button" class="close-modal-btn" (click)="fecharEditorPerfil()">
+                    ×
+                </button>
+            </div>
+
+            <div class="profile-preview">
+
+                <div class="profile-preview-avatar">
+                    <img *ngIf="fotoPerfilPreview" [src]="fotoPerfilPreview" alt="Foto de perfil" />
+
+                    <span *ngIf="!fotoPerfilPreview">
+                        {{ getInicialUsuario() }}
+                    </span>
+                </div>
+
+                <div>
+                    <h3>
+                        {{ nicknameEditado || usuarioLogado?.nickname || usuarioLogado?.nome }}
+                    </h3>
+
+                </div>
+
+            </div>
+
+            <div class="profile-form-group">
+                <label>Nickname</label>
+
+                <input type="text" [(ngModel)]="nicknameEditado" placeholder="Digite seu nickname" />
+            </div>
+
+            <div class="profile-form-group">
+                <label>Foto de perfil</label>
+
+                <label class="upload-box">
+                    <input type="file" accept="image/*" (change)="selecionarFotoPerfil($event)" />
+
+                    <span>Selecionar imagem do computador</span>
+                </label>
+            </div>
+
+            <div class="profile-modal-actions">
+                <button type="button" class="cancel-profile-btn" (click)="fecharEditorPerfil()">
+                    Cancelar
+                </button>
+
+                <button type="button" class="save-profile-btn" (click)="salvarPerfil()">
+                    Salvar perfil
+                </button>
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
