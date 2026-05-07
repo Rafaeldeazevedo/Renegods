@@ -9,41 +9,42 @@
       </button>
     </div>
 
-    <!-- TOPBAR -->
-    <section class="topbar">
+    <!-- HERO NOVA -->
+    <section class="fighters-hero">
 
-      <div class="search-area">
-        <span>⌕</span>
+      <div class="fighters-hero-content">
 
-        <input type="text" [(ngModel)]="termoBusca" placeholder="Buscar personagem, golpe ou jogador..." />
-      </div>
+        <span class="hero-kicker">PERSONAGENS</span>
 
-      <div class="filter-actions">
-        <button type="button" [class.active]="filtroAtual === 'todos'" (click)="selecionarFiltro('todos')">
-          Todos
-        </button>
-
-        <button type="button" [class.active]="filtroAtual === 'favoritos'" (click)="selecionarFiltro('favoritos')">
-          Favoritos
-          <strong>{{ totalFavoritos }}</strong>
-        </button>
-      </div>
-
-    </section>
-
-    <!-- HERO -->
-    <section class="page-hero">
-
-      <div class="hero-text">
-        <span>PERSONAGENS</span>
-
-        <h1>Explore os lutadores de Tekken 8</h1>
+        <h1>Seleção de personagens</h1>
 
         <p>
-          Consulte frame data, golpes, propriedades e favoritos de cada personagem.
+          Escolha seu lutador, consulte frame data, marque favoritos e estude os detalhes
+          técnicos de cada personagem.
         </p>
 
-        <div class="hero-stats">
+        <div class="hero-search-row">
+
+          <div class="hero-search">
+            <span>⌕</span>
+
+            <input type="text" [(ngModel)]="termoBusca" placeholder="Buscar personagem, golpe ou jogador..." />
+          </div>
+
+          <div class="hero-filter-actions">
+            <button type="button" [class.active]="filtroAtual === 'todos'" (click)="selecionarFiltro('todos')">
+              Todos
+            </button>
+
+            <button type="button" [class.active]="filtroAtual === 'favoritos'" (click)="selecionarFiltro('favoritos')">
+              Favoritos
+              <strong>{{ totalFavoritos }}</strong>
+            </button>
+          </div>
+
+        </div>
+
+        <div class="hero-badges">
           <div>
             <strong>{{ personagens.length }}</strong>
             <span>Personagens disponíveis</span>
@@ -53,10 +54,16 @@
             <strong>{{ totalFavoritos }}</strong>
             <span>Seus favoritos</span>
           </div>
+
+          <div>
+            <strong>T8</strong>
+            <span>Frame Data Hub</span>
+          </div>
         </div>
+
       </div>
 
-      <div class="hero-characters" *ngIf="personagensHero.length > 0">
+      <div class="fighters-hero-art" *ngIf="personagensHero.length > 0">
         <img *ngFor="let personagem of personagensHero" [src]="getImagemPersonagem(personagem)" [alt]="personagem.nome"
           (error)="usarImagemPadrao($event)" />
       </div>
@@ -68,7 +75,16 @@
 
       <div>
         <span></span>
-        <h2>Seleção de personagens</h2>
+
+        <h2>
+          <ng-container *ngIf="filtroAtual === 'todos'">
+            Todos os personagens
+          </ng-container>
+
+          <ng-container *ngIf="filtroAtual === 'favoritos'">
+            Personagens favoritos
+          </ng-container>
+        </h2>
       </div>
 
       <p *ngIf="filtroAtual === 'todos'">
@@ -105,7 +121,10 @@
           <img [src]="getImagemPersonagem(personagem)" [alt]="personagem.nome" (error)="usarImagemPadrao($event)" />
         </div>
 
-        <h3>{{ personagem.nome }}</h3>
+        <div class="character-info">
+          <span>TEKKEN 8</span>
+          <h3>{{ personagem.nome }}</h3>
+        </div>
 
         <button type="button" class="frame-btn" (click)="abrirFrameData(personagem)">
           Ver frame data
