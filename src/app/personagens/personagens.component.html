@@ -1,81 +1,17 @@
 <div class="personagens-page">
 
-  <!-- SIDEBAR -->
-  <aside class="side-panel">
-
-    <div class="sidebar-top">
-
-
-      <div class="profile-wrapper" *ngIf="usuarioLogado">
-      
-        <button type="button" class="sidebar-user" (click)="alternarMenuPerfil()">
-          <div class="sidebar-user-avatar">
-            <img *ngIf="getFotoPerfilUsuario()" [src]="getFotoPerfilUsuario()" alt="Foto de perfil" />
-      
-            <span *ngIf="!getFotoPerfilUsuario()">
-              {{ getInicialUsuario() }}
-            </span>
-          </div>
-      
-          <div class="sidebar-user-info">
-            <strong>{{ usuarioLogado.nickname || usuarioLogado.nome }}</strong>
-          </div>
-      
-          <span class="profile-arrow">⌄</span>
-        </button>
-      
-        <div class="profile-menu" *ngIf="menuPerfilAberto">
-          <button type="button" (click)="abrirEditorPerfil()">
-            Editar perfil
-          </button>
-      
-          <button type="button" class="logout-option" (click)="sair()">
-            Sair
-          </button>
-        </div>
-      
-      </div>
-
-    <nav class="side-menu">
-      <button type="button" class="side-item" routerLink="/home">
-        <span>⌂</span>
-        Início
-      </button>
-
-      <button type="button" class="side-item active" (click)="selecionarFiltro('todos')">
-        <span>👥</span>
-        Personagens
-      </button>
-
-      <button type="button" class="side-item" (click)="selecionarFiltro('favoritos')">
-        <span>⭐</span>
-        Favoritos
-        <strong>{{ totalFavoritos }}</strong>
-      </button>
-
-      <button type="button" class="side-item">
-        <span>📊</span>
-        Tier List
-      </button>
-
-      <button type="button" class="side-item">
-        <span>📘</span>
-        Wavu Wank
-      </button>
-
-      <button type="button" class="side-item" routerLink="/jogadores-comunidade">
-        <span>🎮</span>
-        Jogadores Comunidade
-      </button>
-
-     
-    </nav>
-
-
-  <!-- CONTEÚDO -->
   <main class="content">
 
+    <!-- BOTÃO VOLTAR -->
+    <div class="page-actions">
+      <button type="button" class="back-home-btn" routerLink="/home">
+        ← Voltar para Home
+      </button>
+    </div>
+
+    <!-- TOPBAR -->
     <section class="topbar">
+
       <div class="search-area">
         <span>⌕</span>
 
@@ -92,11 +28,44 @@
           <strong>{{ totalFavoritos }}</strong>
         </button>
       </div>
+
     </section>
 
-   
+    <!-- HERO -->
+    <section class="page-hero">
 
+      <div class="hero-text">
+        <span>PERSONAGENS</span>
+
+        <h1>Explore os lutadores de Tekken 8</h1>
+
+        <p>
+          Consulte frame data, golpes, propriedades e favoritos de cada personagem.
+        </p>
+
+        <div class="hero-stats">
+          <div>
+            <strong>{{ personagens.length }}</strong>
+            <span>Personagens disponíveis</span>
+          </div>
+
+          <div>
+            <strong>{{ totalFavoritos }}</strong>
+            <span>Seus favoritos</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-characters" *ngIf="personagensHero.length > 0">
+        <img *ngFor="let personagem of personagensHero" [src]="getImagemPersonagem(personagem)" [alt]="personagem.nome"
+          (error)="usarImagemPadrao($event)" />
+      </div>
+
+    </section>
+
+    <!-- TÍTULO DA SEÇÃO -->
     <section class="section-title">
+
       <div>
         <span></span>
         <h2>Seleção de personagens</h2>
@@ -109,25 +78,31 @@
       <p *ngIf="filtroAtual === 'favoritos'">
         Mostrando {{ personagensFiltrados.length }} favorito(s)
       </p>
+
     </section>
 
+    <!-- LOADING -->
     <section class="loading-card" *ngIf="carregando">
       Carregando personagens...
     </section>
 
+    <!-- EMPTY -->
     <section class="empty-card" *ngIf="!carregando && personagensFiltrados.length === 0">
       Nenhum personagem encontrado.
     </section>
 
+    <!-- GRID -->
     <section class="characters-grid" *ngIf="!carregando && personagensFiltrados.length > 0">
+
       <article class="character-card" *ngFor="let personagem of personagensFiltrados">
+
         <button type="button" class="favorite-btn" [class.active]="personagem.favorito"
           (click)="favoritar(personagem); $event.stopPropagation()">
           ★
         </button>
 
         <div class="character-image">
-          <img [src]="personagem.imagem" [alt]="personagem.nome"  />
+          <img [src]="getImagemPersonagem(personagem)" [alt]="personagem.nome" (error)="usarImagemPadrao($event)" />
         </div>
 
         <h3>{{ personagem.nome }}</h3>
@@ -135,8 +110,11 @@
         <button type="button" class="frame-btn" (click)="abrirFrameData(personagem)">
           Ver frame data
         </button>
+
       </article>
+
     </section>
 
   </main>
+
 </div>

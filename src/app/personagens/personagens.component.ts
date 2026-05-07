@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import {PersonagemService } from '../services/personagem.service';
+
+import { PersonagemService } from '../services/personagem.service';
 import { Personagem } from '../model/personagem.model';
 import { UsuarioLogado } from '../model/auth.model';
-
-
 
 @Component({
   selector: 'app-personagens',
@@ -13,11 +12,11 @@ import { UsuarioLogado } from '../model/auth.model';
 })
 export class PersonagensComponent implements OnInit {
   personagens: Personagem[] = [];
+  personagensHero: Personagem[] = [];
 
   termoBusca = '';
   filtroAtual: 'todos' | 'favoritos' = 'todos';
   carregando = false;
-  menuConfiguracoesAberto = false;
 
   usuarioLogado: UsuarioLogado | null = null;
 
@@ -45,7 +44,12 @@ export class PersonagensComponent implements OnInit {
       return;
     }
 
-    this.usuarioLogado = JSON.parse(usuarioStorage);
+    try {
+      this.usuarioLogado = JSON.parse(usuarioStorage);
+    } catch (erro) {
+      console.error('Erro ao ler usuário logado:', erro);
+      this.usuarioLogado = null;
+    }
   }
 
   carregarPersonagens(): void {
@@ -57,52 +61,53 @@ export class PersonagensComponent implements OnInit {
 
     this.personagemService.listarPorUsuario(this.usuarioLogado.id).subscribe({
       next: (personagens) => {
-        this.personagens = personagens;
+        this.personagens = personagens || [];
+        this.personagensHero = this.pegarAleatorios(this.personagens, 3);
+
         this.carregando = false;
       },
       error: (erro) => {
         console.error('Erro ao carregar personagens:', erro);
+
+        this.personagens = [];
+        this.personagensHero = [];
+
         this.carregando = false;
       }
     });
   }
-abrirFrameData(personagem: any): void {
-  sessionStorage.setItem('personagemFrameData', JSON.stringify(personagem));
 
-  this.router.navigate(
-    ['/personagens', personagem.id, 'frame-data'],
-    {
-      state: {
-        personagem: personagem
+  abrirFrameData(personagem: Personagem): void {
+    sessionStorage.setItem('personagemFrameData', JSON.stringify(personagem));
+
+    this.router.navigate(
+      ['/personagens', personagem.id, 'frame-data'],
+      {
+        state: {
+          personagem: personagem
+        }
       }
-    }
-  );
-}
-
-get personagensFiltrados(): Personagem[] {
-  return this.personagens.filter(personagem => {
-    const bateBusca = personagem.nome
-      .toLowerCase()
-      .includes(this.termoBusca.toLowerCase());
-
-    const bateFiltro =
-      this.filtroAtual === 'todos' ||
-      personagem.favorito === true;
-
-    return bateBusca && bateFiltro;
-  });
-}
-
-getInicialUsuario(): string {
-  if (!this.usuarioLogado) {
-    return '?';
+    );
   }
-  const nomeParaAvatar = this.usuarioLogado.nickname || this.usuarioLogado.nome;
-  return nomeParaAvatar.charAt(0).toUpperCase();
-}
+
+  get personagensFiltrados(): Personagem[] {
+    const termo = this.termoBusca.trim().toLowerCase();
+
+    return this.personagens.filter(personagem => {
+      const nome = personagem.nome || '';
+
+      const bateBusca = nome.toLowerCase().includes(termo);
+
+      const bateFiltro =
+        this.filtroAtual === 'todos' ||
+        personagem.favorito === true;
+
+      return bateBusca && bateFiltro;
+    });
+  }
 
   get totalFavoritos(): number {
-    return this.personagens.filter(p => p.favorito).length;
+    return this.personagens.filter(p => p.favorito === true).length;
   }
 
   favoritar(personagem: Personagem): void {
@@ -141,15 +146,54 @@ getInicialUsuario(): string {
   selecionarFiltro(filtro: 'todos' | 'favoritos'): void {
     this.filtroAtual = filtro;
   }
-  alternarConfiguracoes(): void {
-  this.menuConfiguracoesAberto = !this.menuConfiguracoesAberto;
-}
 
-sair(): void {
-  localStorage.removeItem('usuarioLogado');
-  localStorage.removeItem('token');
+  pegarAleatorios(lista: Personagem[], quantidade: number): Personagem[] {
+    if (!lista || lista.length === 0) {
+      return [];
+    }
 
-  this.menuConfiguracoesAberto = false;
-  this.router.navigate(['/login']);
-}
+    return [...lista]
+      .sort(() => Math.random() - 0.5)
+      .slice(0, quantidade);
+  }
+
+  getImagemPersonagem(personagem: any): string {
+    if (personagem?.imagem) {
+      return personagem.imagem;
+    }
+
+    if (!personagem?.nome) {
+      return 'assets/personagens/alisa-bosconovitch.png';
+    }
+
+    const slug = this.gerarSlug(personagem.nome);
+
+    return `assets/personagens/${slug}.png`;
+  }
+
+  gerarSlug(nome: string): string {
+    return nome
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
+
+  usarImagemPadrao(event: Event): void {
+    const img = event.target as HTMLImageElement;
+
+    if (img.src.includes('alisa-bosconovitch.png')) {
+      return;
+    }
+
+    img.src = 'assets/personagens/alisa-bosconovitch.png';
+  }
+
+  sair(): void {
+    localStorage.removeItem('usuarioLogado');
+    localStorage.removeItem('token');
+
+    this.router.navigate(['/login']);
+  }
 }
