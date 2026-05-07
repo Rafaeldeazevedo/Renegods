@@ -11,6 +11,7 @@ export interface LoginResponse {
   nivel: number;
   xp: number;
   token?: string;
+  fotoPerfil?: string;
 }
 
 export interface UsuarioLogado {
@@ -20,4 +21,6 @@ export interface UsuarioLogado {
   nickname: string;
   nivel: number;
   xp: number;
+  fotoPerfil?: string;
+
 }

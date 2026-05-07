@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-
 import { PersonagemService } from '../services/personagem.service';
 import { JogadorComunidadeService } from '../services/jogadorComunidade.service';
-
 import { Personagem } from '../model/personagem.model';
 import { UsuarioLogado } from '../model/auth.model';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -45,7 +44,8 @@ export class HomeComponent implements OnInit {
   constructor(
     private router: Router,
     private personagemService: PersonagemService,
-    private jogadorComunidadeService: JogadorComunidadeService
+    private jogadorComunidadeService: JogadorComunidadeService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -309,23 +309,33 @@ export class HomeComponent implements OnInit {
     reader.readAsDataURL(arquivo);
   }
 
-  salvarPerfil(): void {
-    if (!this.usuarioLogado) {
-      return;
-    }
-
-    const usuarioAtualizado: any = {
-      ...this.usuarioLogado,
-      nickname: this.nicknameEditado.trim() || this.usuarioLogado.nickname || this.usuarioLogado.nome,
-      fotoPerfil: this.fotoPerfilPreview
-    };
-
-    this.usuarioLogado = usuarioAtualizado;
-
-    localStorage.setItem('usuarioLogado', JSON.stringify(usuarioAtualizado));
-
-    this.editorPerfilAberto = false;
+salvarPerfil(): void {
+  if (!this.usuarioLogado) {
+    return;
   }
+
+  const payload = {
+    nickname: this.nicknameEditado.trim() || this.usuarioLogado.nickname || this.usuarioLogado.nome,
+    fotoPerfil: this.fotoPerfilPreview
+  };
+
+  console.log('ENVIANDO PERFIL PARA O BACK:', payload);
+
+  this.authService.atualizarPerfil(this.usuarioLogado.id, payload).subscribe({
+    next: (usuarioAtualizado) => {
+      console.log('USUÁRIO ATUALIZADO PELO BACK:', usuarioAtualizado);
+
+      this.usuarioLogado = usuarioAtualizado;
+
+      this.editorPerfilAberto = false;
+      this.menuPerfilAberto = false;
+    },
+    error: (erro) => {
+      console.error('ERRO AO ATUALIZAR PERFIL:', erro);
+      alert('Erro ao atualizar perfil.');
+    }
+  });
+}
 
   alternarConfiguracoes(): void {
     this.menuConfiguracoesAberto = !this.menuConfiguracoesAberto;

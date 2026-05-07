@@ -35,7 +35,7 @@ export class LoginComponent {
     this.authService.login(this.loginRequest).subscribe({
       next: () => {
         this.carregando = false;
-        this.router.navigate(['/personagens']);
+        this.router.navigate(['/home']);
       },
       error: (erro) => {
         console.error('Erro ao fazer login:', erro);

@@ -6,17 +6,35 @@
     <div class="sidebar-top">
 
 
-      <div class="sidebar-user" *ngIf="usuarioLogado">
-        <div class="sidebar-user-avatar">
-          {{ getInicialUsuario() }}
+      <div class="profile-wrapper" *ngIf="usuarioLogado">
+      
+        <button type="button" class="sidebar-user" (click)="alternarMenuPerfil()">
+          <div class="sidebar-user-avatar">
+            <img *ngIf="getFotoPerfilUsuario()" [src]="getFotoPerfilUsuario()" alt="Foto de perfil" />
+      
+            <span *ngIf="!getFotoPerfilUsuario()">
+              {{ getInicialUsuario() }}
+            </span>
+          </div>
+      
+          <div class="sidebar-user-info">
+            <strong>{{ usuarioLogado.nickname || usuarioLogado.nome }}</strong>
+          </div>
+      
+          <span class="profile-arrow">⌄</span>
+        </button>
+      
+        <div class="profile-menu" *ngIf="menuPerfilAberto">
+          <button type="button" (click)="abrirEditorPerfil()">
+            Editar perfil
+          </button>
+      
+          <button type="button" class="logout-option" (click)="sair()">
+            Sair
+          </button>
         </div>
-
-        <div class="sidebar-user-info">
-          <strong>{{ usuarioLogado.nickname || usuarioLogado.nome }}</strong>
-          <span>Renegado</span>
-        </div>
+      
       </div>
-    </div>
 
     <nav class="side-menu">
       <button type="button" class="side-item" routerLink="/home">
@@ -53,7 +71,6 @@
      
     </nav>
 
-  </aside>
 
   <!-- CONTEÚDO -->
   <main class="content">
