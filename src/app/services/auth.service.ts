@@ -1,14 +1,17 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import { LoginRequest,LoginResponse } from '../model/auth.model';
+import { environment } from '../../environments/environment';
+import { LoginRequest, LoginResponse } from '../model/auth.model';
+
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/auth';
+
+  private apiUrl = `${environment.apiUrl}/auth`;
 
   constructor(private http: HttpClient) {}
 
@@ -37,10 +40,14 @@ export class AuthService {
       return null;
     }
 
-    return JSON.parse(usuario);
+    return JSON.parse(usuario) as LoginResponse;
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem('token');
   }
 
   estaLogado(): boolean {
-    return !!this.getUsuarioLogado();
+    return !!this.getToken();
   }
 }

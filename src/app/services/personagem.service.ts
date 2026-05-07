@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Personagem } from '../model/personagem.model';
+import { environment } from 'src/environments/environment';
 
 
 
@@ -9,7 +10,7 @@ import { Personagem } from '../model/personagem.model';
   providedIn: 'root'
 })
 export class PersonagemService {
-   private apiUrl = 'http://localhost:8080/personagens';
+   private apiUrl = `${environment.apiUrl}/personagens`;
 
   constructor(private http: HttpClient) {}
 
