@@ -4,8 +4,6 @@ import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { LoginRequest, LoginResponse } from '../model/auth.model';
 
-
-
 @Injectable({
   providedIn: 'root'
 })
@@ -19,13 +17,45 @@ export class AuthService {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, request)
       .pipe(
         tap((usuario) => {
-          localStorage.setItem('usuarioLogado', JSON.stringify(usuario));
-
-          if (usuario.token) {
-            localStorage.setItem('token', usuario.token);
-          }
+          this.salvarUsuarioLocal(usuario);
         })
       );
+  }
+
+  buscarUsuarioPorId(id: number): Observable<LoginResponse> {
+    return this.http.get<LoginResponse>(`${this.apiUrl}/usuarios/${id}`)
+      .pipe(
+        tap((usuario) => {
+          this.salvarUsuarioLocal(usuario);
+        })
+      );
+  }
+
+  atualizarPerfil(id: number, payload: {
+    nickname: string;
+    fotoPerfil: string;
+  }): Observable<LoginResponse> {
+    return this.http.put<LoginResponse>(`${this.apiUrl}/usuarios/${id}/perfil`, payload)
+      .pipe(
+        tap((usuario) => {
+          this.salvarUsuarioLocal(usuario);
+        })
+      );
+  }
+
+  salvarUsuarioLocal(usuario: LoginResponse): void {
+    const usuarioAtual = this.getUsuarioLogado();
+
+    const usuarioParaSalvar = {
+      ...usuarioAtual,
+      ...usuario
+    };
+
+    localStorage.setItem('usuarioLogado', JSON.stringify(usuarioParaSalvar));
+
+    if (usuario.token) {
+      localStorage.setItem('token', usuario.token);
+    }
   }
 
   logout(): void {
