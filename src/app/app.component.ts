@@ -20,12 +20,14 @@ export class AppComponent {
 
         this.esconderHeader =
           url.startsWith('/home') ||
+          url.startsWith('/tier-list') ||
           url.startsWith('/jogadores-comunidade') ||
           url.startsWith('/login') ||
           url.startsWith('/personagens');
 
         this.esconderFooter =
           url.startsWith('/home') ||
+          url.startsWith('/tier-list') ||
           url.startsWith('/jogadores-comunidade') ||
           url.startsWith('/login')||
           url.startsWith('/personagens');

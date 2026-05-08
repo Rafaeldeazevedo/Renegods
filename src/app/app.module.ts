@@ -19,6 +19,8 @@ import { JogadoresComunidadeComponent } from './jogadores-comunidade/jogadores-c
 import { JogadorComunidadeCadastroComponent } from './jogadores-comunidade/jogador-comunidade-cadastro/jogador-comunidade-cadastro.component';
 import { JogadorComunidadePersonagensComponent } from './jogadores-comunidade/jogador-comunidade-personagens/jogador-comunidade-personagens.component';
 import { JogadorComunidadePlayerStyleComponent } from './jogadores-comunidade/jogador-comunidade-player-style/jogador-comunidade-player-style.component';
+import { TierListComponent } from './tier-list/tier-list.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 
 @NgModule({
@@ -33,7 +35,8 @@ import { JogadorComunidadePlayerStyleComponent } from './jogadores-comunidade/jo
     JogadoresComunidadeComponent,
     JogadorComunidadeCadastroComponent,
     JogadorComunidadePersonagensComponent,
-    JogadorComunidadePlayerStyleComponent
+    JogadorComunidadePlayerStyleComponent,
+    TierListComponent
   ],
   imports: [
     BrowserModule,
@@ -42,6 +45,7 @@ import { JogadorComunidadePlayerStyleComponent } from './jogadores-comunidade/jo
     AppRoutingModule,
     FormsModule,
     ToastModule,
+    DragDropModule
   
   ],
   providers: [
