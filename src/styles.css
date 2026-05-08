@@ -1,7 +1,13 @@
-html, body {
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+
+html,
+body {
   height: 100%;
   margin: 0;
   padding: 0;
+
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: 1px;
 }
 
 body {
@@ -15,6 +21,50 @@ app-root {
   flex-direction: column;
   flex: 1;
 }
+
+* {
+  box-sizing: border-box;
+}
+
+/* Aplica a fonte também nos elementos de formulário */
+button,
+input,
+textarea,
+select {
+  font-family: 'Bebas Neue', sans-serif;
+}
+
+/* Kerning mais forte para elementos principais */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+button,
+a,
+.hero-tag,
+.hero-kicker,
+.side-item,
+.panel-header h2,
+.section-title h2,
+.stat-info h3,
+.character-info h3,
+.frame-btn,
+.primary-btn,
+.secondary-btn,
+.back-home-btn,
+.login-button {
+  letter-spacing: 2px;
+}
+
+/* Inputs com kerning menor para não ficar estranho digitando */
+input,
+textarea,
+select {
+  letter-spacing: 1px;
+}
+
 /* TOAST RENEGADOS - CARD SEM ÍCONE */
 
 .p-toast {
@@ -68,6 +118,7 @@ app-root {
   font-weight: 900 !important;
   font-size: 16px !important;
   line-height: 1.2 !important;
+  letter-spacing: 2px !important;
 }
 
 .p-toast .p-toast-detail {
@@ -76,6 +127,7 @@ app-root {
   color: #d6d8e2 !important;
   font-size: 14px !important;
   line-height: 1.4 !important;
+  letter-spacing: 1px !important;
 }
 
 /* Força qualquer severity do PrimeNG a usar o mesmo card */
