@@ -25,6 +25,9 @@ export class TierListService {
   listarPorUsuario(usuarioId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/usuario/${usuarioId}`);
   }
+  excluir(id: number): Observable<void> {
+  return this.http.delete<void>(`${this.apiUrl}/${id}`);
+}
 
   listarPorSeason(season: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/season/${season}`);

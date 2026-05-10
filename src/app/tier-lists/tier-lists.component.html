@@ -1,0 +1,133 @@
+<div class="tier-lists-page">
+
+    <main class="tier-lists-content">
+
+        <div class="page-actions">
+
+            <button type="button" class="back-home-btn" routerLink="/home">
+                ← Voltar para Home
+            </button>
+
+            <button type="button" class="create-btn" (click)="criarNovaTierList()">
+                {{ minhaTierListDaSeason ? 'Abrir minha Tier List' : '+ Criar Tier List' }}
+            </button>
+
+        </div>
+
+        <section class="tier-lists-hero">
+
+            <div>
+                <span>TIER LISTS</span>
+
+                <h1>Tier Lists da comunidade</h1>
+
+                <p>
+                    Veja as Tier Lists salvas por temporada e compare sua lista com outros jogadores.
+                </p>
+            </div>
+
+            <div class="season-filter">
+
+                <button type="button" [class.active]="filtroSeason === 'Season 3'"
+                    (click)="selecionarSeason('Season 3')">
+                    Season 3
+                </button>
+
+                <button type="button" [class.active]="filtroSeason === 'Season 4'"
+                    (click)="selecionarSeason('Season 4')">
+                    Season 4
+                </button>
+
+            </div>
+
+        </section>
+
+        <section class="loading-card" *ngIf="carregando">
+            Carregando Tier Lists...
+        </section>
+
+        <section class="error-message" *ngIf="mensagemErro">
+            {{ mensagemErro }}
+        </section>
+
+        <section class="empty-card" *ngIf="!carregando && !mensagemErro && tierLists.length === 0">
+            Nenhuma Tier List encontrada para {{ filtroSeason }}.
+        </section>
+
+        <section class="tier-lists-grid" *ngIf="!carregando && tierLists.length > 0">
+
+            <article class="tier-card" *ngFor="let tierList of tierListsPaginadas">
+
+                <div class="tier-card-header">
+
+                    <div class="tier-user">
+
+                        <div class="tier-user-avatar">
+
+                            <img *ngIf="getFotoCriador(tierList); else avatarLetra" [src]="getFotoCriador(tierList)"
+                                [alt]="getNomeCriador(tierList)" />
+
+                            <ng-template #avatarLetra>
+                                <span>{{ getInicialCriador(tierList) }}</span>
+                            </ng-template>
+
+                        </div>
+
+                        <div class="tier-user-info">
+
+                            <span class="tier-season">
+                                {{ tierList.season }}
+                            </span>
+
+                            <h3>
+                                {{ tierList.nome }}
+                            </h3>
+
+                            <p>
+                                {{ getNomeCriador(tierList) }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="tier-card-actions">
+
+                    <button *ngIf="isMinhaTierList(tierList)" type="button" class="btn-primary"
+                        (click)="abrirTierList(tierList)">
+                        Abrir
+                    </button>
+
+                    <button *ngIf="!isMinhaTierList(tierList)" type="button" class="btn-secondary"
+                        (click)="compararTierList(tierList)">
+                        Comparar
+                    </button>
+
+                </div>
+
+            </article>
+
+        </section>
+
+        <div class="tier-paginator" *ngIf="!carregando && tierLists.length > itensPorPagina">
+
+            <button type="button" class="page-btn" (click)="paginaAnterior()" [disabled]="paginaAtual === 1">
+                ←
+            </button>
+
+            <button type="button" class="page-number" *ngFor="let pagina of paginas"
+                [class.active]="paginaAtual === pagina" (click)="irParaPagina(pagina)">
+                {{ pagina }}
+            </button>
+
+            <button type="button" class="page-btn" (click)="proximaPagina()" [disabled]="paginaAtual === totalPaginas">
+                →
+            </button>
+
+        </div>
+
+    </main>
+
+</div>

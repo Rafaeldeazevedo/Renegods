@@ -21,6 +21,9 @@ import { JogadorComunidadePersonagensComponent } from './jogadores-comunidade/jo
 import { JogadorComunidadePlayerStyleComponent } from './jogadores-comunidade/jogador-comunidade-player-style/jogador-comunidade-player-style.component';
 import { TierListComponent } from './tier-list/tier-list.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { TierListsComponent } from './tier-lists/tier-lists.component';
+import { TierListDetalheComponent } from './tier-list-detalhe/tier-list-detalhe.component';
+import { TierListCompararComponent } from './tier-list-comparar/tier-list-comparar.component';
 
 
 @NgModule({
@@ -36,7 +39,10 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     JogadorComunidadeCadastroComponent,
     JogadorComunidadePersonagensComponent,
     JogadorComunidadePlayerStyleComponent,
-    TierListComponent
+    TierListComponent,
+    TierListsComponent,
+    TierListDetalheComponent,
+    TierListCompararComponent
   ],
   imports: [
     BrowserModule,

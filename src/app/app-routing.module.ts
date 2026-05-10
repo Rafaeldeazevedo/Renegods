@@ -10,6 +10,9 @@ import { JogadorComunidadePersonagensComponent } from './jogadores-comunidade/jo
 import { JogadorComunidadePlayerStyleComponent } from './jogadores-comunidade/jogador-comunidade-player-style/jogador-comunidade-player-style.component';
 import { HomeComponent } from './home/home.component';
 import { TierListComponent } from './tier-list/tier-list.component';
+import { TierListsComponent } from './tier-lists/tier-lists.component';
+import { TierListDetalheComponent } from './tier-list-detalhe/tier-list-detalhe.component';
+import { TierListCompararComponent } from './tier-list-comparar/tier-list-comparar.component';
 
 
 const routes: Routes = [
@@ -18,6 +21,9 @@ const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'personagens', component: PersonagensComponent },
   { path: 'tier-list', component: TierListComponent},
+  {path: 'tier-lists/comparar/:idA/:idB',component: TierListCompararComponent},
+  {path: 'tier-lists/:id',component: TierListDetalheComponent},
+  { path: 'tier-lists', component: TierListsComponent},
   { path: 'jogadores-comunidade', component: JogadoresComunidadeComponent },
   { path: 'jogadores-comunidade/novo', component: JogadorComunidadeCadastroComponent },
   {

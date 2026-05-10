@@ -1,0 +1,228 @@
+<div class="compare-page">
+
+    <main class="compare-content">
+
+        <!-- BOTÃO VOLTAR -->
+        <div class="page-actions">
+            <button type="button" class="back-btn" (click)="voltar()">
+                ← Voltar para Tier Lists
+            </button>
+        </div>
+
+        <!-- LOADING -->
+        <section class="loading-card" *ngIf="carregando">
+            Carregando comparação...
+        </section>
+
+        <!-- ERRO -->
+        <section class="error-message" *ngIf="mensagemErro">
+            {{ mensagemErro }}
+        </section>
+
+        <ng-container *ngIf="!carregando && !mensagemErro && tierListA && tierListB">
+
+            <!-- HERO -->
+            <section class="compare-hero">
+
+                <div>
+                    <span>COMPARAÇÃO</span>
+
+                    <h1>Comparar Tier Lists</h1>
+
+                    <p>
+                        Veja onde sua avaliação bate ou diverge da Tier List de outro usuário.
+                    </p>
+                </div>
+
+                <div class="compare-stats">
+
+                    <div>
+                        <strong>{{ comparacao.length }}</strong>
+                        <span>Personagens comparados</span>
+                    </div>
+
+                    <div>
+                        <strong>{{ getTotalIguais() }}</strong>
+                        <span>Iguais</span>
+                    </div>
+
+                    <div>
+                        <strong>{{ getTotalDiferentes() }}</strong>
+                        <span>Diferentes</span>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- CARDS DAS LISTAS -->
+            <section class="compare-header-grid">
+
+                <article class="compare-list-card">
+                    <span>SUA TIER LIST</span>
+
+                    <h2>{{ tierListA.nome }}</h2>
+
+                    <p>
+                        {{ tierListA.season }} · {{ getTotalOrganizados(tierListA) }} personagem(ns)
+                    </p>
+
+                    <button type="button" (click)="abrirTierList(tierListA.id)">
+                        Abrir
+                    </button>
+                </article>
+
+                <article class="compare-list-card">
+                    <span>OUTRO USUÁRIO</span>
+
+                    <h2>{{ tierListB.nome }}</h2>
+
+                    <p>
+                        {{ tierListB.season }} · Criada por {{ getNomeCriador(tierListB) }}
+                    </p>
+
+                    <button type="button" (click)="abrirTierList(tierListB.id)">
+                        Abrir
+                    </button>
+                </article>
+
+            </section>
+
+            <!-- BOARDS LADO A LADO -->
+            <section class="boards-grid">
+
+                <!-- SUA LISTA -->
+                <article class="board-card">
+
+                    <div class="board-title">
+                        <span>SUA LISTA</span>
+                        <h2>{{ tierListA.nome }}</h2>
+                    </div>
+
+                    <div class="tier-board">
+
+                        <div class="tier-row" *ngFor="let tier of tierKeys">
+
+                            <div class="tier-label" [ngClass]="'tier-' + tier.toLowerCase()">
+                                {{ tier }}
+                            </div>
+
+                            <div class="tier-zone">
+
+                                <div class="tier-character" *ngFor="let personagem of tiersA[tier]">
+                                    <img [src]="getImagemPerfil(personagem)" [alt]="personagem.nome"
+                                        (error)="usarImagemPadrao($event)" />
+
+                                    <span>{{ personagem.nome }}</span>
+                                </div>
+
+                                <div class="empty-tier" *ngIf="tiersA[tier].length === 0">
+                                    Vazio
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+                <!-- OUTRA LISTA -->
+                <article class="board-card">
+
+                    <div class="board-title">
+                        <span>COMPARANDO COM</span>
+                        <h2>{{ tierListB.nome }}</h2>
+                    </div>
+
+                    <div class="tier-board">
+
+                        <div class="tier-row" *ngFor="let tier of tierKeys">
+
+                            <div class="tier-label" [ngClass]="'tier-' + tier.toLowerCase()">
+                                {{ tier }}
+                            </div>
+
+                            <div class="tier-zone">
+
+                                <div class="tier-character" *ngFor="let personagem of tiersB[tier]">
+                                    <img [src]="getImagemPerfil(personagem)" [alt]="personagem.nome"
+                                        (error)="usarImagemPadrao($event)" />
+
+                                    <span>{{ personagem.nome }}</span>
+                                </div>
+
+                                <div class="empty-tier" *ngIf="tiersB[tier].length === 0">
+                                    Vazio
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+            </section>
+
+            <!-- DIFERENÇAS -->
+            <section class="diff-section">
+
+                <div class="section-title">
+                    <div>
+                        <span></span>
+                        <h2>Diferenças por personagem</h2>
+                    </div>
+
+                    <p>{{ getTotalDiferentes() }} diferença(s)</p>
+                </div>
+
+                <div class="diff-table">
+
+                    <div class="diff-row diff-head">
+                        <div>Personagem</div>
+                        <div>Sua Tier</div>
+                        <div>Outra Tier</div>
+                        <div>Status</div>
+                    </div>
+
+                    <div class="diff-row" *ngFor="let linha of comparacao" [class.equal]="linha.igual">
+
+                        <div class="diff-character">
+                            <img [src]="getImagemPerfil(linha.personagem)" [alt]="linha.personagem.nome"
+                                (error)="usarImagemPadrao($event)" />
+
+                            <strong>{{ linha.personagem.nome }}</strong>
+                        </div>
+
+                        <div>
+                            <span class="tier-pill" [ngClass]="getClasseTier(linha.tierA)">
+                                {{ linha.tierA }}
+                            </span>
+                        </div>
+
+                        <div>
+                            <span class="tier-pill" [ngClass]="getClasseTier(linha.tierB)">
+                                {{ linha.tierB }}
+                            </span>
+                        </div>
+
+                        <div>
+                            <span class="status-pill" [class.same]="linha.igual" [class.diff]="!linha.igual">
+                                {{ linha.igual ? 'Igual' : 'Diferente' }}
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </ng-container>
+
+    </main>
+
+</div>

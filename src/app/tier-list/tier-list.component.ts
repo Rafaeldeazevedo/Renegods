@@ -6,7 +6,7 @@ import { TierListRequest } from '../model/tierList.model';
 import { Personagem } from '../model/personagem.model';
 import { UsuarioLogado } from '../model/auth.model';
 
-type TierKey = 'S' | 'A' | 'B' | 'C';
+type TierKey = 'S' | 'A' | 'B' | 'C' | 'D';
 
 @Component({
   selector: 'app-tier-list',
@@ -31,7 +31,8 @@ export class TierListComponent implements OnInit {
     S: [],
     A: [],
     B: [],
-    C: []
+    C: [],
+    D: []
   };
 
   tierKeys: TierKey[] = ['S', 'A', 'B', 'C'];
@@ -88,10 +89,11 @@ export class TierListComponent implements OnInit {
         this.personagensDisponiveis = personagens || [];
 
         this.tiers = {
-          S: [],
-          A: [],
-          B: [],
-          C: []
+    S: [],
+    A: [],
+    B: [],
+    C: [],
+    D: []
         };
 
         this.carregando = false;
@@ -102,10 +104,11 @@ export class TierListComponent implements OnInit {
         this.personagensDisponiveis = [];
 
         this.tiers = {
-          S: [],
-          A: [],
-          B: [],
-          C: []
+    S: [],
+    A: [],
+    B: [],
+    C: [],
+    D: []
         };
 
         this.mensagemErro = 'Erro ao carregar personagens.';
@@ -168,16 +171,18 @@ export class TierListComponent implements OnInit {
       ...this.tiers.S,
       ...this.tiers.A,
       ...this.tiers.B,
-      ...this.tiers.C
+      ...this.tiers.C,
+      ...this.tiers.D
     ];
 
     this.personagensDisponiveis = todosPersonagens;
 
     this.tiers = {
-      S: [],
-      A: [],
-      B: [],
-      C: []
+    S: [],
+    A: [],
+    B: [],
+    C: [],
+    D: []
     };
 
     this.mensagemErro = '';
@@ -233,6 +238,11 @@ export class TierListComponent implements OnInit {
       error: (erro) => {
         console.error('Erro ao salvar Tier List:', erro);
 
+          if (erro?.status === 409) {
+    this.mensagemErro = 'Você já criou uma Tier List para esta season.';
+    return;
+  }
+
         this.salvando = false;
         this.mensagemErro = erro?.error || 'Erro ao salvar Tier List.';
       }
@@ -264,7 +274,8 @@ export class TierListComponent implements OnInit {
       this.tiers.S.length +
       this.tiers.A.length +
       this.tiers.B.length +
-      this.tiers.C.length
+      this.tiers.C.length +
+      this.tiers.D.length
     );
   }
 

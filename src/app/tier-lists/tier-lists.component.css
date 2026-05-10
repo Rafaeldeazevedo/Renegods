@@ -1,0 +1,589 @@
+* {
+    box-sizing: border-box;
+}
+
+:host {
+    display: block;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+.tier-lists-page {
+    min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
+
+    background:
+        radial-gradient(circle at top right, rgba(255, 45, 117, 0.16), transparent 30%),
+        radial-gradient(circle at top left, rgba(102, 51, 255, 0.10), transparent 24%),
+        linear-gradient(180deg, #090b12 0%, #05060b 100%);
+
+    color: #ffffff;
+}
+
+.tier-lists-content {
+    width: 100%;
+    max-width: 1540px;
+    margin: 0 auto;
+
+    padding: 28px 24px 48px;
+    overflow-x: hidden;
+}
+
+/* AÇÕES */
+
+.page-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+
+    margin-bottom: 18px;
+}
+
+.back-home-btn,
+.create-btn {
+    height: 46px;
+    padding: 0 20px;
+
+    border-radius: 14px;
+    border: 1px solid rgba(255, 45, 117, 0.45);
+
+    color: #ffffff;
+
+    cursor: pointer;
+
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 2px;
+
+    transition: all 0.2s ease;
+}
+
+.back-home-btn {
+    background: rgba(255, 45, 117, 0.08);
+}
+
+.create-btn {
+    border: none;
+    background: linear-gradient(135deg, #ff005c, #ff4f8b);
+    box-shadow: 0 12px 28px rgba(255, 45, 117, 0.26);
+}
+
+.back-home-btn:hover,
+.create-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* HERO */
+
+.tier-lists-hero {
+    min-height: 220px;
+    padding: 30px 32px;
+
+    border-radius: 26px;
+    border: 1px solid rgba(255, 45, 117, 0.38);
+
+    background:
+        radial-gradient(circle at right, rgba(255, 45, 117, 0.24), transparent 38%),
+        linear-gradient(135deg, rgba(32, 10, 28, 0.95), rgba(8, 10, 18, 0.98));
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
+}
+
+.tier-lists-hero span {
+    color: #ff4f8b;
+
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 3px;
+}
+
+.tier-lists-hero h1 {
+    margin: 14px 0 12px;
+
+    font-size: 50px;
+    line-height: 0.96;
+    font-weight: 900;
+    letter-spacing: 2px;
+}
+
+.tier-lists-hero p {
+    max-width: 760px;
+    margin: 0;
+
+    color: #d3d6e2;
+
+    font-size: 16px;
+    line-height: 1.6;
+    letter-spacing: 1px;
+}
+
+/* FILTRO */
+
+.season-filter {
+    display: flex;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.season-filter button {
+    height: 54px;
+    padding: 0 24px;
+
+    border-radius: 16px;
+    border: 1px solid rgba(255, 45, 117, 0.45);
+
+    background: rgba(255, 45, 117, 0.08);
+    color: #ffffff;
+
+    cursor: pointer;
+
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 1px;
+
+    transition: all 0.2s ease;
+}
+
+.season-filter button:hover,
+.season-filter button.active {
+    background: linear-gradient(135deg, #ff005c, #ff4f8b);
+    border-color: transparent;
+    box-shadow: 0 12px 28px rgba(255, 45, 117, 0.26);
+}
+
+/* ESTADOS */
+
+.loading-card,
+.empty-card,
+.error-message {
+    margin-top: 22px;
+    padding: 24px;
+
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    background: rgba(18, 22, 34, 0.86);
+
+    color: #c7cad6;
+
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 1px;
+}
+
+.error-message {
+    border-color: rgba(255, 69, 96, 0.45);
+    background: rgba(255, 69, 96, 0.10);
+    color: #ff8fa3;
+}
+
+/* GRID DOS CARDS */
+
+.tier-lists-grid {
+    margin-top: 24px;
+
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 520px));
+    gap: 22px;
+
+    align-items: start;
+}
+
+/* CARD MENOR */
+
+.tier-card {
+    width: 100%;
+
+    padding: 22px;
+
+    border-radius: 24px;
+    border: 1px solid rgba(255, 45, 117, 0.35);
+
+    background:
+        radial-gradient(circle at top right, rgba(255, 45, 117, 0.14), transparent 34%),
+        linear-gradient(135deg, #111827 0%, #070a12 58%, #1a1020 100%);
+
+    box-shadow: 0 18px 38px rgba(0, 0, 0, 0.35);
+
+    transition: all 0.22s ease;
+}
+
+.tier-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 45, 117, 0.65);
+    box-shadow:
+        0 24px 58px rgba(0, 0, 0, 0.48),
+        0 0 30px rgba(255, 45, 117, 0.12);
+}
+
+.tier-card-header {
+    margin-bottom: 18px;
+}
+
+.tier-user {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.tier-user-avatar {
+    width: 72px;
+    height: 72px;
+
+    border-radius: 50%;
+    overflow: hidden;
+
+    border: 2px solid #ff2d75;
+    box-shadow: 0 0 0 5px rgba(255, 45, 117, 0.08);
+
+    background:
+        radial-gradient(circle at center, rgba(255, 45, 117, 0.20), transparent 60%),
+        #05070c;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #ffffff;
+
+    font-size: 28px;
+    font-weight: 900;
+
+    flex-shrink: 0;
+}
+
+.tier-user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.tier-user-avatar span {
+    color: #ffffff;
+    font-size: 28px;
+    font-weight: 900;
+}
+
+.tier-user-info {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.tier-season {
+    color: #ff4f8b;
+
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.tier-user-info h3 {
+    margin: 0;
+
+    color: #ffffff;
+
+    font-size: 27px;
+    font-weight: 900;
+    line-height: 1.08;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tier-user-info p {
+    margin: 0;
+
+    color: #d9dbe3;
+
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: 1px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* STAT COMPACTO */
+
+.tier-card-stats {
+    margin-bottom: 18px;
+}
+
+.tier-stat-box {
+    min-height: 86px;
+    width: 100%;
+
+    border-radius: 18px;
+    border: 1px solid rgba(255, 45, 117, 0.18);
+
+    background:
+        radial-gradient(circle at top right, rgba(255, 45, 117, 0.08), transparent 38%),
+        rgba(8, 10, 18, 0.72);
+
+    padding: 14px 18px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.tier-stat-box strong {
+    color: #ffffff;
+
+    font-size: 36px;
+    font-weight: 900;
+    line-height: 1;
+
+    margin-bottom: 8px;
+}
+
+.tier-stat-box span {
+    color: #bfc4d1;
+
+    font-size: 13px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* BOTÃO ÚNICO */
+
+.tier-card-actions {
+    display: flex;
+    width: 100%;
+}
+
+.btn-primary,
+.btn-secondary {
+    width: 100%;
+    height: 52px;
+
+    border-radius: 16px;
+
+    font-size: 14px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    border: none;
+
+    color: #ffffff;
+    background: linear-gradient(135deg, #ff0066 0%, #ff4d8d 100%);
+
+    box-shadow: 0 14px 28px rgba(255, 0, 102, 0.25);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.05);
+}
+
+.btn-secondary {
+    border: 1px solid rgba(255, 45, 117, 0.45);
+
+    color: #ffffff;
+    background: rgba(255, 45, 117, 0.08);
+}
+
+.btn-secondary:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 45, 117, 0.16);
+}
+
+/* RESPONSIVO */
+
+@media (max-width: 900px) {
+    .tier-lists-content {
+        padding: 18px 14px 34px;
+    }
+
+    .tier-lists-hero {
+        flex-direction: column;
+        align-items: flex-start;
+
+        padding: 26px;
+    }
+
+    .tier-lists-hero h1 {
+        font-size: 42px;
+    }
+
+    .season-filter {
+        width: 100%;
+    }
+
+    .season-filter button {
+        flex: 1;
+    }
+
+    .tier-lists-grid {
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    }
+}
+
+@media (max-width: 560px) {
+    .tier-lists-content {
+        padding: 14px 12px 28px;
+    }
+
+    .page-actions {
+        flex-direction: column;
+    }
+
+    .back-home-btn,
+    .create-btn {
+        width: 100%;
+        height: 48px;
+    }
+
+    .tier-lists-hero {
+        padding: 22px 18px;
+        border-radius: 22px;
+    }
+
+    .tier-lists-hero h1 {
+        font-size: 32px;
+    }
+
+    .tier-lists-hero p {
+        font-size: 14px;
+    }
+
+    .season-filter {
+        flex-direction: column;
+    }
+
+    .tier-lists-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .tier-card {
+        padding: 18px;
+        border-radius: 22px;
+    }
+
+    .tier-user {
+        align-items: flex-start;
+        gap: 13px;
+    }
+
+    .tier-user-avatar {
+        width: 66px;
+        height: 66px;
+    }
+
+    .tier-user-info h3 {
+        font-size: 22px;
+    }
+
+    .tier-user-info p {
+        font-size: 14px;
+    }
+
+    .tier-stat-box {
+        min-height: 78px;
+        padding: 13px 16px;
+    }
+
+    .tier-stat-box strong {
+        font-size: 31px;
+    }
+
+    .tier-stat-box span {
+        font-size: 12px;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        height: 50px;
+        font-size: 13px;
+    }
+        /* PAGINATOR */
+    
+        .tier-paginator {
+            margin-top: 26px;
+    
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+    
+            flex-wrap: wrap;
+        }
+    
+        .page-btn,
+        .page-number {
+            min-width: 46px;
+            height: 46px;
+    
+            padding: 0 14px;
+    
+            border-radius: 14px;
+            border: 1px solid rgba(255, 45, 117, 0.45);
+    
+            background: rgba(255, 45, 117, 0.08);
+            color: #ffffff;
+    
+            cursor: pointer;
+    
+            font-size: 14px;
+            font-weight: 900;
+            letter-spacing: 1px;
+    
+            transition: all 0.2s ease;
+        }
+    
+        .page-btn:hover:not(:disabled),
+        .page-number:hover,
+        .page-number.active {
+            background: linear-gradient(135deg, #ff005c, #ff4f8b);
+            border-color: transparent;
+            box-shadow: 0 12px 28px rgba(255, 45, 117, 0.22);
+            transform: translateY(-2px);
+        }
+    
+        .page-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+    
+        .page-number.active {
+            cursor: default;
+        }
+    
+        @media (max-width: 560px) {
+            .tier-paginator {
+                gap: 8px;
+            }
+    
+            .page-btn,
+            .page-number {
+                min-width: 42px;
+                height: 42px;
+                border-radius: 12px;
+                font-size: 13px;
+            }
+        }
+}

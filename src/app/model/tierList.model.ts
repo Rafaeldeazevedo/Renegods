@@ -1,6 +1,6 @@
 export interface TierListItemRequest {
   personagemId: number;
-  tier: 'S' | 'A' | 'B' | 'C';
+  tier: 'S' | 'A' | 'B' | 'C' | 'D';
   posicao: number;
 }
 
