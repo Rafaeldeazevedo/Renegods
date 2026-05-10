@@ -313,4 +313,29 @@ export class TierListCompararComponent implements OnInit {
 
     img.src = 'assets/profile/alisa-bosconovitch.png';
   }
+  getFotoCriador(tierList: any): string | null {
+  if (tierList?.fotoPerfil) {
+    return tierList.fotoPerfil;
+  }
+
+  if (tierList?.usuario?.fotoPerfil) {
+    return tierList.usuario.fotoPerfil;
+  }
+
+  if (tierList?.usuarioId === this.usuarioLogado?.id && this.usuarioLogado?.fotoPerfil) {
+    return this.usuarioLogado.fotoPerfil;
+  }
+
+  return null;
+}
+
+getInicialCriador(tierList: any): string {
+  const nome = this.getNomeCriador(tierList);
+
+  if (!nome) {
+    return '?';
+  }
+
+  return nome.charAt(0).toUpperCase();
+}
 }

@@ -2,19 +2,16 @@
 
     <main class="compare-content">
 
-        <!-- BOTÃO VOLTAR -->
         <div class="page-actions">
             <button type="button" class="back-btn" (click)="voltar()">
                 ← Voltar para Tier Lists
             </button>
         </div>
 
-        <!-- LOADING -->
         <section class="loading-card" *ngIf="carregando">
             Carregando comparação...
         </section>
 
-        <!-- ERRO -->
         <section class="error-message" *ngIf="mensagemErro">
             {{ mensagemErro }}
         </section>
@@ -55,35 +52,59 @@
 
             </section>
 
-            <!-- CARDS DAS LISTAS -->
+            <!-- CARDS DAS TIER LISTS COM FOTO PEQUENA -->
             <section class="compare-header-grid">
 
+                <!-- TIER LIST A -->
                 <article class="compare-list-card">
-                    <span>SUA TIER LIST</span>
 
-                    <h2>{{ tierListA.nome }}</h2>
+                    <div class="compare-user-card">
 
-                    <p>
-                        {{ tierListA.season }} · {{ getTotalOrganizados(tierListA) }} personagem(ns)
-                    </p>
+                        <div class="compare-user-avatar">
+                            <img *ngIf="getFotoCriador(tierListA); else avatarLetraA" [src]="getFotoCriador(tierListA)"
+                                [alt]="tierListA.nome" />
+
+                            <ng-template #avatarLetraA>
+                                <span>{{ getInicialCriador(tierListA) }}</span>
+                            </ng-template>
+                        </div>
+
+                        <div class="compare-user-info">
+                            <h2>{{ tierListA.nome }}</h2>
+                        </div>
+
+                    </div>
 
                     <button type="button" (click)="abrirTierList(tierListA.id)">
                         Abrir
                     </button>
+
                 </article>
 
+                <!-- TIER LIST B -->
                 <article class="compare-list-card">
-                    <span>OUTRO USUÁRIO</span>
 
-                    <h2>{{ tierListB.nome }}</h2>
+                    <div class="compare-user-card">
 
-                    <p>
-                        {{ tierListB.season }} · Criada por {{ getNomeCriador(tierListB) }}
-                    </p>
+                        <div class="compare-user-avatar">
+                            <img *ngIf="getFotoCriador(tierListB); else avatarLetraB" [src]="getFotoCriador(tierListB)"
+                                [alt]="tierListB.nome" />
+
+                            <ng-template #avatarLetraB>
+                                <span>{{ getInicialCriador(tierListB) }}</span>
+                            </ng-template>
+                        </div>
+
+                        <div class="compare-user-info">
+                            <h2>{{ tierListB.nome }}</h2>
+                        </div>
+
+                    </div>
 
                     <button type="button" (click)="abrirTierList(tierListB.id)">
                         Abrir
                     </button>
+
                 </article>
 
             </section>
@@ -91,7 +112,7 @@
             <!-- BOARDS LADO A LADO -->
             <section class="boards-grid">
 
-                <!-- SUA LISTA -->
+                <!-- BOARD A -->
                 <article class="board-card">
 
                     <div class="board-title">
@@ -128,7 +149,7 @@
 
                 </article>
 
-                <!-- OUTRA LISTA -->
+                <!-- BOARD B -->
                 <article class="board-card">
 
                     <div class="board-title">
