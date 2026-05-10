@@ -319,8 +319,11 @@ salvarPerfil(): void {
     fotoPerfil: this.fotoPerfilPreview
   };
 
+  console.log('ENVIANDO PERFIL PARA O BACK:', payload);
+
   this.authService.atualizarPerfil(this.usuarioLogado.id, payload).subscribe({
     next: (usuarioAtualizado) => {
+      console.log('USUÁRIO ATUALIZADO PELO BACK:', usuarioAtualizado);
 
       this.usuarioLogado = usuarioAtualizado;
 
