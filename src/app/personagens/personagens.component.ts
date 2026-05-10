@@ -17,6 +17,7 @@ export class PersonagensComponent implements OnInit {
   termoBusca = '';
   filtroAtual: 'todos' | 'favoritos' = 'todos';
   carregando = false;
+  
 
   usuarioLogado: UsuarioLogado | null = null;
 

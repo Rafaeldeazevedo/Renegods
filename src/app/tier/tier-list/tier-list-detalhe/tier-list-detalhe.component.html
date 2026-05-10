@@ -1,0 +1,101 @@
+<div class="tier-detail-page">
+
+    <main class="tier-detail-content">
+
+        <div class="page-actions">
+
+            <button type="button" class="back-btn" (click)="voltar()">
+                ← Voltar para Tier Lists
+            </button>
+
+            <button type="button" class="reset-btn" *ngIf="isMinhaTierList()" (click)="redefinirTierList()"
+                [disabled]="redefinindo">
+                {{ redefinindo ? 'Redefinindo...' : 'Redefinir Tier List' }}
+            </button>
+
+        </div>
+
+        <section class="loading-card" *ngIf="carregando">
+            Carregando Tier List...
+        </section>
+
+        <section class="error-message" *ngIf="mensagemErro">
+            {{ mensagemErro }}
+        </section>
+
+        <section class="success-message" *ngIf="mensagemSucesso">
+            {{ mensagemSucesso }}
+        </section>
+
+        <ng-container *ngIf="!carregando && !mensagemErro && tierList">
+
+            <section class="tier-detail-hero">
+
+                <div>
+                    <span>{{ tierList.season }}</span>
+
+                    <h1>{{ tierList.nome }}</h1>
+
+                    <p>
+                        Criada por {{ getNomeCriador() }}.
+                        Esta Tier List possui {{ getTotalOrganizados() }} personagem(ns) organizados.
+                    </p>
+                </div>
+
+                <div class="hero-stats">
+
+                    <div>
+                        <strong>{{ getTotalOrganizados() }}</strong>
+                        <span>Total</span>
+                    </div>
+
+                    <div>
+                        <strong>{{ getTotalNaTier('S') }}</strong>
+                        <span>Tier S</span>
+                    </div>
+
+                    <div>
+                        <strong>{{ getTotalNaTier('A') }}</strong>
+                        <span>Tier A</span>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <section class="tier-board">
+
+                <div class="tier-row" *ngFor="let tier of tierKeys">
+
+                    <div class="tier-label" [ngClass]="'tier-' + tier.toLowerCase()">
+                        {{ tier }}
+                    </div>
+
+                    <div class="tier-zone">
+
+                        <div class="tier-character" *ngFor="let personagem of tiers[tier]">
+                            <img [src]="getImagemPerfil(personagem)" [alt]="personagem.nome"
+                                (error)="usarImagemPadrao($event)" />
+
+                            <span>{{ personagem.nome }}</span>
+                        </div>
+
+                        <div class="empty-tier" *ngIf="tiers[tier].length === 0">
+                            Nenhum personagem nesta tier
+                        </div>
+
+                    </div>
+
+                    <div class="tier-count">
+                        {{ getTotalNaTier(tier) }}
+                    </div>
+
+                </div>
+
+            </section>
+
+        </ng-container>
+
+    </main>
+
+</div>
