@@ -17,7 +17,7 @@
                 <h1>Monte sua Tier List</h1>
 
                 <p>
-                    Clique na foto do personagem e escolha se ele vai para S, A, B ou C.
+                    Clique na foto do personagem e escolha se ele vai para S, A, B, C ou D.
                     A organização é totalmente manual.
                 </p>
 
@@ -34,7 +34,7 @@
 
                         <select [(ngModel)]="seasonSelecionada">
                             <option value="Season 3">Season 3</option>
-                            <!-- <option value="Season 4">Season 4</option> -->
+                            <option value="Season 4">Season 4</option>
                         </select>
                     </div>
 
@@ -180,7 +180,8 @@
                 <button type="button" class="option-c" (click)="moverPersonagemParaTier('C')">
                     C
                 </button>
-                <button type="button" class="option-c" (click)="moverPersonagemParaTier('D')">
+
+                <button type="button" class="option-d" (click)="moverPersonagemParaTier('D')">
                     D
                 </button>
 

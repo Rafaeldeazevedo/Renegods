@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+
 import { PersonagemService } from '../services/personagem.service';
-import {TierListService } from '../services/tier-list.service';
+import { TierListService } from '../services/tier-list.service';
 import { TierListRequest } from '../model/tierList.model';
 import { Personagem } from '../model/personagem.model';
 import { UsuarioLogado } from '../model/auth.model';
@@ -27,6 +28,8 @@ export class TierListComponent implements OnInit {
 
   personagensDisponiveis: Personagem[] = [];
 
+  tierKeys: TierKey[] = ['S', 'A', 'B', 'C', 'D'];
+
   tiers: Record<TierKey, Personagem[]> = {
     S: [],
     A: [],
@@ -34,8 +37,6 @@ export class TierListComponent implements OnInit {
     C: [],
     D: []
   };
-
-  tierKeys: TierKey[] = ['S', 'A', 'B', 'C'];
 
   personagemSelecionado: Personagem | null = null;
   menuTierAberto = false;
@@ -89,11 +90,11 @@ export class TierListComponent implements OnInit {
         this.personagensDisponiveis = personagens || [];
 
         this.tiers = {
-    S: [],
-    A: [],
-    B: [],
-    C: [],
-    D: []
+          S: [],
+          A: [],
+          B: [],
+          C: [],
+          D: []
         };
 
         this.carregando = false;
@@ -104,11 +105,11 @@ export class TierListComponent implements OnInit {
         this.personagensDisponiveis = [];
 
         this.tiers = {
-    S: [],
-    A: [],
-    B: [],
-    C: [],
-    D: []
+          S: [],
+          A: [],
+          B: [],
+          C: [],
+          D: []
         };
 
         this.mensagemErro = 'Erro ao carregar personagens.';
@@ -178,11 +179,11 @@ export class TierListComponent implements OnInit {
     this.personagensDisponiveis = todosPersonagens;
 
     this.tiers = {
-    S: [],
-    A: [],
-    B: [],
-    C: [],
-    D: []
+      S: [],
+      A: [],
+      B: [],
+      C: [],
+      D: []
     };
 
     this.mensagemErro = '';
@@ -238,12 +239,13 @@ export class TierListComponent implements OnInit {
       error: (erro) => {
         console.error('Erro ao salvar Tier List:', erro);
 
-          if (erro?.status === 409) {
-    this.mensagemErro = 'Você já criou uma Tier List para esta season.';
-    return;
-  }
-
         this.salvando = false;
+
+        if (erro?.status === 409) {
+          this.mensagemErro = 'Você já criou uma Tier List para esta season.';
+          return;
+        }
+
         this.mensagemErro = erro?.error || 'Erro ao salvar Tier List.';
       }
     });
