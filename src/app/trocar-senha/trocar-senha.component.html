@@ -1,0 +1,61 @@
+<div class="change-password-page">
+
+    <section class="change-card">
+
+        <div class="brand-area">
+            <div class="brand-icon">
+                <img src="assets/logo.png" alt="Logo Renegados">
+            </div>
+
+            <div>
+                <span>PRIMEIRO ACESSO</span>
+                <h1>Troque sua senha</h1>
+            </div>
+        </div>
+
+        <p class="description">
+            Sua conta foi criada com uma senha temporária.
+            Para continuar, defina uma nova senha.
+        </p>
+
+        <form class="change-form" (ngSubmit)="trocarSenha()">
+
+            <div class="form-group">
+                <label>Senha atual</label>
+                <input type="password" name="senhaAtual" placeholder="Digite a senha temporária"
+                    [(ngModel)]="form.senhaAtual" />
+            </div>
+
+            <div class="form-group">
+                <label>Nova senha</label>
+                <input type="password" name="novaSenha" placeholder="Digite a nova senha"
+                    [(ngModel)]="form.novaSenha" />
+            </div>
+
+            <div class="form-group">
+                <label>Confirmar nova senha</label>
+                <input type="password" name="confirmarSenha" placeholder="Confirme a nova senha"
+                    [(ngModel)]="form.confirmarSenha" />
+            </div>
+
+            <div class="error-message" *ngIf="mensagemErro">
+                {{ mensagemErro }}
+            </div>
+
+            <div class="success-message" *ngIf="mensagemSucesso">
+                {{ mensagemSucesso }}
+            </div>
+
+            <button type="submit" class="change-button" [disabled]="carregando">
+                {{ carregando ? 'Salvando...' : 'Alterar senha' }}
+            </button>
+
+            <button type="button" class="logout-button" (click)="sair()">
+                Sair
+            </button>
+
+        </form>
+
+    </section>
+
+</div>

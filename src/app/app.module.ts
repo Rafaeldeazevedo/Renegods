@@ -11,7 +11,8 @@ import { PersonagensComponent } from './personagens/personagens.component';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { ToastModule } from 'primeng/toast';
-
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthTokenInterceptor } from './interceptors/auth-token.interceptor';
 import { MessageService } from 'primeng/api';
 import { LoginComponent } from './login/login.component';
 import { PersonagemFrameDataComponent } from './personagens/personagem-frame-data/personagem-frame-data.component';
@@ -24,6 +25,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { TierListsComponent } from './tier-lists/tier-lists.component';
 import { TierListDetalheComponent } from './tier-list-detalhe/tier-list-detalhe.component';
 import { TierListCompararComponent } from './tier-list-comparar/tier-list-comparar.component';
+import { TrocarSenhaComponent } from './trocar-senha/trocar-senha.component';
 
 
 @NgModule({
@@ -42,7 +44,8 @@ import { TierListCompararComponent } from './tier-list-comparar/tier-list-compar
     TierListComponent,
     TierListsComponent,
     TierListDetalheComponent,
-    TierListCompararComponent
+    TierListCompararComponent,
+    TrocarSenhaComponent
   ],
   imports: [
     BrowserModule,
@@ -54,10 +57,14 @@ import { TierListCompararComponent } from './tier-list-comparar/tier-list-compar
     DragDropModule
   
   ],
-  providers: [
-    MessageService,
-
-  ],
+ providers: [
+  MessageService,
+  {
+    provide: HTTP_INTERCEPTORS,
+    useClass: AuthTokenInterceptor,
+    multi: true
+  }
+],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

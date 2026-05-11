@@ -1,8 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, map, of, tap } from 'rxjs';
+
 import { environment } from '../../environments/environment';
-import { LoginRequest, LoginResponse } from '../model/auth.model';
+
+import {
+  LoginRequest,
+  LoginResponse,
+  UsuarioLogado,
+  TrocarSenhaRequest,
+  ValidarTokenResponse
+} from '../model/auth.model';
 
 @Injectable({
   providedIn: 'root'
@@ -13,64 +21,82 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  login(request: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, request)
-      .pipe(
-        tap((usuario) => {
-          this.salvarUsuarioLocal(usuario);
-        })
-      );
+  login(request: LoginRequest): Observable<UsuarioLogado> {
+    return this.http.post<UsuarioLogado>(`${this.apiUrl}/login`, request).pipe(
+      tap((usuario) => {
+        this.salvarUsuarioLocal(usuario);
+      })
+    );
+  }
+
+  trocarSenha(request: TrocarSenhaRequest): Observable<string> {
+    return this.http.put(`${this.apiUrl}/trocar-senha`, request, {
+      responseType: 'text'
+    });
+  }
+
+  validarToken(): Observable<boolean> {
+    const token = this.getToken();
+
+    if (!token) {
+      return of(false);
+    }
+
+    return this.http.get<ValidarTokenResponse>(`${this.apiUrl}/validar-token`).pipe(
+      map((response) => response.valido === true)
+    );
   }
 
   buscarUsuarioPorId(id: number): Observable<LoginResponse> {
-    return this.http.get<LoginResponse>(`${this.apiUrl}/usuarios/${id}`)
-      .pipe(
-        tap((usuario) => {
-          this.salvarUsuarioLocal(usuario);
-        })
-      );
+    return this.http.get<LoginResponse>(`${this.apiUrl}/usuarios/${id}`).pipe(
+      tap((usuario) => {
+        this.salvarUsuarioLocal(usuario);
+      })
+    );
   }
 
   atualizarPerfil(id: number, payload: {
     nickname: string;
     fotoPerfil: string;
   }): Observable<LoginResponse> {
-    return this.http.put<LoginResponse>(`${this.apiUrl}/usuarios/${id}/perfil`, payload)
-      .pipe(
-        tap((usuario) => {
-          this.salvarUsuarioLocal(usuario);
-        })
-      );
+    return this.http.put<LoginResponse>(`${this.apiUrl}/usuarios/${id}/perfil`, payload).pipe(
+      tap((usuario) => {
+        this.salvarUsuarioLocal(usuario);
+      })
+    );
   }
 
-  salvarUsuarioLocal(usuario: LoginResponse): void {
+  salvarUsuarioLocal(usuario: UsuarioLogado | LoginResponse): void {
     const usuarioAtual = this.getUsuarioLogado();
 
-    const usuarioParaSalvar = {
+    const usuarioParaSalvar: UsuarioLogado = {
       ...usuarioAtual,
       ...usuario
     };
 
     localStorage.setItem('usuarioLogado', JSON.stringify(usuarioParaSalvar));
 
-    if (usuario.token) {
-      localStorage.setItem('token', usuario.token);
+    if (usuarioParaSalvar.token) {
+      localStorage.setItem('token', usuarioParaSalvar.token);
     }
   }
 
-  logout(): void {
-    localStorage.removeItem('usuarioLogado');
-    localStorage.removeItem('token');
+  atualizarUsuarioLogado(usuario: UsuarioLogado): void {
+    this.salvarUsuarioLocal(usuario);
   }
 
-  getUsuarioLogado(): LoginResponse | null {
-    const usuario = localStorage.getItem('usuarioLogado');
+  getUsuarioLogado(): UsuarioLogado | null {
+    const usuarioStorage = localStorage.getItem('usuarioLogado');
 
-    if (!usuario) {
+    if (!usuarioStorage) {
       return null;
     }
 
-    return JSON.parse(usuario) as LoginResponse;
+    try {
+      return JSON.parse(usuarioStorage);
+    } catch {
+      return null;
+    }
   }
 
   getToken(): string | null {
@@ -78,6 +104,11 @@ export class AuthService {
   }
 
   estaLogado(): boolean {
-    return !!this.getToken();
+    return !!this.getUsuarioLogado() && !!this.getToken();
+  }
+
+  logout(): void {
+    localStorage.removeItem('usuarioLogado');
+    localStorage.removeItem('token');
   }
 }

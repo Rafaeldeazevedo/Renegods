@@ -21,6 +21,18 @@ export interface UsuarioLogado {
   nickname: string;
   nivel: number;
   xp: number;
+  token?: string;
   fotoPerfil?: string;
+  deveTrocarSenha?: boolean;
+}
 
+export interface TrocarSenhaRequest {
+  usuarioId: number;
+  senhaAtual: string;
+  novaSenha: string;
+  confirmarSenha: string;
+}
+
+export interface ValidarTokenResponse {
+  valido: boolean;
 }
