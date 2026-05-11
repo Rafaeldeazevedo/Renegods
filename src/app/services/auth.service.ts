@@ -21,14 +21,13 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  login(request: LoginRequest): Observable<UsuarioLogado> {
-    return this.http.post<UsuarioLogado>(`${this.apiUrl}/login`, request).pipe(
-      tap((usuario) => {
-        this.salvarUsuarioLocal(usuario);
-      })
-    );
-  }
-
+ login(request: LoginRequest): Observable<UsuarioLogado> {
+  return this.http.post<UsuarioLogado>(`${this.apiUrl}/login`, request).pipe(
+    tap((usuario) => {
+      this.salvarUsuarioLocal(usuario);
+    })
+  );
+}
   trocarSenha(request: TrocarSenhaRequest): Observable<string> {
     return this.http.put(`${this.apiUrl}/trocar-senha`, request, {
       responseType: 'text'
@@ -66,20 +65,20 @@ export class AuthService {
     );
   }
 
-  salvarUsuarioLocal(usuario: UsuarioLogado | LoginResponse): void {
-    const usuarioAtual = this.getUsuarioLogado();
+  salvarUsuarioLocal(usuario: LoginResponse | UsuarioLogado): void {
+  const usuarioAtual = this.getUsuarioLogado();
 
-    const usuarioParaSalvar: UsuarioLogado = {
-      ...usuarioAtual,
-      ...usuario
-    };
+  const usuarioParaSalvar: UsuarioLogado = {
+    ...usuarioAtual,
+    ...usuario
+  };
 
-    localStorage.setItem('usuarioLogado', JSON.stringify(usuarioParaSalvar));
+  localStorage.setItem('usuarioLogado', JSON.stringify(usuarioParaSalvar));
 
-    if (usuarioParaSalvar.token) {
-      localStorage.setItem('token', usuarioParaSalvar.token);
-    }
+  if (usuario.token && usuario.token.startsWith('eyJ')) {
+    localStorage.setItem('token', usuario.token);
   }
+}
 
   atualizarUsuarioLogado(usuario: UsuarioLogado): void {
     this.salvarUsuarioLocal(usuario);
