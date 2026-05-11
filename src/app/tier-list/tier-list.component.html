@@ -17,8 +17,8 @@
                 <h1>Monte sua Tier List</h1>
 
                 <p>
-                    Clique na foto do personagem e escolha se ele vai para S, A, B, C ou D.
-                    A organização é totalmente manual.
+                    Arraste os personagens para S, A, B, C ou D. Você também pode arrastar
+                    dentro da mesma tier para organizar a posição.
                 </p>
 
                 <div class="tier-save-form">
@@ -80,123 +80,73 @@
 
         <ng-container *ngIf="!carregando">
 
-            <section class="tier-board">
+            <div cdkDropListGroup>
 
-                <div class="tier-row" *ngFor="let tier of tierKeys">
+                <section class="tier-board">
 
-                    <div class="tier-label" [ngClass]="'tier-' + tier.toLowerCase()">
-                        {{ tier }}
+                    <div class="tier-row" *ngFor="let tier of tierKeys">
+
+                        <div class="tier-label" [ngClass]="'tier-' + tier.toLowerCase()">
+                            {{ tier }}
+                        </div>
+
+                        <div class="tier-dropzone" cdkDropList cdkDropListOrientation="horizontal"
+                            [cdkDropListData]="tiers[tier]" (cdkDropListDropped)="dropPersonagem($event)">
+
+                            <div class="tier-character" *ngFor="let personagem of tiers[tier]" cdkDrag>
+                                <img [src]="getImagemPerfil(personagem)" [alt]="personagem.nome"
+                                    (error)="usarImagemPadrao($event)" />
+
+                                <span>{{ personagem.nome }}</span>
+                            </div>
+
+                            <div class="empty-tier" *ngIf="tiers[tier].length === 0">
+                                Arraste um personagem para esta tier
+                            </div>
+
+                        </div>
+
+                        <div class="tier-count">
+                            {{ getTotalNaTier(tier) }}
+                        </div>
+
                     </div>
 
-                    <div class="tier-dropzone">
+                </section>
 
-                        <div class="tier-character" *ngFor="let personagem of tiers[tier]"
-                            (click)="abrirMenuTier(personagem)">
+                <section class="available-section">
+
+                    <div class="section-title">
+
+                        <div>
+                            <span></span>
+                            <h2>Personagens disponíveis</h2>
+                        </div>
+
+                        <p>
+                            {{ personagensDisponiveis.length }} personagem(ns)
+                        </p>
+
+                    </div>
+
+                    <div class="available-grid" cdkDropList [cdkDropListData]="personagensDisponiveis"
+                        (cdkDropListDropped)="dropPersonagem($event)">
+
+                        <div class="available-character" *ngFor="let personagem of personagensDisponiveis" cdkDrag>
                             <img [src]="getImagemPerfil(personagem)" [alt]="personagem.nome"
                                 (error)="usarImagemPadrao($event)" />
 
                             <span>{{ personagem.nome }}</span>
                         </div>
 
-                        <div class="empty-tier" *ngIf="tiers[tier].length === 0">
-                            Clique em um personagem e envie para esta tier
-                        </div>
-
                     </div>
 
-                    <div class="tier-count">
-                        {{ getTotalNaTier(tier) }}
-                    </div>
+                </section>
 
-                </div>
-
-            </section>
-
-            <section class="available-section">
-
-                <div class="section-title">
-
-                    <div>
-                        <span></span>
-                        <h2>Personagens disponíveis</h2>
-                    </div>
-
-                    <p>
-                        {{ personagensDisponiveis.length }} personagem(ns)
-                    </p>
-
-                </div>
-
-                <div class="available-grid">
-
-                    <div class="available-character" *ngFor="let personagem of personagensDisponiveis"
-                        (click)="abrirMenuTier(personagem)">
-                        <img [src]="getImagemPerfil(personagem)" [alt]="personagem.nome"
-                            (error)="usarImagemPadrao($event)" />
-
-                        <span>{{ personagem.nome }}</span>
-                    </div>
-
-                </div>
-
-            </section>
+            </div>
 
         </ng-container>
 
     </main>
-
-    <div class="tier-menu-overlay" *ngIf="menuTierAberto && personagemSelecionado" (click)="fecharMenuTier()">
-
-        <div class="tier-menu-card" (click)="$event.stopPropagation()">
-
-            <div class="tier-menu-header">
-
-                <div class="tier-menu-avatar">
-                    <img [src]="getImagemPerfil(personagemSelecionado)" [alt]="personagemSelecionado.nome"
-                        (error)="usarImagemPadrao($event)" />
-                </div>
-
-                <div>
-                    <span>ENVIAR PARA TIER</span>
-                    <h3>{{ personagemSelecionado.nome }}</h3>
-                </div>
-
-            </div>
-
-            <div class="tier-menu-options">
-
-                <button type="button" class="option-s" (click)="moverPersonagemParaTier('S')">
-                    S
-                </button>
-
-                <button type="button" class="option-a" (click)="moverPersonagemParaTier('A')">
-                    A
-                </button>
-
-                <button type="button" class="option-b" (click)="moverPersonagemParaTier('B')">
-                    B
-                </button>
-
-                <button type="button" class="option-c" (click)="moverPersonagemParaTier('C')">
-                    C
-                </button>
-
-                <button type="button" class="option-d" (click)="moverPersonagemParaTier('D')">
-                    D
-                </button>
-
-            </div>
-
-            <button type="button" class="return-btn" (click)="voltarParaDisponiveis()">
-                Voltar para disponíveis
-            </button>
-
-            <button type="button" class="cancel-btn" (click)="fecharMenuTier()">
-                Cancelar
-            </button>
-
-        </div>
-
-    </div>
 
 </div>
