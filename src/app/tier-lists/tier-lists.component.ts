@@ -17,7 +17,7 @@ export class TierListsComponent implements OnInit {
   mensagemErro = '';
 
   paginaAtual = 1;
-  itensPorPagina = 6;
+  itensPorPagina = 9;
   filtroSeason = 'Season 3';
 
   minhaTierListDaSeason: any = null;

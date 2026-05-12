@@ -1,5 +1,9 @@
 <div class="page">
 
+    <button type="button" class="btn-back-home" (click)="voltarHome()">
+        ← Voltar para Home
+    </button>
+
     <div class="page-header">
         <div>
             <h1>Jogadores Comunidade</h1>
@@ -21,7 +25,7 @@
 
     <div *ngIf="!carregando && jogadores.length > 0" class="players-grid">
 
-        <article class="player-card" *ngFor="let jogador of jogadores">
+        <article class="player-card" *ngFor="let jogador of jogadoresPaginados">
 
             <div class="player-header">
 
@@ -41,14 +45,17 @@
             </div>
 
             <div class="player-characters-preview" *ngIf="jogador.personagens?.length">
-            <div class="mini-character" *ngFor="let personagem of jogador.personagens.slice(0, 3)"
-                [class.selected]="jogadorSelecionado?.id === jogador.id && personagemSelecionado?.id === personagem.id"
-                (click)="selecionarPersonagemDoJogador(jogador, personagem)">
-                <img [src]="getImagemProfilePersonagem(personagem)" [alt]="personagem.nome"
-                    (error)="usarImagemPadrao($event, personagem)" />
-            
-                <span>{{ obterNomeCurto(personagem.nome) }}</span>
-            </div>
+
+                <div class="mini-character" *ngFor="let personagem of jogador.personagens.slice(0, 3)"
+                    [class.selected]="jogadorSelecionado?.id === jogador.id && personagemSelecionado?.id === personagem.id"
+                    (click)="selecionarPersonagemDoJogador(jogador, personagem)">
+
+                    <img [src]="getImagemProfilePersonagem(personagem)" [alt]="personagem.nome"
+                        (error)="usarImagemPadrao($event, personagem)" />
+
+                    <span>{{ obterNomeCurto(personagem.nome) }}</span>
+                </div>
+
             </div>
 
             <div class="player-characters-preview empty-preview" *ngIf="!jogador.personagens?.length">
@@ -61,13 +68,31 @@
                     Player style
                 </button>
 
-                <button type="button" class="btn-edit">
+                <button type="button" class="btn-edit" (click)="editarJogador(jogador)">
                     ✎ Editar
                 </button>
 
             </div>
 
         </article>
+
+    </div>
+
+    <div class="paginator" *ngIf="!carregando && jogadores.length > itensPorPagina">
+
+        <button type="button" class="page-btn page-arrow" [disabled]="paginaAtual === 1" (click)="paginaAnterior()">
+            ←
+        </button>
+
+        <button type="button" class="page-btn" *ngFor="let pagina of paginas" [class.active]="paginaAtual === pagina"
+            (click)="irParaPagina(pagina)">
+            {{ pagina }}
+        </button>
+
+        <button type="button" class="page-btn page-arrow" [disabled]="paginaAtual === totalPaginas"
+            (click)="proximaPagina()">
+            →
+        </button>
 
     </div>
 

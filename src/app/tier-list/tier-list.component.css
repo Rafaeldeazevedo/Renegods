@@ -38,6 +38,11 @@
 }
 
 .back-home-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
     height: 46px;
     padding: 0 20px;
 
@@ -52,6 +57,7 @@
     font-size: 14px;
     font-weight: 900;
     letter-spacing: 2px;
+    text-transform: uppercase;
 
     transition: all 0.2s ease;
 }
@@ -61,6 +67,10 @@
     border-color: transparent;
     box-shadow: 0 12px 28px rgba(255, 45, 117, 0.26);
     transform: translateY(-2px);
+}
+
+.back-home-btn:active {
+    transform: translateY(0);
 }
 
 /* HERO */
@@ -209,6 +219,8 @@
     letter-spacing: 1px;
 }
 
+/* BOTÕES SALVAR / RESETAR */
+
 .tier-summary button {
     height: 56px;
     padding: 0 18px;
@@ -216,7 +228,7 @@
     border-radius: 16px;
     border: 1px solid rgba(255, 45, 117, 0.45);
 
-    background: rgba(255, 45, 117, 0.10);
+    background: rgba(255, 45, 117, 0.08);
     color: #ffffff;
 
     cursor: pointer;
@@ -224,6 +236,7 @@
     font-size: 13px;
     font-weight: 900;
     letter-spacing: 1px;
+    text-transform: uppercase;
 
     transition: all 0.2s ease;
 }
@@ -232,17 +245,30 @@
     background: linear-gradient(135deg, #ff005c, #ff4f8b);
     border-color: transparent;
     box-shadow: 0 12px 28px rgba(255, 45, 117, 0.26);
+    transform: translateY(-2px);
+}
+
+.tier-summary button:active:not(:disabled) {
+    transform: translateY(0);
 }
 
 .tier-summary button:disabled {
     opacity: 0.55;
     cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
 }
 
 .save-tier-btn {
+    background: rgba(255, 45, 117, 0.08) !important;
+    border: 1px solid rgba(255, 45, 117, 0.45) !important;
+    box-shadow: none !important;
+}
+
+.save-tier-btn:hover:not(:disabled) {
     background: linear-gradient(135deg, #ff005c, #ff4f8b) !important;
     border-color: transparent !important;
-    box-shadow: 0 12px 28px rgba(255, 45, 117, 0.26);
+    box-shadow: 0 12px 28px rgba(255, 45, 117, 0.26) !important;
 }
 
 /* MENSAGENS */
@@ -339,7 +365,7 @@
         linear-gradient(180deg, #a855f7 0%, #5b21b6 100%);
 }
 
-/* TIERS COM SCROLL HORIZONTAL PARA ORDEM ESTÁVEL */
+/* TIERS EM LINHAS, SEM SCROLL */
 
 .tier-dropzone {
     min-height: 104px;
@@ -353,28 +379,12 @@
         linear-gradient(180deg, #101622 0%, #05070c 100%);
 
     display: flex;
-    align-items: center;
+    align-items: flex-start;
+    align-content: flex-start;
     gap: 12px;
 
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    overflow-y: hidden;
-
-    scrollbar-width: thin;
-}
-
-.tier-dropzone::-webkit-scrollbar {
-    height: 8px;
-}
-
-.tier-dropzone::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.04);
-    border-radius: 999px;
-}
-
-.tier-dropzone::-webkit-scrollbar-thumb {
-    background: rgba(255, 45, 117, 0.45);
-    border-radius: 999px;
+    flex-wrap: wrap;
+    overflow: visible;
 }
 
 .empty-tier {
@@ -483,7 +493,7 @@
     text-overflow: ellipsis;
 }
 
-/* DISPONÍVEIS VOLTANDO A QUEBRAR LINHA */
+/* DISPONÍVEIS */
 
 .available-section {
     margin-top: 30px;

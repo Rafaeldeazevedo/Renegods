@@ -293,4 +293,7 @@ export class TierListComponent implements OnInit {
 
     img.src = 'assets/profile/alisa-bosconovitch.png';
   }
+    voltarHome(): void {
+    this.router.navigate(['/home']);
+  }
 }

@@ -3,7 +3,7 @@
     <main class="tier-content">
 
         <div class="page-actions">
-            <button type="button" class="back-home-btn" routerLink="/home">
+            <button type="button" class="back-home-btn" (click)="voltarHome()">
                 ← Voltar para Home
             </button>
         </div>
@@ -90,8 +90,8 @@
                             {{ tier }}
                         </div>
 
-                        <div class="tier-dropzone" cdkDropList cdkDropListOrientation="horizontal"
-                            [cdkDropListData]="tiers[tier]" (cdkDropListDropped)="dropPersonagem($event)">
+                        <div class="tier-dropzone" cdkDropList [cdkDropListData]="tiers[tier]"
+                            (cdkDropListDropped)="dropPersonagem($event)">
 
                             <div class="tier-character" *ngFor="let personagem of tiers[tier]" cdkDrag>
                                 <img [src]="getImagemPerfil(personagem)" [alt]="personagem.nome"

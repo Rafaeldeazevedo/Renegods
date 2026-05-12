@@ -68,6 +68,11 @@ export class JogadorComunidadeService {
       { descricao }
     );
   }
+  
+
+atualizar(id: number, payload: any) {
+  return this.http.put<any>(`${this.apiUrl}/${id}`, payload);
+}
 
   excluirMania(maniaId: number): Observable<void> {
     return this.http.delete<void>(
