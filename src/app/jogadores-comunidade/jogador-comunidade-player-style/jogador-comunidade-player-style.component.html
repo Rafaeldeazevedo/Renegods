@@ -1,14 +1,14 @@
 <div class="player-style-page">
 
     <button type="button" class="btn-back" (click)="voltar()">
-        ← Voltar
+        ← Voltar para jogadores
     </button>
 
-    <section class="style-hero">
+    <section class="top-grid">
 
-        <div class="hero-left">
+        <article class="profile-card">
 
-            <div class="style-player">
+            <div class="profile-avatar">
                 <img *ngIf="jogador?.foto" [src]="jogador.foto" [alt]="jogador?.nome"
                     (error)="usarImagemPadraoJogador($event)" />
 
@@ -17,47 +17,65 @@
                 </div>
             </div>
 
-            <div class="style-info">
-                <span>PLAYER STYLE</span>
+            <div class="profile-info">
+                <span class="eyebrow">Player Style</span>
 
                 <h1>{{ jogador?.nome || 'Jogador' }}</h1>
 
-                <p>
-                    Tekken ID:
-                    <strong>{{ jogador?.tekkenId || '-' }}</strong>
-                </p>
+                <div class="profile-meta">
+
+                    <div class="meta-pill">
+                        <span>Tekken ID</span>
+                        <strong>{{ jogador?.tekkenId || '-' }}</strong>
+                    </div>
+
+                    <div class="meta-pill">
+                        <span>Criado por</span>
+                        <strong>{{ getNomeCriador() }}</strong>
+                    </div>
+
+                </div>
 
                 <div class="character-chip" *ngIf="personagem">
                     <img [src]="getImagemProfilePersonagem(personagem)" [alt]="personagem.nome"
                         (error)="usarImagemPadrao($event, personagem)" />
 
-                    <strong>{{ personagem.nome }}</strong>
+                    <div>
+                        <span>Personagem atual</span>
+                        <strong>{{ personagem.nome }}</strong>
+                    </div>
                 </div>
+
             </div>
 
-        </div>
+        </article>
 
-        <div class="hero-right">
+        <article class="style-card">
 
-            <div class="style-summary-header">
-                <h2>Estilo de jogo</h2>
+            <div class="card-title-row">
+                <div>
+                    <span class="eyebrow">Análise</span>
+                    <h2>Estilo de jogo</h2>
+                </div>
 
-                <button type="button" class="btn-style-action" (click)="abrirEdicaoEstilo()">
-                    {{ estiloJogo?.trim() ? 'Editar estilo de jogo' : 'Criar estilo de jogo' }}
+                <button type="button" class="btn-outline" (click)="abrirEdicaoEstilo()">
+                    ✎ {{ possuiEstilo ? 'Editar estilo' : 'Criar estilo' }}
                 </button>
             </div>
 
-            <div class="style-summary-box">
-                <p class="style-summary-text" *ngIf="estiloJogo?.trim()">
+            <div class="style-content" [class.empty]="!possuiEstilo">
+                <div class="quote-mark">“</div>
+
+                <p *ngIf="possuiEstilo">
                     {{ estiloJogo }}
                 </p>
 
-                <p class="style-summary-empty" *ngIf="!estiloJogo?.trim()">
+                <p *ngIf="!possuiEstilo">
                     Nenhum estilo de jogo cadastrado para esse player com esse personagem.
                 </p>
             </div>
 
-        </div>
+        </article>
 
     </section>
 
@@ -65,8 +83,10 @@
 
         <div class="editor-header">
             <div>
+                <span class="eyebrow">Editor</span>
+
                 <h2>
-                    {{ estiloJogo?.trim() ? 'Editar estilo de jogo' : 'Criar estilo de jogo' }}
+                    {{ possuiEstilo ? 'Editar estilo de jogo' : 'Criar estilo de jogo' }}
                 </h2>
 
                 <p>Resumo geral de como esse jogador costuma jogar com esse personagem.</p>
@@ -78,108 +98,185 @@
         </div>
 
         <textarea [(ngModel)]="estiloJogoEditando"
-            placeholder="Ex: Joga esperando você ficar quieto, fica muito passivo, trava bastante e tem throw break ruim..."
-            rows="5"></textarea>
+            placeholder="Ex: joga esperando você ficar quieto, fica muito passivo, trava bastante e tem throw break ruim..."
+            rows="5">
+        </textarea>
 
         <div class="editor-actions">
-            <button type="button" class="btn-create" (click)="salvarPlayerStyle()" [disabled]="salvandoEstilo">
+            <button type="button" class="btn-primary" (click)="salvarPlayerStyle()" [disabled]="salvandoEstilo">
                 {{ salvandoEstilo ? 'Salvando...' : 'Salvar estilo de jogo' }}
             </button>
 
-            <button type="button" class="btn-cancel" (click)="cancelarEdicaoEstilo()">
+            <button type="button" class="btn-secondary" (click)="cancelarEdicaoEstilo()">
                 Cancelar
             </button>
         </div>
 
     </section>
 
-    <section class="mania-list-card">
+    <section class="content-grid">
 
-        <div class="list-header">
-            <div>
-                <h2>Manias cadastradas</h2>
-                <p>{{ manias.length }} registro(s)</p>
-            </div>
+        <article class="mania-list-card">
 
-            <button type="button" class="btn-create-mania-header" (click)="abrirCriacaoMania()" *ngIf="!criandoMania">
-                + Criar mania
-            </button>
-        </div>
-
-        <div class="mania-create-box" *ngIf="criandoMania">
-
-            <div class="editor-header">
+            <div class="list-header">
                 <div>
-                    <h3>Adicionar mania</h3>
-                    <p>Cadastre hábitos, padrões, vícios ou respostas comuns desse player com esse personagem.</p>
+                    <span class="eyebrow">Padrões do jogador</span>
+                    <h2>Manias cadastradas</h2>
+                    <p>{{ totalManias }} registro(s)</p>
                 </div>
 
-                <button type="button" class="btn-close-editor" (click)="cancelarCriacaoMania()">
-                    ×
+                <button type="button" class="btn-primary" (click)="abrirCriacaoMania()" *ngIf="!criandoMania">
+                    + Criar mania
                 </button>
             </div>
 
-            <textarea [(ngModel)]="novaMania" placeholder="Ex: Faz a nóia do 2,1 into orbital..." rows="4"></textarea>
+            <div class="mania-create-box" *ngIf="criandoMania">
 
-            <div class="editor-actions">
-                <button type="button" class="btn-create" (click)="criarMania()">
-                    + Salvar mania
-                </button>
+                <div class="editor-header">
+                    <div>
+                        <span class="eyebrow">Nova mania</span>
+                        <h3>Adicionar mania</h3>
+                        <p>Cadastre hábitos, padrões, vícios ou respostas comuns desse player.</p>
+                    </div>
 
-                <button type="button" class="btn-cancel" (click)="cancelarCriacaoMania()">
-                    Cancelar
-                </button>
-            </div>
-
-        </div>
-
-        <div *ngIf="carregando" class="state-box">
-            Carregando manias...
-        </div>
-
-        <div *ngIf="!carregando && manias.length === 0" class="state-box">
-            Nenhuma mania cadastrada para esse personagem.
-        </div>
-
-        <div class="mania-list" *ngIf="!carregando && manias.length > 0">
-
-            <article class="mania-item" *ngFor="let mania of manias; let i = index">
-
-                <div class="mania-number">
-                    {{ i + 1 }}
-                </div>
-
-                <div class="mania-content" *ngIf="maniaEditandoId !== mania.id">
-                    <p>{{ mania.descricao }}</p>
-                </div>
-
-                <div class="mania-edit" *ngIf="maniaEditandoId === mania.id">
-                    <textarea [(ngModel)]="descricaoEditando" rows="3"></textarea>
-                </div>
-
-                <div class="mania-actions" *ngIf="maniaEditandoId !== mania.id">
-                    <button type="button" class="btn-small edit" (click)="iniciarEdicao(mania)">
-                        Editar
-                    </button>
-
-                    <button type="button" class="btn-small delete" (click)="excluirMania(mania)">
-                        Excluir
+                    <button type="button" class="btn-close-editor" (click)="cancelarCriacaoMania()">
+                        ×
                     </button>
                 </div>
 
-                <div class="mania-actions" *ngIf="maniaEditandoId === mania.id">
-                    <button type="button" class="btn-small save" (click)="salvarEdicao(mania)">
-                        Salvar
+                <textarea [(ngModel)]="novaMania" placeholder="Ex: faz 2,1 into orbital sempre que consegue..."
+                    rows="4">
+                </textarea>
+
+                <div class="editor-actions">
+                    <button type="button" class="btn-primary" (click)="criarMania()">
+                        + Salvar mania
                     </button>
 
-                    <button type="button" class="btn-small cancel" (click)="cancelarEdicao()">
+                    <button type="button" class="btn-secondary" (click)="cancelarCriacaoMania()">
                         Cancelar
                     </button>
                 </div>
 
+            </div>
+
+            <div *ngIf="carregando" class="state-box">
+                Carregando manias...
+            </div>
+
+            <div *ngIf="!carregando && manias.length === 0" class="state-box">
+                Nenhuma mania cadastrada para esse personagem.
+            </div>
+
+            <div class="mania-list" *ngIf="!carregando && manias.length > 0">
+
+                <article class="mania-item" *ngFor="let mania of manias; let i = index">
+
+                    <div class="mania-number">
+                        {{ i + 1 }}
+                    </div>
+
+                    <div class="mania-icon">
+                        ⚔
+                    </div>
+
+                    <div class="mania-content" *ngIf="maniaEditandoId !== mania.id">
+                        <h3>{{ mania.descricao }}</h3>
+                        <p>Registro de padrão observado contra esse jogador.</p>
+                    </div>
+
+                    <div class="mania-edit" *ngIf="maniaEditandoId === mania.id">
+                        <textarea [(ngModel)]="descricaoEditando" rows="3"></textarea>
+                    </div>
+
+                    <div class="mania-tag" *ngIf="maniaEditandoId !== mania.id">
+                        Mania
+                    </div>
+
+                    <div class="mania-actions" *ngIf="maniaEditandoId !== mania.id">
+                        <button type="button" class="btn-icon edit" (click)="iniciarEdicao(mania)">
+                            ✎
+                        </button>
+
+                        <button type="button" class="btn-icon delete" (click)="excluirMania(mania)">
+                            🗑
+                        </button>
+                    </div>
+
+                    <div class="mania-actions" *ngIf="maniaEditandoId === mania.id">
+                        <button type="button" class="btn-small save" (click)="salvarEdicao(mania)">
+                            Salvar
+                        </button>
+
+                        <button type="button" class="btn-small cancel" (click)="cancelarEdicao()">
+                            Cancelar
+                        </button>
+                    </div>
+
+                </article>
+
+            </div>
+
+        </article>
+
+        <aside class="side-panel">
+
+            <article class="summary-card">
+                <span class="eyebrow">Resumo</span>
+
+                <h2>Leitura rápida</h2>
+
+                <div class="summary-list">
+
+                    <div class="summary-item">
+                        <div class="summary-icon">🎮</div>
+
+                        <div>
+                            <span>Personagem</span>
+                            <strong>{{ personagem?.nome || '-' }}</strong>
+                        </div>
+                    </div>
+
+                    <div class="summary-item">
+                        <div class="summary-icon">🔥</div>
+
+                        <div>
+                            <span>Total de manias</span>
+                            <strong>{{ totalManias }}</strong>
+                        </div>
+                    </div>
+
+                    <div class="summary-item">
+                        <div class="summary-icon">🧠</div>
+
+                        <div>
+                            <span>Estilo cadastrado</span>
+                            <strong>{{ possuiEstilo ? 'Sim' : 'Não' }}</strong>
+                        </div>
+                    </div>
+
+                    <div class="summary-item">
+                        <div class="summary-icon">👤</div>
+
+                        <div>
+                            <span>Criado por</span>
+                            <strong>{{ getNomeCriador() }}</strong>
+                        </div>
+                    </div>
+
+                </div>
             </article>
 
-        </div>
+            <article class="tip-card">
+                <span class="eyebrow">Dica rápida</span>
+
+                <p>
+                    Use essas manias para lembrar padrões, punir hábitos repetidos e preparar respostas contra esse
+                    jogador.
+                </p>
+            </article>
+
+        </aside>
 
     </section>
 

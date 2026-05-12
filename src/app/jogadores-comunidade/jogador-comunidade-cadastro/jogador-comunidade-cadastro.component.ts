@@ -22,7 +22,7 @@ export class JogadorComunidadeCadastroComponent implements OnInit {
   personagens: any[] = [];
   personagensFiltrados: any[] = [];
   personagensSelecionados: any[] = [];
-
+  jogador: any = null;
   fotosPerfil: any[] = [];
 
   termoBuscaPersonagem = '';
@@ -104,76 +104,88 @@ export class JogadorComunidadeCadastroComponent implements OnInit {
   }
 
   carregarJogadorParaEdicao(id: number): void {
-    this.carregando = true;
+  this.carregando = true;
 
-    this.jogadorComunidadeService.buscarPorId(id).subscribe({
-      next: (jogador) => {
-        this.nome = jogador.nome || '';
-        this.tekkenId = jogador.tekkenId || '';
-        this.fotoSelecionada = this.normalizarFotoSalva(jogador.foto || '');
+  this.jogadorComunidadeService.buscarPorId(id).subscribe({
+    next: (jogador) => {
+      this.jogador = jogador;
 
-        this.personagensSelecionados = jogador.personagens || [];
+      this.nome = jogador.nome || '';
+      this.tekkenId = jogador.tekkenId || '';
+      this.fotoSelecionada = this.normalizarFotoSalva(jogador.foto || '');
 
-        this.carregando = false;
-      },
-      error: (erro) => {
-        console.error('Erro ao carregar jogador para edição:', erro);
-        this.carregando = false;
-      }
-    });
+      this.personagensSelecionados = jogador.personagens || [];
+
+      this.carregando = false;
+    },
+    error: (erro) => {
+      console.error('Erro ao carregar jogador para edição:', erro);
+      this.carregando = false;
+    }
+  });
+}
+
+salvar(): void {
+  if (!this.nome.trim()) {
+    alert('Informe o nome do jogador.');
+    return;
   }
 
-  salvar(): void {
-    if (!this.nome.trim()) {
-      alert('Informe o nome do jogador.');
-      return;
-    }
+  if (!this.tekkenId.trim()) {
+    alert('Informe o Tekken ID.');
+    return;
+  }
 
-    if (!this.tekkenId.trim()) {
-      alert('Informe o Tekken ID.');
-      return;
-    }
+  if (!this.personagensSelecionados.length) {
+    alert('Selecione pelo menos um personagem.');
+    return;
+  }
 
-    if (!this.personagensSelecionados.length) {
-      alert('Selecione pelo menos um personagem.');
-      return;
-    }
+  const usuarioStorage = localStorage.getItem('usuarioLogado');
+  const usuarioLogado = usuarioStorage ? JSON.parse(usuarioStorage) : null;
 
-    const payload = {
-      nome: this.nome.trim(),
-      tekkenId: this.tekkenId.trim(),
-      foto: this.fotoSelecionada || null,
-      personagensIds: this.personagensSelecionados.map(personagem => personagem.id)
-    };
+  const payload = {
+    nome: this.nome.trim(),
+    tekkenId: this.tekkenId.trim(),
+    foto: this.fotoSelecionada || null,
+    personagensIds: this.personagensSelecionados.map(personagem => personagem.id),
+    criadoPorNickname:
+      this.jogador?.criadoPorNickname ||
+      usuarioLogado?.nickname ||
+      usuarioLogado?.nickName ||
+      usuarioLogado?.nome ||
+      usuarioLogado?.login ||
+      'Jogador Renegado'
+  };
 
-    this.salvando = true;
+  this.salvando = true;
 
-    if (this.modoEdicao && this.jogadorId) {
-      this.jogadorComunidadeService.atualizar(this.jogadorId, payload).subscribe({
-        next: () => {
-          this.salvando = false;
-          this.router.navigate(['/jogadores-comunidade']);
-        },
-        error: (erro) => {
-          console.error('Erro ao atualizar jogador:', erro);
-          this.salvando = false;
-        }
-      });
-
-      return;
-    }
-
-    this.jogadorComunidadeService.cadastrar(payload).subscribe({
+  if (this.modoEdicao && this.jogadorId) {
+    this.jogadorComunidadeService.atualizar(this.jogadorId, payload).subscribe({
       next: () => {
         this.salvando = false;
         this.router.navigate(['/jogadores-comunidade']);
       },
       error: (erro) => {
-        console.error('Erro ao cadastrar jogador:', erro);
+        console.error('Erro ao atualizar jogador:', erro);
         this.salvando = false;
       }
     });
+
+    return;
   }
+
+  this.jogadorComunidadeService.cadastrar(payload).subscribe({
+    next: () => {
+      this.salvando = false;
+      this.router.navigate(['/jogadores-comunidade']);
+    },
+    error: (erro) => {
+      console.error('Erro ao cadastrar jogador:', erro);
+      this.salvando = false;
+    }
+  });
+}
 
   voltar(): void {
     this.router.navigate(['/jogadores-comunidade']);

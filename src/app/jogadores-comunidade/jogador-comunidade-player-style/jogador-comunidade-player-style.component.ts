@@ -121,9 +121,9 @@ export class JogadorComunidadePlayerStyleComponent implements OnInit {
       .subscribe({
         next: (dados) => {
           this.estiloJogo = dados?.estiloJogo || this.estiloJogoEditando;
+          this.estiloJogoEditando = '';
           this.salvandoEstilo = false;
           this.editandoEstilo = false;
-          this.estiloJogoEditando = '';
         },
         error: (erro) => {
           console.error('Erro ao salvar estilo de jogo:', erro);
@@ -165,7 +165,7 @@ export class JogadorComunidadePlayerStyleComponent implements OnInit {
     const descricao = this.novaMania.trim();
 
     if (!descricao) {
-      alert('Digite a mania/player style.');
+      alert('Digite a mania.');
       return;
     }
 
@@ -240,6 +240,26 @@ export class JogadorComunidadePlayerStyleComponent implements OnInit {
     this.router.navigate(['/jogadores-comunidade']);
   }
 
+  getNomeCriador(): string {
+    if (this.jogador?.criadoPorNickname) {
+      return this.jogador.criadoPorNickname;
+    }
+
+    if (this.jogador?.nicknameCriador) {
+      return this.jogador.nicknameCriador;
+    }
+
+    if (this.jogador?.usuario?.nickname) {
+      return this.jogador.usuario.nickname;
+    }
+
+    if (this.jogador?.usuario?.nome) {
+      return this.jogador.usuario.nome;
+    }
+
+    return '';
+  }
+
   getImagemProfilePersonagem(personagem: any): string {
     if (!personagem?.nome) {
       return personagem?.imagem || 'assets/personagens/alisa-bosconovitch.png';
@@ -285,5 +305,13 @@ export class JogadorComunidadePlayerStyleComponent implements OnInit {
 
     img.onerror = null;
     img.style.display = 'none';
+  }
+
+  get totalManias(): number {
+    return this.manias.length;
+  }
+
+  get possuiEstilo(): boolean {
+    return !!this.estiloJogo?.trim();
   }
 }
