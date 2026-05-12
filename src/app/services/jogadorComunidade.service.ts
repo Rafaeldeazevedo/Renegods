@@ -72,8 +72,11 @@ export class JogadorComunidadeService {
       { descricao }
     );
   }
-  
 
+  excluirJogador(id: number) {
+  return this.http.delete<void>(`${this.apiUrl}/${id}`);
+}
+  
 atualizar(id: number, payload: any) {
   return this.http.put<any>(`${this.apiUrl}/${id}`, payload);
 }

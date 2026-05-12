@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { JogadorComunidadeService } from '../services/jogadorComunidade.service';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-jogadores-comunidade',
@@ -20,7 +21,8 @@ export class JogadoresComunidadeComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private jogadorComunidadeService: JogadorComunidadeService
+    private jogadorComunidadeService: JogadorComunidadeService,
+    private messageService: MessageService
   ) {}
 
   ngOnInit(): void {
@@ -139,4 +141,50 @@ export class JogadoresComunidadeComponent implements OnInit {
   proximaPagina(): void {
     this.irParaPagina(this.paginaAtual + 1);
   }
+get isAdmin(): boolean {
+  const usuarioStorage = localStorage.getItem('usuarioLogado');
+
+  if (!usuarioStorage) {
+    return false;
+  }
+
+  try {
+    const usuario = JSON.parse(usuarioStorage);
+
+    return String(usuario?.perfil || '').toUpperCase() === 'ADMIN';
+  } catch {
+    return false;
+  }
+}
+
+excluirJogador(jogador: any): void {
+  const confirmar = confirm(`Deseja excluir o jogador "${jogador.nome}"?`);
+
+  if (!confirmar) {
+    return;
+  }
+
+  this.jogadorComunidadeService.excluirJogador(jogador.id).subscribe({
+    next: () => {
+      this.jogadores = this.jogadores.filter(item => item.id !== jogador.id);
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Jogador excluído',
+        detail: 'Jogador removido com sucesso.',
+        life: 3000
+      });
+    },
+    error: (erro) => {
+      console.error('Erro ao excluir jogador:', erro);
+
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Não foi possível excluir o jogador.',
+        life: 3000
+      });
+    }
+  });
+}
 }

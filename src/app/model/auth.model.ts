@@ -12,6 +12,7 @@ export interface LoginResponse {
   xp: number;
   token?: string;
   fotoPerfil?: string;
+  
 }
 
 export interface UsuarioLogado {
@@ -24,6 +25,8 @@ export interface UsuarioLogado {
   token?: string;
   fotoPerfil?: string;
   deveTrocarSenha?: boolean;
+  perfil?: string;
+
 }
 
 export interface TrocarSenhaRequest {

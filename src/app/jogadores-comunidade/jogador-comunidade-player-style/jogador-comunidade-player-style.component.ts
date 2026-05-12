@@ -189,6 +189,21 @@ export class JogadorComunidadePlayerStyleComponent implements OnInit {
     });
 }
 
+get isAdmin(): boolean {
+  const usuarioStorage = localStorage.getItem('usuarioLogado');
+
+  if (!usuarioStorage) {
+    return false;
+  }
+
+  try {
+    const usuario = JSON.parse(usuarioStorage);
+    return String(usuario?.perfil || '').toUpperCase() === 'ADMIN';
+  } catch {
+    return false;
+  }
+}
+
   iniciarEdicao(mania: any): void {
     this.maniaEditandoId = mania.id;
     this.descricaoEditando = mania.descricao;

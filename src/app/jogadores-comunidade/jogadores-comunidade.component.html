@@ -30,7 +30,8 @@
             <div class="player-header">
 
                 <div class="player-avatar">
-                    <img *ngIf="jogador.foto" [src]="jogador.foto" [alt]="jogador.nome" />
+                    <img *ngIf="jogador.foto" [src]="jogador.foto" [alt]="jogador.nome"
+                        (error)="usarImagemPadrao($event)" />
 
                     <span *ngIf="!jogador.foto">
                         {{ jogador.nome?.charAt(0) }}
@@ -54,6 +55,7 @@
                         (error)="usarImagemPadrao($event, personagem)" />
 
                     <span>{{ obterNomeCurto(personagem.nome) }}</span>
+
                 </div>
 
             </div>
@@ -70,6 +72,10 @@
 
                 <button type="button" class="btn-edit" (click)="editarJogador(jogador)">
                     ✎ Editar
+                </button>
+
+                <button type="button" class="btn-delete" *ngIf="isAdmin" (click)="excluirJogador(jogador)">
+                    🗑 Excluir
                 </button>
 
             </div>
