@@ -25,16 +25,15 @@
                     <div class="form-field">
                         <label>Nome da Tier List</label>
 
-                        <input type="text" [(ngModel)]="nomeTierList" placeholder="Ex: Minha tier list ranked" />
+                        <input type="text" [(ngModel)]="nomeTierList" placeholder="Tier List - Nickname" />
                     </div>
 
                     <div class="form-field">
-                        <label>Visibilidade</label>
+                        <label>Temporada</label>
 
-                        <select [(ngModel)]="visibilidade">
-                            <option value="PUBLICA">Pública</option>
-                            <option value="PRIVADA">Privada</option>
-                        </select>
+                        <div class="season-display">
+                            {{ seasonAtual }}
+                        </div>
                     </div>
 
                 </div>

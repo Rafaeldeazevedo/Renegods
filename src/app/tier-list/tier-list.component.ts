@@ -4,7 +4,9 @@ import {
   moveItemInArray
 } from '@angular/cdk/drag-drop';
 import { Router } from '@angular/router';
+
 import { PersonagemService } from '../services/personagem.service';
+import { TierListService } from '../services/tier-list.service';
 
 interface TierItem {
   key: string;
@@ -26,7 +28,7 @@ export class TierListComponent implements OnInit {
   mensagemErro = '';
 
   nomeTierList = '';
-  visibilidade = 'PUBLICA';
+  seasonAtual = 'Season 3';
 
   personagensDisponiveis: any[] = [];
 
@@ -69,11 +71,24 @@ export class TierListComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private personagemService: PersonagemService
+    private personagemService: PersonagemService,
+    private tierListService: TierListService
   ) {}
 
   ngOnInit(): void {
+    this.preencherNomeTierList();
     this.carregarPersonagens();
+  }
+
+  preencherNomeTierList(): void {
+    const usuarioLogado = this.getUsuarioLogado();
+
+    const nickname =
+      usuarioLogado?.nickname ||
+      usuarioLogado?.nome ||
+      'Jogador';
+
+    this.nomeTierList = `Tier List - ${nickname}`;
   }
 
   carregarPersonagens(): void {
@@ -109,6 +124,7 @@ export class TierListComponent implements OnInit {
       },
       error: (erro) => {
         console.error('Erro ao carregar personagens:', erro);
+
         this.mensagemErro = 'Erro ao carregar personagens.';
         this.carregando = false;
       }
@@ -241,7 +257,7 @@ export class TierListComponent implements OnInit {
 
     const itens = this.tiers.flatMap(tier =>
       tier.personagens.map((personagem, index) => ({
-        personagemId: personagem.id,
+        personagemId: Number(personagem.id),
         tier: tier.key,
         posicao: index + 1
       }))
@@ -254,34 +270,43 @@ export class TierListComponent implements OnInit {
 
     const usuarioLogado = this.getUsuarioLogado();
 
+    if (!usuarioLogado?.id) {
+      this.mensagemErro = 'Usuário não encontrado.';
+      return;
+    }
+
     const request = {
       nome: this.nomeTierList.trim(),
-      visibilidade: this.visibilidade,
-      usuarioId: usuarioLogado?.id,
+      season: this.seasonAtual,
+      visibilidade: 'PUBLICA',
+      usuarioId: Number(usuarioLogado.id),
       itens
     };
 
-    console.log('Payload salvar tier list:', request);
 
-    /*
-      Se você já tiver TierListService, liga aqui:
+    this.salvando = true;
 
-      this.salvando = true;
+    this.tierListService.criar(request).subscribe({
+      next: (resposta) => {
 
-      this.tierListService.salvar(request).subscribe({
-        next: () => {
-          this.mensagemSucesso = 'Tier list salva com sucesso.';
-          this.salvando = false;
-        },
-        error: (erro) => {
-          console.error('Erro ao salvar tier list:', erro);
-          this.mensagemErro = 'Erro ao salvar tier list.';
-          this.salvando = false;
-        }
-      });
-    */
+        this.mensagemSucesso = 'Tier list salva com sucesso.';
+        this.mensagemErro = '';
+        this.salvando = false;
+        this.router.navigate(['/tier-lists']);
 
-    this.mensagemSucesso = 'Tier list montada. Confira o payload no console.';
+      },
+      error: (erro) => {
+        console.error('Erro ao salvar tier list:', erro);
+
+        this.mensagemErro =
+          erro?.error?.mensagem ||
+          erro?.error?.message ||
+          'Erro ao salvar tier list.';
+
+        this.mensagemSucesso = '';
+        this.salvando = false;
+      }
+    });
   }
 
   voltarParaHome(): void {
@@ -303,22 +328,22 @@ export class TierListComponent implements OnInit {
     return this.getTotalSelecionados() + this.getTotalDisponiveis();
   }
 
-getImagemPersonagem(personagem: any): string {
-  if (!personagem?.nome) {
-    return 'assets/profile/alisa-bosconovitch.png';
+  getImagemPersonagem(personagem: any): string {
+    if (!personagem?.nome) {
+      return 'assets/profile/alisa.png';
+    }
+
+    const slug = this.gerarSlug(personagem.nome);
+
+    return `assets/profile/${slug}.png`;
   }
 
-  const slug = this.gerarSlug(personagem.nome);
+  usarImagemPadrao(event: Event): void {
+    const img = event.target as HTMLImageElement;
 
-  return `assets/profile/${slug}.png`;
-}
-
-usarImagemPadrao(event: Event): void {
-  const img = event.target as HTMLImageElement;
-
-  img.onerror = null;
-  img.src = 'assets/profile/alisa-bosconovitch.png';
-}
+    img.onerror = null;
+    img.src = 'assets/profile/alisa.png';
+  }
 
   gerarSlug(nome: string): string {
     return nome
