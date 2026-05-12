@@ -15,7 +15,8 @@ export class JogadorComunidadePlayerStyleComponent implements OnInit {
 
   jogador: any = null;
   personagem: any = null;
-
+  paginaAtualManias = 1;
+  itensPorPaginaManias = 5;
   estiloJogo = '';
   estiloJogoEditando = '';
 
@@ -133,23 +134,25 @@ export class JogadorComunidadePlayerStyleComponent implements OnInit {
       });
   }
 
-  buscarManias(): void {
-    this.carregando = true;
+ buscarManias(): void {
+  this.carregando = true;
 
-    this.jogadorComunidadeService
-      .listarManias(this.jogadorId, this.personagemId)
-      .subscribe({
-        next: (dados) => {
-          this.manias = dados || [];
-          this.carregando = false;
-        },
-        error: (erro) => {
-          console.error('Erro ao buscar manias:', erro);
-          this.manias = [];
-          this.carregando = false;
-        }
-      });
-  }
+  this.jogadorComunidadeService
+    .listarManias(this.jogadorId, this.personagemId)
+    .subscribe({
+      next: (dados) => {
+        this.manias = dados || [];
+        this.paginaAtualManias = 1;
+        this.carregando = false;
+      },
+      error: (erro) => {
+        console.error('Erro ao buscar manias:', erro);
+        this.manias = [];
+        this.paginaAtualManias = 1;
+        this.carregando = false;
+      }
+    });
+}
 
   abrirCriacaoMania(): void {
     this.novaMania = '';
@@ -162,27 +165,29 @@ export class JogadorComunidadePlayerStyleComponent implements OnInit {
   }
 
   criarMania(): void {
-    const descricao = this.novaMania.trim();
+  const descricao = this.novaMania.trim();
 
-    if (!descricao) {
-      alert('Digite a mania.');
-      return;
-    }
-
-    this.jogadorComunidadeService
-      .criarMania(this.jogadorId, this.personagemId, descricao)
-      .subscribe({
-        next: () => {
-          this.novaMania = '';
-          this.criandoMania = false;
-          this.buscarManias();
-        },
-        error: (erro) => {
-          console.error('Erro ao criar mania:', erro);
-          alert('Erro ao criar mania.');
-        }
-      });
+  if (!descricao) {
+    alert('Digite a mania.');
+    return;
   }
+
+  const criadoPorNickname = this.getNicknameUsuarioLogado();
+
+  this.jogadorComunidadeService
+    .criarMania(this.jogadorId, this.personagemId, descricao, criadoPorNickname)
+    .subscribe({
+      next: () => {
+        this.novaMania = '';
+        this.criandoMania = false;
+        this.buscarManias();
+      },
+      error: (erro) => {
+        console.error('Erro ao criar mania:', erro);
+        alert('Erro ao criar mania.');
+      }
+    });
+}
 
   iniciarEdicao(mania: any): void {
     this.maniaEditandoId = mania.id;
@@ -260,6 +265,8 @@ export class JogadorComunidadePlayerStyleComponent implements OnInit {
     return '';
   }
 
+  
+
   getImagemProfilePersonagem(personagem: any): string {
     if (!personagem?.nome) {
       return personagem?.imagem || 'assets/personagens/alisa-bosconovitch.png';
@@ -314,4 +321,60 @@ export class JogadorComunidadePlayerStyleComponent implements OnInit {
   get possuiEstilo(): boolean {
     return !!this.estiloJogo?.trim();
   }
+  get totalPaginasManias(): number {
+  return Math.ceil(this.manias.length / this.itensPorPaginaManias) || 1;
+}
+
+get maniasPaginadas(): any[] {
+  const inicio = (this.paginaAtualManias - 1) * this.itensPorPaginaManias;
+  const fim = inicio + this.itensPorPaginaManias;
+
+  return this.manias.slice(inicio, fim);
+}
+
+get paginasManias(): number[] {
+  return Array.from(
+    { length: this.totalPaginasManias },
+    (_, index) => index + 1
+  );
+}
+
+irParaPaginaManias(pagina: number): void {
+  if (pagina < 1 || pagina > this.totalPaginasManias) {
+    return;
+  }
+
+  this.paginaAtualManias = pagina;
+}
+
+getNicknameUsuarioLogado(): string {
+  const usuarioStorage = localStorage.getItem('usuarioLogado');
+
+  if (!usuarioStorage) {
+    return 'Jogador Renegado';
+  }
+
+  try {
+    const usuario = JSON.parse(usuarioStorage);
+
+    return (
+      usuario?.nickname ||
+      usuario?.nickName ||
+      usuario?.nome ||
+      usuario?.login ||
+      'Jogador Renegado'
+    );
+  } catch (erro) {
+    console.error('Erro ao ler usuário logado:', erro);
+    return 'Jogador Renegado';
+  }
+}
+
+paginaAnteriorManias(): void {
+  this.irParaPaginaManias(this.paginaAtualManias - 1);
+}
+
+proximaPaginaManias(): void {
+  this.irParaPaginaManias(this.paginaAtualManias + 1);
+}
 }

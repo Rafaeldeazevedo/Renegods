@@ -52,15 +52,19 @@ export class JogadorComunidadeService {
   }
 
   criarMania(
-    jogadorId: number,
-    personagemId: number,
-    descricao: string
-  ): Observable<any> {
-    return this.http.post<any>(
-      `${this.apiUrl}/${jogadorId}/personagens/${personagemId}/manias`,
-      { descricao }
-    );
-  }
+  jogadorId: number,
+  personagemId: number,
+  descricao: string,
+  criadoPorNickname: string
+) {
+  return this.http.post<any>(
+    `${this.apiUrl}/${jogadorId}/personagens/${personagemId}/manias`,
+    {
+      descricao,
+      criadoPorNickname
+    }
+  );
+}
 
   alterarMania(maniaId: number, descricao: string): Observable<any> {
     return this.http.put<any>(

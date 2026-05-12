@@ -170,10 +170,10 @@
 
             <div class="mania-list" *ngIf="!carregando && manias.length > 0">
 
-                <article class="mania-item" *ngFor="let mania of manias; let i = index">
+                <article class="mania-item" *ngFor="let mania of maniasPaginadas; let i = index">
 
                     <div class="mania-number">
-                        {{ i + 1 }}
+                        {{ ((paginaAtualManias - 1) * itensPorPaginaManias) + i + 1 }}
                     </div>
 
                     <div class="mania-icon">
@@ -182,7 +182,11 @@
 
                     <div class="mania-content" *ngIf="maniaEditandoId !== mania.id">
                         <h3>{{ mania.descricao }}</h3>
-                        <p>Registro de padrão observado contra esse jogador.</p>
+
+                        <p>
+                            Criado por:
+                            <strong>{{ mania.criadoPorNickname || 'Jogador Renegado' }}</strong>
+                        </p>
                     </div>
 
                     <div class="mania-edit" *ngIf="maniaEditandoId === mania.id">
@@ -214,6 +218,25 @@
                     </div>
 
                 </article>
+
+            </div>
+
+            <div class="mania-paginator" *ngIf="!carregando && manias.length > itensPorPaginaManias">
+
+                <button type="button" class="mania-page-btn" [disabled]="paginaAtualManias === 1"
+                    (click)="paginaAnteriorManias()">
+                    ←
+                </button>
+
+                <button type="button" class="mania-page-btn" *ngFor="let pagina of paginasManias"
+                    [class.active]="paginaAtualManias === pagina" (click)="irParaPaginaManias(pagina)">
+                    {{ pagina }}
+                </button>
+
+                <button type="button" class="mania-page-btn" [disabled]="paginaAtualManias === totalPaginasManias"
+                    (click)="proximaPaginaManias()">
+                    →
+                </button>
 
             </div>
 
@@ -259,7 +282,7 @@
                         <div class="summary-icon">👤</div>
 
                         <div>
-                            <span>Criado por</span>
+                            <span>Criador do jogador</span>
                             <strong>{{ getNomeCriador() }}</strong>
                         </div>
                     </div>
