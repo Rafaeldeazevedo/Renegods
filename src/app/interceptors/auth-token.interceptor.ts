@@ -18,8 +18,7 @@ export class AuthTokenInterceptor implements HttpInterceptor {
       url.includes('/auth/login') ||
       url.includes('/auth/registrar') ||
       url.includes('/auth/register') ||
-      url.includes('/auth/esqueci-senha') ||
-      url.includes('/auth/trocar-senha');
+      url.includes('/auth/esqueci-senha');
 
     if (rotaSemToken) {
       return next.handle(req);

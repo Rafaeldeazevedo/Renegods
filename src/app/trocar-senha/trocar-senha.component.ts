@@ -20,6 +20,8 @@ export class TrocarSenhaComponent implements OnInit {
   };
 
   carregando = false;
+  validandoToken = false;
+
   mensagemErro = '';
   mensagemSucesso = '';
 
@@ -36,12 +38,60 @@ export class TrocarSenhaComponent implements OnInit {
       return;
     }
 
+    const token = this.authService.getToken();
+
+    if (!token) {
+      this.authService.logout();
+      this.router.navigate(['/login']);
+      return;
+    }
+
     this.form.usuarioId = this.usuarioLogado.id;
+
+    this.validarTokenInicial();
+  }
+
+  validarTokenInicial(): void {
+    this.validandoToken = true;
+    this.mensagemErro = '';
+
+    this.authService.validarToken().subscribe({
+      next: (tokenValido) => {
+        this.validandoToken = false;
+
+        if (!tokenValido) {
+          this.authService.logout();
+          this.router.navigate(['/login']);
+          return;
+        }
+      },
+      error: (erro) => {
+        console.error('Erro ao validar token:', erro);
+
+        this.validandoToken = false;
+
+        this.authService.logout();
+        this.router.navigate(['/login']);
+      }
+    });
   }
 
   trocarSenha(): void {
     this.mensagemErro = '';
     this.mensagemSucesso = '';
+
+    if (!this.usuarioLogado) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    const token = this.authService.getToken();
+
+    if (!token) {
+      this.authService.logout();
+      this.router.navigate(['/login']);
+      return;
+    }
 
     if (!this.form.senhaAtual.trim()) {
       this.mensagemErro = 'Informe a senha atual.';
@@ -65,6 +115,30 @@ export class TrocarSenhaComponent implements OnInit {
 
     this.carregando = true;
 
+    this.authService.validarToken().subscribe({
+      next: (tokenValido) => {
+        if (!tokenValido) {
+          this.carregando = false;
+
+          this.authService.logout();
+          this.router.navigate(['/login']);
+          return;
+        }
+
+        this.enviarTrocaSenha();
+      },
+      error: (erro) => {
+        console.error('Erro ao validar token antes de trocar senha:', erro);
+
+        this.carregando = false;
+
+        this.authService.logout();
+        this.router.navigate(['/login']);
+      }
+    });
+  }
+
+  enviarTrocaSenha(): void {
     this.authService.trocarSenha(this.form).subscribe({
       next: () => {
         this.carregando = false;
@@ -91,6 +165,11 @@ export class TrocarSenhaComponent implements OnInit {
 
         if (erro?.error?.mensagem) {
           this.mensagemErro = erro.error.mensagem;
+          return;
+        }
+
+        if (erro?.error?.message) {
+          this.mensagemErro = erro.error.message;
           return;
         }
 
