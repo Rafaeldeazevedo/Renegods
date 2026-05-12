@@ -1,12 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
+import {
+  CdkDragDrop,
+  moveItemInArray,
+  transferArrayItem
+} from '@angular/cdk/drag-drop';
+
 import { PersonagemService } from '../services/personagem.service';
-import { TierListService } from '../services/tier-list.service';
-import { TierListRequest } from '../model/tierList.model';
+import {TierListService } from '../services/tier-list.service';
+
 import { Personagem } from '../model/personagem.model';
 import { UsuarioLogado } from '../model/auth.model';
-
+import { TierListRequest } from '../model/tierList.model';
 type TierKey = 'S' | 'A' | 'B' | 'C' | 'D';
 
 @Component({
@@ -37,9 +43,6 @@ export class TierListComponent implements OnInit {
     C: [],
     D: []
   };
-
-  personagemSelecionado: Personagem | null = null;
-  menuTierAberto = false;
 
   constructor(
     private personagemService: PersonagemService,
@@ -118,52 +121,26 @@ export class TierListComponent implements OnInit {
     });
   }
 
-  abrirMenuTier(personagem: Personagem): void {
-    this.personagemSelecionado = personagem;
-    this.menuTierAberto = true;
-  }
+  dropPersonagem(event: CdkDragDrop<Personagem[]>): void {
+    this.mensagemErro = '';
+    this.mensagemSucesso = '';
 
-  fecharMenuTier(): void {
-    this.personagemSelecionado = null;
-    this.menuTierAberto = false;
-  }
+    if (event.previousContainer === event.container) {
+      moveItemInArray(
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex
+      );
 
-  moverPersonagemParaTier(tier: TierKey): void {
-    if (!this.personagemSelecionado) {
       return;
     }
 
-    const personagem = this.personagemSelecionado;
-
-    this.removerPersonagemDeTodosOsLugares(personagem.id);
-
-    this.tiers[tier].push(personagem);
-
-    this.fecharMenuTier();
-  }
-
-  voltarParaDisponiveis(): void {
-    if (!this.personagemSelecionado) {
-      return;
-    }
-
-    const personagem = this.personagemSelecionado;
-
-    this.removerPersonagemDeTodosOsLugares(personagem.id);
-
-    this.personagensDisponiveis.push(personagem);
-
-    this.fecharMenuTier();
-  }
-
-  removerPersonagemDeTodosOsLugares(personagemId: number): void {
-    this.personagensDisponiveis = this.personagensDisponiveis
-      .filter(p => p.id !== personagemId);
-
-    this.tierKeys.forEach(tier => {
-      this.tiers[tier] = this.tiers[tier]
-        .filter(p => p.id !== personagemId);
-    });
+    transferArrayItem(
+      event.previousContainer.data,
+      event.container.data,
+      event.previousIndex,
+      event.currentIndex
+    );
   }
 
   resetarTierList(): void {
@@ -188,8 +165,6 @@ export class TierListComponent implements OnInit {
 
     this.mensagemErro = '';
     this.mensagemSucesso = '';
-
-    this.fecharMenuTier();
   }
 
   salvarTierList(): void {
@@ -246,7 +221,12 @@ export class TierListComponent implements OnInit {
           return;
         }
 
-        this.mensagemErro = erro?.error || 'Erro ao salvar Tier List.';
+        if (typeof erro?.error === 'string') {
+          this.mensagemErro = erro.error;
+          return;
+        }
+
+        this.mensagemErro = 'Erro ao salvar Tier List.';
       }
     });
   }
@@ -312,5 +292,8 @@ export class TierListComponent implements OnInit {
     }
 
     img.src = 'assets/profile/alisa-bosconovitch.png';
+  }
+    voltarHome(): void {
+    this.router.navigate(['/home']);
   }
 }

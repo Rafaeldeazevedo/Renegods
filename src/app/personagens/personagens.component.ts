@@ -61,7 +61,12 @@ export class PersonagensComponent implements OnInit {
 
     this.personagemService.listarPorUsuario(this.usuarioLogado.id).subscribe({
       next: (personagens) => {
-        this.personagens = personagens || [];
+        this.personagens = (personagens || []).sort((a, b) =>
+          (a.nome || '').localeCompare(b.nome || '', 'pt-BR', {
+            sensitivity: 'base'
+          })
+        );
+
         this.personagensHero = this.pegarAleatorios(this.personagens, 3);
 
         this.carregando = false;

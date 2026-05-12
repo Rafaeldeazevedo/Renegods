@@ -86,6 +86,12 @@ const routes: Routes = [
     component: JogadorComunidadeCadastroComponent,
     canActivate: [AuthGuard]
   },
+  {
+  path: 'jogadores-comunidade/:id/editar',
+  component: JogadorComunidadeCadastroComponent,
+  canActivate: [AuthGuard]
+},
+
 
   {
     path: 'jogadores-comunidade/:id/personagens',

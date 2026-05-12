@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { JogadorComunidadeService } from '../services/jogadorComunidade.service';
-import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-jogadores-comunidade',
@@ -11,30 +10,35 @@ import { MessageService } from 'primeng/api';
 export class JogadoresComunidadeComponent implements OnInit {
 
   jogadores: any[] = [];
+  carregando = false;
+
   jogadorSelecionado: any = null;
   personagemSelecionado: any = null;
-  carregando = false;
+
+  paginaAtual = 1;
+  itensPorPagina = 9;
 
   constructor(
     private router: Router,
-    private jogadorComunidadeService: JogadorComunidadeService,
-    private messageService: MessageService,
+    private jogadorComunidadeService: JogadorComunidadeService
   ) {}
 
   ngOnInit(): void {
-    this.listar();
+    this.buscarJogadores();
   }
 
-  listar(): void {
+  buscarJogadores(): void {
     this.carregando = true;
 
     this.jogadorComunidadeService.listar().subscribe({
-      next: (dados) => {
+      next: (dados: any[]) => {
         this.jogadores = dados || [];
+        this.paginaAtual = 1;
         this.carregando = false;
       },
       error: (erro) => {
-        console.error('Erro ao listar jogadores:', erro);
+        console.error('Erro ao buscar jogadores:', erro);
+        this.jogadores = [];
         this.carregando = false;
       }
     });
@@ -44,72 +48,95 @@ export class JogadoresComunidadeComponent implements OnInit {
     this.router.navigate(['/jogadores-comunidade/novo']);
   }
 
-  visualizarPersonagens(jogador: any): void {
-    this.router.navigate(['/jogadores-comunidade', jogador.id, 'personagens']);
-  }
-  getImagemProfilePersonagem(personagem: any): string {
-  if (!personagem?.nome) {
-    return personagem?.imagem || '';
+  voltarHome(): void {
+    this.router.navigate(['/home']);
   }
 
-  const slug = this.gerarSlug(personagem.nome);
-
-  return `assets/profile/${slug}.png`;
-}
-
-gerarSlug(nome: string): string {
-  return nome
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
-usarImagemPadrao(event: Event, personagem: any): void {
-  const img = event.target as HTMLImageElement;
-  img.src = personagem?.imagem || 'assets/Alisa.png';
-}
-
-obterNomeCurto(nome: string): string {
-  if (!nome) {
-    return '';
+  editarJogador(jogador: any): void {
+    this.router.navigate([
+      '/jogadores-comunidade',
+      jogador.id,
+      'editar'
+    ]);
   }
 
-  const partes = nome.trim().split(/\s+/);
-
-  return partes[0];
-}
-selecionarPersonagemDoJogador(jogador: any, personagem: any): void {
-  this.jogadorSelecionado = jogador;
-  this.personagemSelecionado = personagem;
-}
-
-visualizarPlayerStyle(jogador: any): void {
-  if (!this.personagemSelecionado || this.jogadorSelecionado?.id !== jogador.id) {
-    console.log('TOAST CHAMADO');
-
-    this.messageService.add({
-      severity: 'warn',
-      summary: 'Personagem não selecionado',
-      detail: 'Selecione um personagem desse jogador antes de abrir o Player Style.',
-      life: 3500
-    });
-
-    return;
+  selecionarPersonagemDoJogador(jogador: any, personagem: any): void {
+    this.jogadorSelecionado = jogador;
+    this.personagemSelecionado = personagem;
   }
 
-  this.router.navigate([
-    '/jogadores-comunidade',
-    jogador.id,
-    'personagens',
-    this.personagemSelecionado.id,
-    'player-style'
-  ], {
-    state: {
-      jogador,
-      personagem: this.personagemSelecionado
+  visualizarPlayerStyle(jogador: any): void {
+    if (!this.personagemSelecionado || this.jogadorSelecionado?.id !== jogador.id) {
+      alert('Selecione um personagem desse jogador antes de ver o Player Style.');
+      return;
     }
-  });
-}
+
+    this.router.navigate([
+      '/jogadores-comunidade',
+      jogador.id,
+      'personagens',
+      this.personagemSelecionado.id,
+      'player-style'
+    ]);
+  }
+
+  getImagemProfilePersonagem(personagem: any): string {
+    if (personagem?.imagemProfile) {
+      return personagem.imagemProfile;
+    }
+
+    if (personagem?.foto) {
+      return personagem.foto;
+    }
+
+    if (personagem?.imagem) {
+      return personagem.imagem;
+    }
+
+    return 'assets/personagens/alisa-bosconovitch.png';
+  }
+
+  usarImagemPadrao(event: Event, personagem?: any): void {
+    const img = event.target as HTMLImageElement;
+    img.src = 'assets/personagens/alisa-bosconovitch.png';
+  }
+
+  obterNomeCurto(nome: string): string {
+    if (!nome) {
+      return '';
+    }
+
+    return nome.trim().split(' ')[0];
+  }
+
+  get totalPaginas(): number {
+    return Math.ceil(this.jogadores.length / this.itensPorPagina) || 1;
+  }
+
+  get jogadoresPaginados(): any[] {
+    const inicio = (this.paginaAtual - 1) * this.itensPorPagina;
+    const fim = inicio + this.itensPorPagina;
+
+    return this.jogadores.slice(inicio, fim);
+  }
+
+  get paginas(): number[] {
+    return Array.from({ length: this.totalPaginas }, (_, index) => index + 1);
+  }
+
+  irParaPagina(pagina: number): void {
+    if (pagina < 1 || pagina > this.totalPaginas) {
+      return;
+    }
+
+    this.paginaAtual = pagina;
+  }
+
+  paginaAnterior(): void {
+    this.irParaPagina(this.paginaAtual - 1);
+  }
+
+  proximaPagina(): void {
+    this.irParaPagina(this.paginaAtual + 1);
+  }
 }
