@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 
 import { PersonagemService } from '../services/personagem.service';
 import { JogadorComunidadeService } from '../services/jogadorComunidade.service';
-
+import { UsuarioService } from '../services/usuario.service';
 import { UsuarioLogado } from '../model/auth.model';
 import { Personagem } from '../model/personagem.model';
 
@@ -51,7 +51,8 @@ export class HomeComponent implements OnInit {
   constructor(
     private router: Router,
     private personagemService: PersonagemService,
-    private jogadorComunidadeService: JogadorComunidadeService
+    private jogadorComunidadeService: JogadorComunidadeService,
+    private usuarioService: UsuarioService
   ) {}
 
   ngOnInit(): void {
@@ -364,26 +365,38 @@ export class HomeComponent implements OnInit {
   }
 
   async salvarPerfil(): Promise<void> {
-    if (!this.usuarioLogado) {
-      return;
-    }
-
-    const usuarioAtual: any = this.usuarioLogado;
-
-    const fotoFinal = await this.gerarFotoRecortada();
-
-    const usuarioAtualizado: any = {
-      ...usuarioAtual,
-      nickname: this.nicknameEditado?.trim() || usuarioAtual.nickname || usuarioAtual.nome,
-      fotoPerfil: fotoFinal
-    };
-
-    this.usuarioLogado = usuarioAtualizado;
-
-    localStorage.setItem('usuarioLogado', JSON.stringify(usuarioAtualizado));
-
-    this.fecharEditorPerfil();
+  if (!this.usuarioLogado) {
+    return;
   }
+
+  const usuarioAtual: any = this.usuarioLogado;
+
+  const fotoFinal = await this.gerarFotoRecortada();
+
+  const request = {
+    nickname: this.nicknameEditado?.trim() || usuarioAtual.nickname || usuarioAtual.nome,
+    fotoPerfil: fotoFinal
+  };
+
+  this.usuarioService.atualizarPerfil(usuarioAtual.id, request).subscribe({
+    next: (usuarioAtualizado) => {
+      this.usuarioLogado = {
+        ...usuarioAtual,
+        ...usuarioAtualizado,
+        nickname: usuarioAtualizado.nickname || request.nickname,
+        fotoPerfil: usuarioAtualizado.fotoPerfil || request.fotoPerfil
+      };
+
+      localStorage.setItem('usuarioLogado', JSON.stringify(this.usuarioLogado));
+
+      this.fecharEditorPerfil();
+    },
+    error: (erro) => {
+      console.error('Erro ao salvar perfil:', erro);
+      alert('Erro ao salvar perfil.');
+    }
+  });
+}
 
   irParaHome(): void {
     this.router.navigate(['/home']);
