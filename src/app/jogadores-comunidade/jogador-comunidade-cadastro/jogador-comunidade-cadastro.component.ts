@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { JogadorComunidadeService } from '../../services/jogadorComunidade.service';
 import { PersonagemService } from '../../services/personagem.service';
+import { UsuarioLogado } from '../../model/auth.model';
 
 @Component({
   selector: 'app-jogador-comunidade-cadastro',
@@ -11,75 +12,245 @@ import { PersonagemService } from '../../services/personagem.service';
 })
 export class JogadorComunidadeCadastroComponent implements OnInit {
 
+  jogadorId: number | null = null;
+  modoEdicao = false;
+
   nome = '';
   tekkenId = '';
-  foto = '';
-  nomeFotoSelecionada = '';
-
-  filtroPersonagem = '';
-
-  salvando = false;
+  fotoSelecionada = '';
 
   personagens: any[] = [];
-  personagensSelecionados: number[] = [];
+  personagensFiltrados: any[] = [];
+  personagensSelecionados: any[] = [];
+
+  fotosPerfil: any[] = [];
+
+  termoBuscaPersonagem = '';
+
+  usuarioLogado: UsuarioLogado | null = null;
+
+  carregando = false;
+  salvando = false;
 
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private jogadorComunidadeService: JogadorComunidadeService,
     private personagemService: PersonagemService
   ) {}
 
   ngOnInit(): void {
+    this.carregarUsuarioLogado();
+
+    if (!this.usuarioLogado) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
     this.carregarPersonagens();
+
+    const id = this.route.snapshot.paramMap.get('id');
+
+    if (id) {
+      this.jogadorId = Number(id);
+      this.modoEdicao = true;
+      this.carregarJogadorParaEdicao(this.jogadorId);
+    }
+  }
+
+  carregarUsuarioLogado(): void {
+    const usuarioStorage = localStorage.getItem('usuarioLogado');
+
+    if (!usuarioStorage) {
+      this.usuarioLogado = null;
+      return;
+    }
+
+    try {
+      this.usuarioLogado = JSON.parse(usuarioStorage);
+    } catch (erro) {
+      console.error('Erro ao ler usuário logado:', erro);
+      this.usuarioLogado = null;
+    }
   }
 
   carregarPersonagens(): void {
-    this.personagemService.listar().subscribe({
-      next: (dados) => {
-        this.personagens = dados || [];
+    if (!this.usuarioLogado) {
+      return;
+    }
+
+    this.personagemService.listarPorUsuario(this.usuarioLogado.id).subscribe({
+      next: (personagens: any[]) => {
+        this.personagens = (personagens || []).sort((a, b) =>
+          (a.nome || '').localeCompare(b.nome || '', 'pt-BR', {
+            sensitivity: 'base'
+          })
+        );
+
+        this.personagensFiltrados = [...this.personagens];
+
+        this.fotosPerfil = this.personagens.map(personagem => ({
+          nome: personagem.nome,
+          valor: this.getImagemProfilePersonagem(personagem)
+        }));
       },
       error: (erro) => {
         console.error('Erro ao carregar personagens:', erro);
         this.personagens = [];
+        this.personagensFiltrados = [];
+        this.fotosPerfil = [];
       }
     });
   }
 
-  get personagensFiltrados(): any[] {
-    const filtro = this.filtroPersonagem.trim().toLowerCase();
+  carregarJogadorParaEdicao(id: number): void {
+    this.carregando = true;
 
-    if (!filtro) {
-      return this.personagens;
+    this.jogadorComunidadeService.buscarPorId(id).subscribe({
+      next: (jogador) => {
+        this.nome = jogador.nome || '';
+        this.tekkenId = jogador.tekkenId || '';
+        this.fotoSelecionada = this.normalizarFotoSalva(jogador.foto || '');
+
+        this.personagensSelecionados = jogador.personagens || [];
+
+        this.carregando = false;
+      },
+      error: (erro) => {
+        console.error('Erro ao carregar jogador para edição:', erro);
+        this.carregando = false;
+      }
+    });
+  }
+
+  salvar(): void {
+    if (!this.nome.trim()) {
+      alert('Informe o nome do jogador.');
+      return;
     }
 
-    return this.personagens.filter(personagem =>
-      personagem.nome?.toLowerCase().includes(filtro)
+    if (!this.tekkenId.trim()) {
+      alert('Informe o Tekken ID.');
+      return;
+    }
+
+    if (!this.personagensSelecionados.length) {
+      alert('Selecione pelo menos um personagem.');
+      return;
+    }
+
+    const payload = {
+      nome: this.nome.trim(),
+      tekkenId: this.tekkenId.trim(),
+      foto: this.fotoSelecionada || null,
+      personagensIds: this.personagensSelecionados.map(personagem => personagem.id)
+    };
+
+    this.salvando = true;
+
+    if (this.modoEdicao && this.jogadorId) {
+      this.jogadorComunidadeService.atualizar(this.jogadorId, payload).subscribe({
+        next: () => {
+          this.salvando = false;
+          this.router.navigate(['/jogadores-comunidade']);
+        },
+        error: (erro) => {
+          console.error('Erro ao atualizar jogador:', erro);
+          this.salvando = false;
+        }
+      });
+
+      return;
+    }
+
+    this.jogadorComunidadeService.cadastrar(payload).subscribe({
+      next: () => {
+        this.salvando = false;
+        this.router.navigate(['/jogadores-comunidade']);
+      },
+      error: (erro) => {
+        console.error('Erro ao cadastrar jogador:', erro);
+        this.salvando = false;
+      }
+    });
+  }
+
+  voltar(): void {
+    this.router.navigate(['/jogadores-comunidade']);
+  }
+
+  filtrarPersonagens(): void {
+    const termo = this.termoBuscaPersonagem.trim().toLowerCase();
+
+    if (!termo) {
+      this.personagensFiltrados = [...this.personagens];
+      return;
+    }
+
+    this.personagensFiltrados = this.personagens.filter(personagem =>
+      (personagem.nome || '').toLowerCase().includes(termo)
     );
   }
 
-  get personagensPreview(): any[] {
-    return this.personagens
-      .filter(personagem => this.personagensSelecionados.includes(personagem.id))
-      .slice(0, 6);
+  alternarPersonagem(personagem: any): void {
+    if (this.personagemEstaSelecionado(personagem)) {
+      this.personagensSelecionados = this.personagensSelecionados.filter(
+        item => item.id !== personagem.id
+      );
+      return;
+    }
+
+    this.personagensSelecionados.push(personagem);
   }
 
-  selecionarFotoPeloValor(foto: string): void {
-    this.foto = foto;
+  personagemEstaSelecionado(personagem: any): boolean {
+    return this.personagensSelecionados.some(item => item.id === personagem.id);
+  }
 
-    const personagemEncontrado = this.personagens.find(
-      personagem => this.getImagemProfilePersonagem(personagem) === foto
-    );
+  getImagemPersonagem(personagem: any): string {
+    if (personagem?.imagem) {
+      return personagem.imagem;
+    }
 
-    this.nomeFotoSelecionada = personagemEncontrado?.nome || '';
+    if (!personagem?.nome) {
+      return 'assets/personagens/alisa-bosconovitch.png';
+    }
+
+    const slug = this.gerarSlug(personagem.nome);
+
+    return `assets/personagens/${slug}.png`;
   }
 
   getImagemProfilePersonagem(personagem: any): string {
     if (!personagem?.nome) {
-      return personagem?.imagem || '';
+      return '';
     }
 
     const slug = this.gerarSlug(personagem.nome);
+
     return `assets/profile/${slug}.png`;
+  }
+
+  normalizarFotoSalva(foto: string): string {
+    if (!foto) {
+      return '';
+    }
+
+    return foto.toLowerCase();
+  }
+
+  usarImagemPadrao(event: Event): void {
+    const img = event.target as HTMLImageElement;
+
+    img.onerror = null;
+    img.src = 'assets/personagens/alisa-bosconovitch.png';
+  }
+
+  usarImagemPadraoProfile(event: Event): void {
+    const img = event.target as HTMLImageElement;
+
+    img.onerror = null;
+    img.style.display = 'none';
   }
 
   gerarSlug(nome: string): string {
@@ -91,83 +262,23 @@ export class JogadorComunidadeCadastroComponent implements OnInit {
       .replace(/^-+|-+$/g, '');
   }
 
-  togglePersonagem(personagemId: number): void {
-    const jaSelecionado = this.personagensSelecionados.includes(personagemId);
-
-    if (jaSelecionado) {
-      this.personagensSelecionados = this.personagensSelecionados.filter(
-        id => id !== personagemId
-      );
-      return;
-    }
-
-    this.personagensSelecionados = [
-      ...this.personagensSelecionados,
-      personagemId
-    ];
-  }
-
-  estaSelecionado(personagemId: number): boolean {
-    return this.personagensSelecionados.includes(personagemId);
-  }
-
   obterNomeCurto(nome: string): string {
     if (!nome) {
       return '';
     }
 
-    return nome.trim().split(/\s+/)[0];
+    return nome.trim().split(' ')[0];
   }
 
-  usarImagemPadraoPersonagem(event: Event): void {
-    const img = event.target as HTMLImageElement;
-    img.src = 'assets/Alisa.png';
+  get tituloTela(): string {
+    return this.modoEdicao ? 'Editar jogador' : 'Cadastrar jogador';
   }
 
-  usarImagemPadraoFotoPerfil(event: Event): void {
-    const img = event.target as HTMLImageElement;
-    img.src = 'assets/Alisa.png';
+  get textoBotaoSalvar(): string {
+    return this.modoEdicao ? 'Salvar alterações' : 'Cadastrar jogador';
   }
 
- salvar(): void {
-  if (!this.formularioValido()) {
-    alert('Preencha nome, Tekken ID, foto de perfil e selecione pelo menos um personagem.');
-    return;
-  }
-
-  const payload = {
-    nome: this.nome.trim(),
-    tekkenId: this.tekkenId.trim(),
-    foto: this.foto,
-    personagensIds: this.personagensSelecionados
-  };
-
-  console.log('Payload jogador comunidade:', payload);
-
-  this.salvando = true;
-
-  this.jogadorComunidadeService.cadastrar(payload).subscribe({
-    next: () => {
-      this.salvando = false;
-      this.router.navigate(['/jogadores-comunidade']);
-    },
-    error: (erro) => {
-      console.error('Erro ao cadastrar jogador:', erro);
-      this.salvando = false;
-      alert('Erro ao cadastrar jogador.');
-    }
-  });
-}
-
-formularioValido(): boolean {
-  return !!(
-    this.nome.trim() &&
-    this.tekkenId.trim() &&
-    this.foto &&
-    this.personagensSelecionados.length > 0
-  );
-}
-  voltar(): void {
-    this.router.navigate(['/jogadores-comunidade']);
+  get quantidadeSelecionados(): number {
+    return this.personagensSelecionados.length;
   }
 }

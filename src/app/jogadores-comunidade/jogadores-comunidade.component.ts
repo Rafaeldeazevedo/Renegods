@@ -93,12 +93,12 @@ export class JogadoresComunidadeComponent implements OnInit {
       return personagem.imagem;
     }
 
-    return 'assets/img/personagens/default.png';
+    return 'assets/personagens/alisa-bosconovitch.png';
   }
 
   usarImagemPadrao(event: Event, personagem?: any): void {
     const img = event.target as HTMLImageElement;
-    img.src = 'assets/img/personagens/default.png';
+    img.src = 'assets/personagens/alisa-bosconovitch.png';
   }
 
   obterNomeCurto(nome: string): string {
