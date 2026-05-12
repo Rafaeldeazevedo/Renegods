@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+
 import { JogadorComunidadeService } from '../../services/jogadorComunidade.service';
 
 @Component({
@@ -14,16 +15,17 @@ export class JogadorComunidadePlayerStyleComponent implements OnInit {
 
   jogador: any = null;
   personagem: any = null;
-  criandoMania = false;
 
   estiloJogo = '';
+  estiloJogoEditando = '';
+
   salvandoEstilo = false;
   editandoEstilo = false;
-estiloJogoEditando = '';
 
   manias: any[] = [];
   carregando = false;
 
+  criandoMania = false;
   novaMania = '';
 
   maniaEditandoId: number | null = null;
@@ -49,8 +51,42 @@ estiloJogoEditando = '';
       this.personagem = state.personagem;
     }
 
+    this.carregarJogador();
+    this.carregarPersonagemDoJogador();
     this.buscarPlayerStyle();
     this.buscarManias();
+  }
+
+  carregarJogador(): void {
+    this.jogadorComunidadeService.buscarPorId(this.jogadorId).subscribe({
+      next: (jogador) => {
+        this.jogador = jogador;
+
+        if (!this.personagem && jogador?.personagens?.length) {
+          this.personagem = jogador.personagens.find(
+            (p: any) => Number(p.id) === Number(this.personagemId)
+          ) || null;
+        }
+      },
+      error: (erro) => {
+        console.error('Erro ao carregar jogador:', erro);
+      }
+    });
+  }
+
+  carregarPersonagemDoJogador(): void {
+    this.jogadorComunidadeService.listarPersonagensDoJogador(this.jogadorId).subscribe({
+      next: (personagens) => {
+        const lista = personagens || [];
+
+        this.personagem = lista.find(
+          (p: any) => Number(p.id) === Number(this.personagemId)
+        ) || this.personagem;
+      },
+      error: (erro) => {
+        console.error('Erro ao carregar personagem do jogador:', erro);
+      }
+    });
   }
 
   buscarPlayerStyle(): void {
@@ -67,25 +103,35 @@ estiloJogoEditando = '';
       });
   }
 
- salvarPlayerStyle(): void {
-  this.salvandoEstilo = true;
+  abrirEdicaoEstilo(): void {
+    this.estiloJogoEditando = this.estiloJogo || '';
+    this.editandoEstilo = true;
+  }
 
-  this.jogadorComunidadeService
-    .salvarPlayerStyle(this.jogadorId, this.personagemId, this.estiloJogoEditando)
-    .subscribe({
-      next: (dados) => {
-        this.estiloJogo = dados?.estiloJogo || this.estiloJogoEditando;
-        this.salvandoEstilo = false;
-        this.editandoEstilo = false;
-        this.estiloJogoEditando = '';
-      },
-      error: (erro) => {
-        console.error('Erro ao salvar estilo de jogo:', erro);
-        this.salvandoEstilo = false;
-        alert('Erro ao salvar estilo de jogo.');
-      }
-    });
-}
+  cancelarEdicaoEstilo(): void {
+    this.estiloJogoEditando = '';
+    this.editandoEstilo = false;
+  }
+
+  salvarPlayerStyle(): void {
+    this.salvandoEstilo = true;
+
+    this.jogadorComunidadeService
+      .salvarPlayerStyle(this.jogadorId, this.personagemId, this.estiloJogoEditando)
+      .subscribe({
+        next: (dados) => {
+          this.estiloJogo = dados?.estiloJogo || this.estiloJogoEditando;
+          this.salvandoEstilo = false;
+          this.editandoEstilo = false;
+          this.estiloJogoEditando = '';
+        },
+        error: (erro) => {
+          console.error('Erro ao salvar estilo de jogo:', erro);
+          this.salvandoEstilo = false;
+          alert('Erro ao salvar estilo de jogo.');
+        }
+      });
+  }
 
   buscarManias(): void {
     this.carregando = true;
@@ -105,38 +151,38 @@ estiloJogoEditando = '';
       });
   }
 
-  abrirEdicaoEstilo(): void {
-  this.estiloJogoEditando = this.estiloJogo || '';
-  this.editandoEstilo = true;
-}
-
-cancelarEdicaoEstilo(): void {
-  this.estiloJogoEditando = '';
-  this.editandoEstilo = false;
-}
-
-criarMania(): void {
-  const descricao = this.novaMania.trim();
-
-  if (!descricao) {
-    alert('Digite a mania/player style.');
-    return;
+  abrirCriacaoMania(): void {
+    this.novaMania = '';
+    this.criandoMania = true;
   }
 
-  this.jogadorComunidadeService
-    .criarMania(this.jogadorId, this.personagemId, descricao)
-    .subscribe({
-      next: () => {
-        this.novaMania = '';
-        this.criandoMania = false;
-        this.buscarManias();
-      },
-      error: (erro) => {
-        console.error('Erro ao criar mania:', erro);
-        alert('Erro ao criar mania.');
-      }
-    });
-}
+  cancelarCriacaoMania(): void {
+    this.novaMania = '';
+    this.criandoMania = false;
+  }
+
+  criarMania(): void {
+    const descricao = this.novaMania.trim();
+
+    if (!descricao) {
+      alert('Digite a mania/player style.');
+      return;
+    }
+
+    this.jogadorComunidadeService
+      .criarMania(this.jogadorId, this.personagemId, descricao)
+      .subscribe({
+        next: () => {
+          this.novaMania = '';
+          this.criandoMania = false;
+          this.buscarManias();
+        },
+        error: (erro) => {
+          console.error('Erro ao criar mania:', erro);
+          alert('Erro ao criar mania.');
+        }
+      });
+  }
 
   iniciarEdicao(mania: any): void {
     this.maniaEditandoId = mania.id;
@@ -148,16 +194,6 @@ criarMania(): void {
     this.descricaoEditando = '';
   }
 
-  abrirCriacaoMania(): void {
-  this.novaMania = '';
-  this.criandoMania = true;
-}
-
-cancelarCriacaoMania(): void {
-  this.novaMania = '';
-  this.criandoMania = false;
-}
-
   salvarEdicao(mania: any): void {
     const descricao = this.descricaoEditando.trim();
 
@@ -165,7 +201,6 @@ cancelarCriacaoMania(): void {
       alert('Descrição não pode ficar vazia.');
       return;
     }
-
 
     this.jogadorComunidadeService
       .alterarMania(mania.id, descricao)
@@ -207,11 +242,26 @@ cancelarCriacaoMania(): void {
 
   getImagemProfilePersonagem(personagem: any): string {
     if (!personagem?.nome) {
-      return personagem?.imagem || '';
+      return personagem?.imagem || 'assets/personagens/alisa-bosconovitch.png';
     }
 
     const slug = this.gerarSlug(personagem.nome);
+
     return `assets/profile/${slug}.png`;
+  }
+
+  getImagemPersonagem(personagem: any): string {
+    if (personagem?.imagem) {
+      return personagem.imagem;
+    }
+
+    if (!personagem?.nome) {
+      return 'assets/personagens/alisa-bosconovitch.png';
+    }
+
+    const slug = this.gerarSlug(personagem.nome);
+
+    return `assets/personagens/${slug}.png`;
   }
 
   gerarSlug(nome: string): string {
@@ -223,8 +273,17 @@ cancelarCriacaoMania(): void {
       .replace(/^-+|-+$/g, '');
   }
 
-  usarImagemPadrao(event: Event, personagem: any): void {
+  usarImagemPadrao(event: Event, personagem?: any): void {
     const img = event.target as HTMLImageElement;
-    img.src = personagem?.imagem || 'assets/Alisa.png';
+
+    img.onerror = null;
+    img.src = personagem?.imagem || 'assets/personagens/alisa-bosconovitch.png';
+  }
+
+  usarImagemPadraoJogador(event: Event): void {
+    const img = event.target as HTMLImageElement;
+
+    img.onerror = null;
+    img.style.display = 'none';
   }
 }

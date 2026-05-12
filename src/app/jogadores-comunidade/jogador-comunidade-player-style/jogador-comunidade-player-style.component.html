@@ -7,8 +7,10 @@
     <section class="style-hero">
 
         <div class="hero-left">
+
             <div class="style-player">
-                <img *ngIf="jogador?.foto" [src]="jogador.foto" [alt]="jogador?.nome" />
+                <img *ngIf="jogador?.foto" [src]="jogador.foto" [alt]="jogador?.nome"
+                    (error)="usarImagemPadraoJogador($event)" />
 
                 <div class="avatar-fallback" *ngIf="!jogador?.foto">
                     {{ jogador?.nome?.charAt(0) || '?' }}
@@ -32,9 +34,11 @@
                     <strong>{{ personagem.nome }}</strong>
                 </div>
             </div>
+
         </div>
 
         <div class="hero-right">
+
             <div class="style-summary-header">
                 <h2>Estilo de jogo</h2>
 
@@ -52,11 +56,13 @@
                     Nenhum estilo de jogo cadastrado para esse player com esse personagem.
                 </p>
             </div>
+
         </div>
 
     </section>
 
     <section class="style-editor-card" *ngIf="editandoEstilo">
+
         <div class="editor-header">
             <div>
                 <h2>
@@ -84,6 +90,7 @@
                 Cancelar
             </button>
         </div>
+
     </section>
 
     <section class="mania-list-card">
@@ -100,6 +107,7 @@
         </div>
 
         <div class="mania-create-box" *ngIf="criandoMania">
+
             <div class="editor-header">
                 <div>
                     <h3>Adicionar mania</h3>
@@ -122,6 +130,7 @@
                     Cancelar
                 </button>
             </div>
+
         </div>
 
         <div *ngIf="carregando" class="state-box">
@@ -133,6 +142,7 @@
         </div>
 
         <div class="mania-list" *ngIf="!carregando && manias.length > 0">
+
             <article class="mania-item" *ngFor="let mania of manias; let i = index">
 
                 <div class="mania-number">
@@ -168,6 +178,7 @@
                 </div>
 
             </article>
+
         </div>
 
     </section>
