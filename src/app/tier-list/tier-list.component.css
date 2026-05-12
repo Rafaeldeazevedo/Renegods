@@ -365,7 +365,7 @@
         linear-gradient(180deg, #a855f7 0%, #5b21b6 100%);
 }
 
-/* TIERS EM LINHAS, SEM SCROLL */
+/* TIERS ESTÁVEIS */
 
 .tier-dropzone {
     min-height: 104px;
@@ -382,8 +382,8 @@
     align-items: flex-start;
     align-content: flex-start;
     gap: 12px;
-
     flex-wrap: wrap;
+
     overflow: visible;
 }
 
@@ -441,7 +441,10 @@
 
     cursor: grab;
 
-    transition: all 0.2s ease;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
 }
 
 .tier-character:active,
@@ -451,7 +454,6 @@
 
 .tier-character:hover,
 .available-character:hover {
-    transform: translateY(-3px);
     border-color: rgba(255, 45, 117, 0.65);
     box-shadow: 0 12px 28px rgba(0, 0, 0, 0.34);
 }
@@ -591,6 +593,7 @@
     box-sizing: border-box;
 
     width: 84px !important;
+    flex: 0 0 84px !important;
 
     border-radius: 14px;
     border: 1px solid rgba(255, 45, 117, 0.65);
@@ -607,8 +610,9 @@
 }
 
 .cdk-drag-placeholder {
-    flex: 0 0 84px;
     width: 84px;
+    flex: 0 0 84px;
+    height: 100px;
 
     opacity: 0.25;
 
@@ -618,11 +622,11 @@
 }
 
 .cdk-drag-animating {
-    transition: transform 180ms ease;
+    transition: transform 90ms linear;
 }
 
 .cdk-drop-list-dragging .cdk-drag:not(.cdk-drag-placeholder) {
-    transition: transform 180ms ease;
+    transition: transform 90ms linear;
 }
 
 .tier-dropzone.cdk-drop-list-receiving,
@@ -680,6 +684,7 @@
 
     .tier-dropzone {
         min-height: 96px;
+        gap: 10px;
     }
 
     .tier-count {
@@ -692,6 +697,15 @@
     .cdk-drag-placeholder {
         width: 74px;
         flex-basis: 74px;
+    }
+
+    .cdk-drag-preview {
+        width: 74px !important;
+        flex-basis: 74px !important;
+    }
+
+    .cdk-drag-placeholder {
+        height: 90px;
     }
 
     .tier-character img,
@@ -765,6 +779,7 @@
 
     .tier-dropzone {
         min-height: 92px;
+        gap: 10px;
     }
 
     .section-title {
@@ -849,6 +864,15 @@
         flex-basis: 62px;
     }
 
+    .cdk-drag-preview {
+        width: 62px !important;
+        flex-basis: 62px !important;
+    }
+
+    .cdk-drag-placeholder {
+        height: 76px;
+    }
+
     .tier-character img,
     .available-character img {
         width: 46px;
@@ -904,6 +928,15 @@
     .cdk-drag-placeholder {
         width: 58px;
         flex-basis: 58px;
+    }
+
+    .cdk-drag-preview {
+        width: 58px !important;
+        flex-basis: 58px !important;
+    }
+
+    .cdk-drag-placeholder {
+        height: 72px;
     }
 
     .tier-character img,

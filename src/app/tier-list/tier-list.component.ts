@@ -1,19 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-
 import {
   CdkDragDrop,
-  moveItemInArray,
-  transferArrayItem
+  moveItemInArray
 } from '@angular/cdk/drag-drop';
-
+import { Router } from '@angular/router';
 import { PersonagemService } from '../services/personagem.service';
-import {TierListService } from '../services/tier-list.service';
 
-import { Personagem } from '../model/personagem.model';
-import { UsuarioLogado } from '../model/auth.model';
-import { TierListRequest } from '../model/tierList.model';
-type TierKey = 'S' | 'A' | 'B' | 'C' | 'D';
+interface TierItem {
+  key: string;
+  nome: string;
+  personagens: any[];
+}
 
 @Component({
   selector: 'app-tier-list',
@@ -21,259 +18,307 @@ type TierKey = 'S' | 'A' | 'B' | 'C' | 'D';
   styleUrls: ['./tier-list.component.css']
 })
 export class TierListComponent implements OnInit {
-  usuarioLogado: UsuarioLogado | null = null;
 
   carregando = false;
   salvando = false;
 
-  nomeTierList = '';
-  seasonSelecionada = 'Season 3';
-
-  mensagemErro = '';
   mensagemSucesso = '';
+  mensagemErro = '';
 
-  personagensDisponiveis: Personagem[] = [];
+  nomeTierList = '';
+  visibilidade = 'PUBLICA';
 
-  tierKeys: TierKey[] = ['S', 'A', 'B', 'C', 'D'];
+  personagensDisponiveis: any[] = [];
 
-  tiers: Record<TierKey, Personagem[]> = {
-    S: [],
-    A: [],
-    B: [],
-    C: [],
-    D: []
-  };
+  tiers: TierItem[] = [
+    {
+      key: 'S',
+      nome: 'S',
+      personagens: []
+    },
+    {
+      key: 'A',
+      nome: 'A',
+      personagens: []
+    },
+    {
+      key: 'B',
+      nome: 'B',
+      personagens: []
+    },
+    {
+      key: 'C',
+      nome: 'C',
+      personagens: []
+    },
+    {
+      key: 'D',
+      nome: 'D',
+      personagens: []
+    }
+  ];
+
+  dropListsIds: string[] = [
+    'tier-S',
+    'tier-A',
+    'tier-B',
+    'tier-C',
+    'tier-D',
+    'disponiveis'
+  ];
 
   constructor(
-    private personagemService: PersonagemService,
-    private tierListService: TierListService,
-    private router: Router
+    private router: Router,
+    private personagemService: PersonagemService
   ) {}
 
   ngOnInit(): void {
-    this.carregarUsuarioLogado();
-
-    if (!this.usuarioLogado) {
-      this.router.navigate(['/login']);
-      return;
-    }
-
-    this.nomeTierList = `Tier List ${this.usuarioLogado.nickname || this.usuarioLogado.nome}`;
-
     this.carregarPersonagens();
   }
 
-  carregarUsuarioLogado(): void {
-    const usuarioStorage = localStorage.getItem('usuarioLogado');
-
-    if (!usuarioStorage) {
-      this.usuarioLogado = null;
-      return;
-    }
-
-    try {
-      this.usuarioLogado = JSON.parse(usuarioStorage);
-    } catch (erro) {
-      console.error('Erro ao ler usuário logado:', erro);
-      this.usuarioLogado = null;
-    }
-  }
-
   carregarPersonagens(): void {
-    if (!this.usuarioLogado) {
-      return;
-    }
-
     this.carregando = true;
     this.mensagemErro = '';
     this.mensagemSucesso = '';
 
-    this.personagemService.listarPorUsuario(this.usuarioLogado.id).subscribe({
-      next: (personagens) => {
-        this.personagensDisponiveis = personagens || [];
+    const usuarioLogado = this.getUsuarioLogado();
 
-        this.tiers = {
-          S: [],
-          A: [],
-          B: [],
-          C: [],
-          D: []
-        };
+    if (!usuarioLogado?.id) {
+      this.carregando = false;
+      this.mensagemErro = 'Usuário não encontrado.';
+      return;
+    }
+
+    this.personagemService.listarPorUsuario(usuarioLogado.id).subscribe({
+      next: (dados: any[]) => {
+        const personagens = dados || [];
+
+        this.personagensDisponiveis = personagens
+          .map(personagem => ({
+            ...personagem
+          }))
+          .sort((a, b) =>
+            String(a.nome || '').localeCompare(String(b.nome || ''), 'pt-BR', {
+              sensitivity: 'base'
+            })
+          );
+
+        this.limparTiers();
 
         this.carregando = false;
       },
       error: (erro) => {
         console.error('Erro ao carregar personagens:', erro);
-
-        this.personagensDisponiveis = [];
-
-        this.tiers = {
-          S: [],
-          A: [],
-          B: [],
-          C: [],
-          D: []
-        };
-
         this.mensagemErro = 'Erro ao carregar personagens.';
         this.carregando = false;
       }
     });
   }
 
-  dropPersonagem(event: CdkDragDrop<Personagem[]>): void {
-    this.mensagemErro = '';
+  drop(event: CdkDragDrop<any[]>): void {
     this.mensagemSucesso = '';
+    this.mensagemErro = '';
 
-    if (event.previousContainer === event.container) {
-      moveItemInArray(
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex
-      );
+    const personagemArrastado = event.item.data;
 
+    if (!personagemArrastado || personagemArrastado.id == null) {
       return;
     }
 
-    transferArrayItem(
-      event.previousContainer.data,
-      event.container.data,
-      event.previousIndex,
-      event.currentIndex
+    if (event.previousContainer === event.container) {
+      this.moverDentroDaMesmaLista(event, personagemArrastado);
+      return;
+    }
+
+    this.moverEntreListas(event, personagemArrastado);
+  }
+
+  moverDentroDaMesmaLista(event: CdkDragDrop<any[]>, personagemArrastado: any): void {
+    const lista = event.container.data;
+
+    if (!Array.isArray(lista)) {
+      return;
+    }
+
+    const personagemId = Number(personagemArrastado.id);
+
+    const indexAtual = lista.findIndex(
+      personagem => Number(personagem.id) === personagemId
     );
+
+    if (indexAtual === -1) {
+      return;
+    }
+
+    let indexDestino = event.currentIndex;
+
+    if (indexDestino < 0) {
+      indexDestino = 0;
+    }
+
+    if (indexDestino >= lista.length) {
+      indexDestino = lista.length - 1;
+    }
+
+    moveItemInArray(lista, indexAtual, indexDestino);
+  }
+
+  moverEntreListas(event: CdkDragDrop<any[]>, personagemArrastado: any): void {
+    const listaOrigem = event.previousContainer.data;
+    const listaDestino = event.container.data;
+
+    if (!Array.isArray(listaOrigem) || !Array.isArray(listaDestino)) {
+      return;
+    }
+
+    const personagemId = Number(personagemArrastado.id);
+
+    const indexOrigem = listaOrigem.findIndex(
+      personagem => Number(personagem.id) === personagemId
+    );
+
+    if (indexOrigem === -1) {
+      return;
+    }
+
+    const [personagemRemovido] = listaOrigem.splice(indexOrigem, 1);
+
+    if (!personagemRemovido) {
+      return;
+    }
+
+    let indexDestino = event.currentIndex;
+
+    if (indexDestino < 0) {
+      indexDestino = 0;
+    }
+
+    if (indexDestino > listaDestino.length) {
+      indexDestino = listaDestino.length;
+    }
+
+    listaDestino.splice(indexDestino, 0, personagemRemovido);
+  }
+
+  limparTiers(): void {
+    this.tiers.forEach(tier => {
+      tier.personagens = [];
+    });
   }
 
   resetarTierList(): void {
-    const todosPersonagens: Personagem[] = [
+    const todosPersonagens = [
       ...this.personagensDisponiveis,
-      ...this.tiers.S,
-      ...this.tiers.A,
-      ...this.tiers.B,
-      ...this.tiers.C,
-      ...this.tiers.D
+      ...this.tiers.flatMap(tier => tier.personagens)
     ];
 
-    this.personagensDisponiveis = todosPersonagens;
+    this.tiers.forEach(tier => {
+      tier.personagens = [];
+    });
 
-    this.tiers = {
-      S: [],
-      A: [],
-      B: [],
-      C: [],
-      D: []
-    };
+    this.personagensDisponiveis = todosPersonagens
+      .filter((personagem, index, array) =>
+        array.findIndex(p => Number(p.id) === Number(personagem.id)) === index
+      )
+      .sort((a, b) =>
+        String(a.nome || '').localeCompare(String(b.nome || ''), 'pt-BR', {
+          sensitivity: 'base'
+        })
+      );
 
-    this.mensagemErro = '';
     this.mensagemSucesso = '';
+    this.mensagemErro = '';
   }
 
   salvarTierList(): void {
-    this.mensagemErro = '';
     this.mensagemSucesso = '';
-
-    if (!this.usuarioLogado) {
-      this.router.navigate(['/login']);
-      return;
-    }
-
-    const itens = this.montarItensPayload();
-
-    if (itens.length === 0) {
-      this.mensagemErro = 'Coloque pelo menos um personagem em alguma tier antes de salvar.';
-      return;
-    }
+    this.mensagemErro = '';
 
     if (!this.nomeTierList || !this.nomeTierList.trim()) {
-      this.mensagemErro = 'Informe um nome para a Tier List.';
+      this.mensagemErro = 'Informe o nome da tier list.';
       return;
     }
 
-    if (!this.seasonSelecionada || !this.seasonSelecionada.trim()) {
-      this.mensagemErro = 'Selecione uma season.';
+    const itens = this.tiers.flatMap(tier =>
+      tier.personagens.map((personagem, index) => ({
+        personagemId: personagem.id,
+        tier: tier.key,
+        posicao: index + 1
+      }))
+    );
+
+    if (itens.length === 0) {
+      this.mensagemErro = 'Adicione pelo menos um personagem na tier list.';
       return;
     }
 
-    const payload: TierListRequest = {
-      usuarioId: this.usuarioLogado.id,
+    const usuarioLogado = this.getUsuarioLogado();
+
+    const request = {
       nome: this.nomeTierList.trim(),
-      season: this.seasonSelecionada,
+      visibilidade: this.visibilidade,
+      usuarioId: usuarioLogado?.id,
       itens
     };
 
-    this.salvando = true;
+    console.log('Payload salvar tier list:', request);
 
-    this.tierListService.criar(payload).subscribe({
-      next: () => {
-        this.salvando = false;
-        this.mensagemSucesso = 'Tier List salva com sucesso.';
+    /*
+      Se você já tiver TierListService, liga aqui:
 
-        setTimeout(() => {
-          this.router.navigate(['/tier-lists']);
-        }, 600);
-      },
-      error: (erro) => {
-        console.error('Erro ao salvar Tier List:', erro);
+      this.salvando = true;
 
-        this.salvando = false;
-
-        if (erro?.status === 409) {
-          this.mensagemErro = 'Você já criou uma Tier List para esta season.';
-          return;
+      this.tierListService.salvar(request).subscribe({
+        next: () => {
+          this.mensagemSucesso = 'Tier list salva com sucesso.';
+          this.salvando = false;
+        },
+        error: (erro) => {
+          console.error('Erro ao salvar tier list:', erro);
+          this.mensagemErro = 'Erro ao salvar tier list.';
+          this.salvando = false;
         }
-
-        if (typeof erro?.error === 'string') {
-          this.mensagemErro = erro.error;
-          return;
-        }
-
-        this.mensagemErro = 'Erro ao salvar Tier List.';
-      }
-    });
-  }
-
-  montarItensPayload(): { personagemId: number; tier: TierKey; posicao: number }[] {
-    const itens: { personagemId: number; tier: TierKey; posicao: number }[] = [];
-
-    this.tierKeys.forEach(tier => {
-      this.tiers[tier].forEach((personagem, index) => {
-        itens.push({
-          personagemId: personagem.id,
-          tier,
-          posicao: index + 1
-        });
       });
-    });
+    */
 
-    return itens;
+    this.mensagemSucesso = 'Tier list montada. Confira o payload no console.';
   }
 
-  getTotalNaTier(tier: TierKey): number {
-    return this.tiers[tier].length;
+  voltarParaHome(): void {
+    this.router.navigate(['/home']);
   }
 
-  getTotalOrganizados(): number {
-    return (
-      this.tiers.S.length +
-      this.tiers.A.length +
-      this.tiers.B.length +
-      this.tiers.C.length +
-      this.tiers.D.length
+  getTotalSelecionados(): number {
+    return this.tiers.reduce(
+      (total, tier) => total + tier.personagens.length,
+      0
     );
   }
 
+  getTotalDisponiveis(): number {
+    return this.personagensDisponiveis.length;
+  }
+
   getTotalPersonagens(): number {
-    return this.personagensDisponiveis.length + this.getTotalOrganizados();
+    return this.getTotalSelecionados() + this.getTotalDisponiveis();
   }
 
-  getImagemPerfil(personagem: any): string {
-    if (!personagem?.nome) {
-      return 'assets/profile/alisa-bosconovitch.png';
-    }
-
-    const slug = this.gerarSlug(personagem.nome);
-
-    return `assets/profile/${slug}.png`;
+getImagemPersonagem(personagem: any): string {
+  if (!personagem?.nome) {
+    return 'assets/profile/alisa-bosconovitch.png';
   }
+
+  const slug = this.gerarSlug(personagem.nome);
+
+  return `assets/profile/${slug}.png`;
+}
+
+usarImagemPadrao(event: Event): void {
+  const img = event.target as HTMLImageElement;
+
+  img.onerror = null;
+  img.src = 'assets/profile/alisa-bosconovitch.png';
+}
 
   gerarSlug(nome: string): string {
     return nome
@@ -284,16 +329,26 @@ export class TierListComponent implements OnInit {
       .replace(/^-+|-+$/g, '');
   }
 
-  usarImagemPadrao(event: Event): void {
-    const img = event.target as HTMLImageElement;
+  trackByPersonagemId(index: number, personagem: any): number {
+    return Number(personagem.id);
+  }
 
-    if (img.src.includes('alisa-bosconovitch.png')) {
-      return;
+  trackByTierKey(index: number, tier: TierItem): string {
+    return tier.key;
+  }
+
+  private getUsuarioLogado(): any {
+    const usuarioStorage = localStorage.getItem('usuarioLogado');
+
+    if (!usuarioStorage) {
+      return null;
     }
 
-    img.src = 'assets/profile/alisa-bosconovitch.png';
-  }
-    voltarHome(): void {
-    this.router.navigate(['/home']);
+    try {
+      return JSON.parse(usuarioStorage);
+    } catch (erro) {
+      console.error('Erro ao ler usuário logado:', erro);
+      return null;
+    }
   }
 }

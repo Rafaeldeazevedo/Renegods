@@ -3,22 +3,21 @@
     <main class="tier-content">
 
         <div class="page-actions">
-            <button type="button" class="back-home-btn" (click)="voltarHome()">
-                ← Voltar para Home
+            <button type="button" class="back-home-btn" (click)="voltarParaHome()">
+                ← Voltar
             </button>
         </div>
 
         <section class="tier-hero">
 
             <div class="tier-hero-main">
-
-                <span>TIER LIST</span>
+                <span>Tekken 8 Database</span>
 
                 <h1>Monte sua Tier List</h1>
 
                 <p>
-                    Arraste os personagens para S, A, B, C ou D. Você também pode arrastar
-                    dentro da mesma tier para organizar a posição.
+                    Arraste os personagens para as tiers S, A, B, C ou D.
+                    Você também pode reorganizar a ordem dentro da própria tier.
                 </p>
 
                 <div class="tier-save-form">
@@ -26,15 +25,15 @@
                     <div class="form-field">
                         <label>Nome da Tier List</label>
 
-                        <input type="text" [(ngModel)]="nomeTierList" placeholder="Ex: Tier List R4F" />
+                        <input type="text" [(ngModel)]="nomeTierList" placeholder="Ex: Minha tier list ranked" />
                     </div>
 
                     <div class="form-field">
-                        <label>Season</label>
+                        <label>Visibilidade</label>
 
-                        <select [(ngModel)]="seasonSelecionada">
-                            <option value="Season 3">Season 3</option>
-                            <option value="Season 4">Season 4</option>
+                        <select [(ngModel)]="visibilidade">
+                            <option value="PUBLICA">Pública</option>
+                            <option value="PRIVADA">Privada</option>
                         </select>
                     </div>
 
@@ -45,20 +44,20 @@
             <div class="tier-summary">
 
                 <div>
-                    <strong>{{ personagensDisponiveis.length }}</strong>
-                    <span>Disponíveis</span>
+                    <strong>{{ getTotalPersonagens() }}</strong>
+                    <span>Total</span>
                 </div>
 
                 <div>
-                    <strong>{{ getTotalOrganizados() }}</strong>
-                    <span>Organizados</span>
+                    <strong>{{ getTotalSelecionados() }}</strong>
+                    <span>Na tier list</span>
                 </div>
 
-                <button type="button" class="save-tier-btn" (click)="salvarTierList()" [disabled]="salvando">
-                    {{ salvando ? 'Salvando...' : 'Salvar Tier List' }}
+                <button type="button" class="save-tier-btn" [disabled]="salvando" (click)="salvarTierList()">
+                    Salvar
                 </button>
 
-                <button type="button" (click)="resetarTierList()" [disabled]="salvando">
+                <button type="button" [disabled]="salvando" (click)="resetarTierList()">
                     Resetar
                 </button>
 
@@ -78,74 +77,72 @@
             Carregando personagens...
         </section>
 
-        <ng-container *ngIf="!carregando">
+        <section class="tier-board" *ngIf="!carregando">
 
-            <div cdkDropListGroup>
+            <div class="tier-row" *ngFor="let tier of tiers; trackBy: trackByTierKey">
 
-                <section class="tier-board">
+                <div class="tier-label" [ngClass]="'tier-' + tier.key.toLowerCase()">
+                    {{ tier.key }}
+                </div>
 
-                    <div class="tier-row" *ngFor="let tier of tierKeys">
+                <div class="tier-dropzone" cdkDropList cdkDropListOrientation="horizontal" [id]="'tier-' + tier.key"
+                    [cdkDropListData]="tier.personagens" [cdkDropListConnectedTo]="dropListsIds"
+                    (cdkDropListDropped)="drop($event)">
 
-                        <div class="tier-label" [ngClass]="'tier-' + tier.toLowerCase()">
-                            {{ tier }}
-                        </div>
+                    <div class="tier-character"
+                        *ngFor="let personagem of tier.personagens; trackBy: trackByPersonagemId" cdkDrag
+                        [cdkDragData]="personagem">
 
-                        <div class="tier-dropzone" cdkDropList [cdkDropListData]="tiers[tier]"
-                            (cdkDropListDropped)="dropPersonagem($event)">
+                        <img [src]="getImagemPersonagem(personagem)" [alt]="personagem.nome"
+                            (error)="usarImagemPadrao($event)" />
 
-                            <div class="tier-character" *ngFor="let personagem of tiers[tier]" cdkDrag>
-                                <img [src]="getImagemPerfil(personagem)" [alt]="personagem.nome"
-                                    (error)="usarImagemPadrao($event)" />
-
-                                <span>{{ personagem.nome }}</span>
-                            </div>
-
-                            <div class="empty-tier" *ngIf="tiers[tier].length === 0">
-                                Arraste um personagem para esta tier
-                            </div>
-
-                        </div>
-
-                        <div class="tier-count">
-                            {{ getTotalNaTier(tier) }}
-                        </div>
+                        <span>{{ personagem.nome }}</span>
 
                     </div>
 
-                </section>
+                    <span class="empty-tier" *ngIf="tier.personagens.length === 0">
+                        Arraste um personagem para esta tier
+                    </span>
 
-                <section class="available-section">
+                </div>
 
-                    <div class="section-title">
-
-                        <div>
-                            <span></span>
-                            <h2>Personagens disponíveis</h2>
-                        </div>
-
-                        <p>
-                            {{ personagensDisponiveis.length }} personagem(ns)
-                        </p>
-
-                    </div>
-
-                    <div class="available-grid" cdkDropList [cdkDropListData]="personagensDisponiveis"
-                        (cdkDropListDropped)="dropPersonagem($event)">
-
-                        <div class="available-character" *ngFor="let personagem of personagensDisponiveis" cdkDrag>
-                            <img [src]="getImagemPerfil(personagem)" [alt]="personagem.nome"
-                                (error)="usarImagemPadrao($event)" />
-
-                            <span>{{ personagem.nome }}</span>
-                        </div>
-
-                    </div>
-
-                </section>
+                <div class="tier-count">
+                    {{ tier.personagens.length }}
+                </div>
 
             </div>
 
-        </ng-container>
+        </section>
+
+        <section class="available-section" *ngIf="!carregando">
+
+            <div class="section-title">
+                <div>
+                    <span></span>
+                    <h2>Personagens disponíveis</h2>
+                </div>
+
+                <p>{{ personagensDisponiveis.length }} personagem(ns)</p>
+            </div>
+
+            <div class="available-grid" cdkDropList cdkDropListOrientation="horizontal" id="disponiveis"
+                [cdkDropListData]="personagensDisponiveis" [cdkDropListConnectedTo]="dropListsIds"
+                (cdkDropListDropped)="drop($event)">
+
+                <div class="available-character"
+                    *ngFor="let personagem of personagensDisponiveis; trackBy: trackByPersonagemId" cdkDrag
+                    [cdkDragData]="personagem">
+
+                    <img [src]="getImagemPersonagem(personagem)" [alt]="personagem.nome"
+                        (error)="usarImagemPadrao($event)" />
+
+                    <span>{{ personagem.nome }}</span>
+
+                </div>
+
+            </div>
+
+        </section>
 
     </main>
 
