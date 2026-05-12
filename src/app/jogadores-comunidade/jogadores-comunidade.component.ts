@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { JogadorComunidadeService } from '../services/jogadorComunidade.service';
 import { MessageService } from 'primeng/api';
+
+import { JogadorComunidadeService } from '../services/jogadorComunidade.service';
 
 @Component({
   selector: 'app-jogadores-comunidade',
@@ -40,8 +41,16 @@ export class JogadoresComunidadeComponent implements OnInit {
       },
       error: (erro) => {
         console.error('Erro ao buscar jogadores:', erro);
+
         this.jogadores = [];
         this.carregando = false;
+
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro ao carregar',
+          detail: 'Não foi possível carregar os jogadores da comunidade.',
+          life: 3500
+        });
       }
     });
   }
@@ -69,7 +78,13 @@ export class JogadoresComunidadeComponent implements OnInit {
 
   visualizarPlayerStyle(jogador: any): void {
     if (!this.personagemSelecionado || this.jogadorSelecionado?.id !== jogador.id) {
-      alert('Selecione um personagem desse jogador antes de ver o Player Style.');
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Escolha um personagem',
+        detail: `Selecione primeiro um personagem do jogador ${jogador.nome} para abrir o Player Style.`,
+        life: 3500
+      });
+
       return;
     }
 
@@ -79,28 +94,79 @@ export class JogadoresComunidadeComponent implements OnInit {
       'personagens',
       this.personagemSelecionado.id,
       'player-style'
-    ]);
+    ], {
+      state: {
+        jogador,
+        personagem: this.personagemSelecionado
+      }
+    });
+  }
+
+  excluirJogador(jogador: any): void {
+    const confirmar = confirm(`Deseja excluir o jogador "${jogador.nome}"?`);
+
+    if (!confirmar) {
+      return;
+    }
+
+    this.jogadorComunidadeService.excluirJogador(jogador.id).subscribe({
+      next: () => {
+        this.jogadores = this.jogadores.filter(item => item.id !== jogador.id);
+
+        if (this.paginaAtual > this.totalPaginas) {
+          this.paginaAtual = this.totalPaginas;
+        }
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Jogador excluído',
+          detail: 'Jogador removido com sucesso.',
+          life: 3000
+        });
+      },
+      error: (erro) => {
+        console.error('Erro ao excluir jogador:', erro);
+
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro ao excluir',
+          detail: 'Não foi possível excluir o jogador.',
+          life: 3500
+        });
+      }
+    });
+  }
+
+  get isAdmin(): boolean {
+    const usuarioStorage = localStorage.getItem('usuarioLogado');
+
+    if (!usuarioStorage) {
+      return false;
+    }
+
+    try {
+      const usuario = JSON.parse(usuarioStorage);
+      return String(usuario?.perfil || '').toUpperCase() === 'ADMIN';
+    } catch {
+      return false;
+    }
   }
 
   getImagemProfilePersonagem(personagem: any): string {
-    if (personagem?.imagemProfile) {
-      return personagem.imagemProfile;
+    if (!personagem?.nome) {
+      return personagem?.imagem || 'assets/personagens/alisa-bosconovitch.png';
     }
 
-    if (personagem?.foto) {
-      return personagem.foto;
-    }
+    const slug = this.gerarSlug(personagem.nome);
 
-    if (personagem?.imagem) {
-      return personagem.imagem;
-    }
-
-    return 'assets/personagens/alisa-bosconovitch.png';
+    return `assets/profile/${slug}.png`;
   }
 
   usarImagemPadrao(event: Event, personagem?: any): void {
     const img = event.target as HTMLImageElement;
-    img.src = 'assets/personagens/alisa-bosconovitch.png';
+
+    img.onerror = null;
+    img.src = personagem?.imagem || 'assets/personagens/alisa-bosconovitch.png';
   }
 
   obterNomeCurto(nome: string): string {
@@ -108,7 +174,16 @@ export class JogadoresComunidadeComponent implements OnInit {
       return '';
     }
 
-    return nome.trim().split(' ')[0];
+    return nome.trim().split(/\s+/)[0];
+  }
+
+  gerarSlug(nome: string): string {
+    return nome
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
   }
 
   get totalPaginas(): number {
@@ -141,50 +216,4 @@ export class JogadoresComunidadeComponent implements OnInit {
   proximaPagina(): void {
     this.irParaPagina(this.paginaAtual + 1);
   }
-get isAdmin(): boolean {
-  const usuarioStorage = localStorage.getItem('usuarioLogado');
-
-  if (!usuarioStorage) {
-    return false;
-  }
-
-  try {
-    const usuario = JSON.parse(usuarioStorage);
-
-    return String(usuario?.perfil || '').toUpperCase() === 'ADMIN';
-  } catch {
-    return false;
-  }
-}
-
-excluirJogador(jogador: any): void {
-  const confirmar = confirm(`Deseja excluir o jogador "${jogador.nome}"?`);
-
-  if (!confirmar) {
-    return;
-  }
-
-  this.jogadorComunidadeService.excluirJogador(jogador.id).subscribe({
-    next: () => {
-      this.jogadores = this.jogadores.filter(item => item.id !== jogador.id);
-
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Jogador excluído',
-        detail: 'Jogador removido com sucesso.',
-        life: 3000
-      });
-    },
-    error: (erro) => {
-      console.error('Erro ao excluir jogador:', erro);
-
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Erro',
-        detail: 'Não foi possível excluir o jogador.',
-        life: 3000
-      });
-    }
-  });
-}
 }
