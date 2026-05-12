@@ -5,32 +5,38 @@ import {
   HttpInterceptor,
   HttpRequest
 } from '@angular/common/http';
-
 import { Observable } from 'rxjs';
-import { AuthService } from '../services/auth.service';
 
 @Injectable()
 export class AuthTokenInterceptor implements HttpInterceptor {
 
-  constructor(private authService: AuthService) {}
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
-  intercept(
-    request: HttpRequest<any>,
-    next: HttpHandler
-  ): Observable<HttpEvent<any>> {
+    const url = req.url.toLowerCase();
 
-    const token = this.authService.getToken();
+    const rotaSemToken =
+      url.includes('/auth/login') ||
+      url.includes('/auth/registrar') ||
+      url.includes('/auth/register') ||
+      url.includes('/auth/esqueci-senha') ||
+      url.includes('/auth/trocar-senha');
 
-    if (!token) {
-      return next.handle(request);
+    if (rotaSemToken) {
+      return next.handle(req);
     }
 
-    const requestComToken = request.clone({
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      return next.handle(req);
+    }
+
+    const reqComToken = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`
       }
     });
 
-    return next.handle(requestComToken);
+    return next.handle(reqComToken);
   }
 }
