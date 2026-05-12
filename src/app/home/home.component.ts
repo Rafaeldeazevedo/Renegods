@@ -36,8 +36,17 @@ export class HomeComponent implements OnInit {
   editorPerfilAberto = false;
 
   nicknameEditado = '';
+
   fotoPerfilPreview = '';
-  fotoPerfilArquivo: File | null = null;
+  fotoPerfilOriginal = '';
+
+  fotoZoom = 1;
+  fotoOffsetX = 0;
+  fotoOffsetY = 0;
+
+  arrastandoFoto = false;
+  ultimoMouseX = 0;
+  ultimoMouseY = 0;
 
   constructor(
     private router: Router,
@@ -168,15 +177,9 @@ export class HomeComponent implements OnInit {
       return [];
     }
 
-    const favoritos = personagens.filter((personagem: any) => personagem.favorito === true);
-
-    if (favoritos.length >= 4) {
-      return favoritos.slice(0, 4);
-    }
-
-    const restantes = personagens.filter((personagem: any) => personagem.favorito !== true);
-
-    return [...favoritos, ...restantes].slice(0, 4);
+    return personagens
+      .filter((personagem: any) => personagem.favorito === true)
+      .slice(0, 4);
   }
 
   montarUltimosJogadores(jogadores: any[]): any[] {
@@ -224,11 +227,22 @@ export class HomeComponent implements OnInit {
       '';
 
     this.fotoPerfilPreview = this.getFotoPerfilUsuario();
+    this.fotoPerfilOriginal = '';
+
+    this.fotoZoom = 1;
+    this.fotoOffsetX = 0;
+    this.fotoOffsetY = 0;
+    this.arrastandoFoto = false;
   }
 
   fecharEditorPerfil(): void {
     this.editorPerfilAberto = false;
-    this.fotoPerfilArquivo = null;
+
+    this.fotoPerfilOriginal = '';
+    this.fotoZoom = 1;
+    this.fotoOffsetX = 0;
+    this.fotoOffsetY = 0;
+    this.arrastandoFoto = false;
   }
 
   selecionarFotoPerfil(event: Event): void {
@@ -239,29 +253,129 @@ export class HomeComponent implements OnInit {
     }
 
     const arquivo = input.files[0];
-
-    this.fotoPerfilArquivo = arquivo;
-
     const reader = new FileReader();
 
     reader.onload = () => {
-      this.fotoPerfilPreview = String(reader.result || '');
+      const base64 = String(reader.result || '');
+
+      this.fotoPerfilOriginal = base64;
+      this.fotoPerfilPreview = base64;
+
+      this.fotoZoom = 1;
+      this.fotoOffsetX = 0;
+      this.fotoOffsetY = 0;
     };
 
     reader.readAsDataURL(arquivo);
   }
 
-  salvarPerfil(): void {
+  iniciarArraste(event: MouseEvent): void {
+    if (!this.fotoPerfilOriginal) {
+      return;
+    }
+
+    this.arrastandoFoto = true;
+    this.ultimoMouseX = event.clientX;
+    this.ultimoMouseY = event.clientY;
+  }
+
+  arrastarFoto(event: MouseEvent): void {
+    if (!this.arrastandoFoto) {
+      return;
+    }
+
+    const deltaX = event.clientX - this.ultimoMouseX;
+    const deltaY = event.clientY - this.ultimoMouseY;
+
+    this.fotoOffsetX += deltaX;
+    this.fotoOffsetY += deltaY;
+
+    this.ultimoMouseX = event.clientX;
+    this.ultimoMouseY = event.clientY;
+  }
+
+  pararArraste(): void {
+    this.arrastandoFoto = false;
+  }
+
+  getTransformFoto(): string {
+    return `translate(${this.fotoOffsetX}px, ${this.fotoOffsetY}px) scale(${this.fotoZoom})`;
+  }
+
+  removerFotoSelecionada(): void {
+    this.fotoPerfilOriginal = '';
+    this.fotoPerfilPreview = '';
+
+    this.fotoZoom = 1;
+    this.fotoOffsetX = 0;
+    this.fotoOffsetY = 0;
+    this.arrastandoFoto = false;
+  }
+
+  async gerarFotoRecortada(): Promise<string> {
+    return new Promise((resolve) => {
+      if (!this.fotoPerfilOriginal) {
+        resolve(this.fotoPerfilPreview || this.getFotoPerfilUsuario());
+        return;
+      }
+
+      const tamanho = 240;
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      canvas.width = tamanho;
+      canvas.height = tamanho;
+
+      if (!ctx) {
+        resolve(this.fotoPerfilOriginal);
+        return;
+      }
+
+      const imagem = new Image();
+
+      imagem.onload = () => {
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, tamanho, tamanho);
+
+        const escalaBase = Math.max(
+          tamanho / imagem.width,
+          tamanho / imagem.height
+        );
+
+        const escalaFinal = escalaBase * this.fotoZoom;
+
+        const largura = imagem.width * escalaFinal;
+        const altura = imagem.height * escalaFinal;
+
+        const x = (tamanho - largura) / 2 + this.fotoOffsetX;
+        const y = (tamanho - altura) / 2 + this.fotoOffsetY;
+
+        ctx.drawImage(imagem, x, y, largura, altura);
+
+        resolve(canvas.toDataURL('image/png'));
+      };
+
+      imagem.onerror = () => {
+        resolve(this.fotoPerfilOriginal);
+      };
+
+      imagem.src = this.fotoPerfilOriginal;
+    });
+  }
+
+  async salvarPerfil(): Promise<void> {
     if (!this.usuarioLogado) {
       return;
     }
 
     const usuarioAtual: any = this.usuarioLogado;
 
+    const fotoFinal = await this.gerarFotoRecortada();
+
     const usuarioAtualizado: any = {
       ...usuarioAtual,
       nickname: this.nicknameEditado?.trim() || usuarioAtual.nickname || usuarioAtual.nome,
-      fotoPerfil: this.fotoPerfilPreview || this.getFotoPerfilUsuario()
+      fotoPerfil: fotoFinal
     };
 
     this.usuarioLogado = usuarioAtualizado;

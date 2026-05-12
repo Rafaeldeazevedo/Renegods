@@ -28,6 +28,7 @@ import { TierListCompararComponent } from './tier-list-comparar/tier-list-compar
 import { TrocarSenhaComponent } from './trocar-senha/trocar-senha.component';
 
 
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -48,16 +49,15 @@ import { TrocarSenhaComponent } from './trocar-senha/trocar-senha.component';
     TrocarSenhaComponent
   ],
   imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    HttpClientModule,
-    AppRoutingModule,
-    FormsModule,
-    ToastModule,
-    ReactiveFormsModule,
-    DragDropModule
-  
-  ],
+  BrowserModule,
+  BrowserAnimationsModule,
+  HttpClientModule,
+  AppRoutingModule,
+  FormsModule,
+  ToastModule,
+  ReactiveFormsModule,
+  DragDropModule,
+],
  providers: [
   MessageService,
   {

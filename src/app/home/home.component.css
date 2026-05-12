@@ -139,7 +139,7 @@
     height: 100%;
 
     object-fit: cover;
-    object-position: center top;
+    object-position: center;
 
     display: block;
     background: #000000;
@@ -247,6 +247,8 @@
 .profile-menu .logout-option {
     color: #ff7f92;
 }
+
+/* MENU */
 
 .side-menu {
     display: flex;
@@ -964,7 +966,9 @@
 
 .profile-modal {
     width: 100%;
-    max-width: 520px;
+    max-width: 560px;
+    max-height: 92vh;
+    overflow-y: auto;
 
     padding: 26px;
 
@@ -1060,7 +1064,10 @@
     height: 100%;
 
     object-fit: cover;
-    object-position: center top;
+    object-position: center;
+
+    display: block;
+    background: #000000;
 }
 
 .profile-preview-avatar span {
@@ -1084,7 +1091,7 @@
     margin-bottom: 18px;
 }
 
-.profile-form-group label {
+.profile-form-group>label {
     display: block;
     margin-bottom: 8px;
 
@@ -1140,6 +1147,130 @@
     font-weight: 900;
     letter-spacing: 1px;
     text-transform: uppercase;
+}
+
+/* CROPPER NATIVO */
+
+.native-cropper {
+    margin-top: 20px;
+    padding: 18px;
+
+    border-radius: 18px;
+    border: 1px solid rgba(255, 45, 117, 0.25);
+
+    background: rgba(7, 10, 18, 0.68);
+}
+
+.crop-instructions {
+    margin-bottom: 14px;
+
+    color: #c8cee0;
+
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.crop-area {
+    width: 240px;
+    height: 240px;
+    margin: 0 auto 18px;
+
+    position: relative;
+
+    border-radius: 50%;
+    overflow: hidden;
+
+    background: #000000;
+    border: 2px solid rgba(255, 45, 117, 0.85);
+
+    cursor: grab;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    user-select: none;
+}
+
+.crop-area:active {
+    cursor: grabbing;
+}
+
+.crop-area img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    object-position: center;
+
+    pointer-events: none;
+
+    transition: transform 0.05s linear;
+}
+
+.crop-mask {
+    position: absolute;
+    inset: 0;
+
+    border-radius: 50%;
+
+    box-shadow:
+        inset 0 0 0 2px rgba(255, 45, 117, 0.95),
+        inset 0 0 26px rgba(0, 0, 0, 0.35);
+
+    pointer-events: none;
+}
+
+.zoom-control {
+    margin-top: 12px;
+}
+
+.zoom-control label {
+    display: block;
+    margin-bottom: 8px;
+
+    color: #ffffff;
+
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.zoom-control input[type="range"] {
+    width: 100%;
+    accent-color: #ff2d75;
+    cursor: pointer;
+}
+
+.remove-photo-btn {
+    width: 100%;
+    height: 44px;
+    margin-top: 14px;
+
+    border-radius: 14px;
+    border: 1px solid rgba(255, 94, 115, 0.45);
+
+    background: rgba(255, 94, 115, 0.08);
+    color: #ff8fa0;
+
+    cursor: pointer;
+
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+
+    transition: all 0.2s ease;
+}
+
+.remove-photo-btn:hover {
+    background: linear-gradient(135deg, #ff304f, #ff6b81);
+    color: #ffffff;
+    border-color: transparent;
 }
 
 .profile-modal-actions {
@@ -1315,5 +1446,10 @@
     .cancel-profile-btn,
     .save-profile-btn {
         width: 100%;
+    }
+
+    .crop-area {
+        width: 210px;
+        height: 210px;
     }
 }
