@@ -216,4 +216,17 @@ export class JogadoresComunidadeComponent implements OnInit {
   proximaPagina(): void {
     this.irParaPagina(this.paginaAtual + 1);
   }
+  getImagemPersonagem(personagem: any): string {
+  if (personagem?.imagem) {
+    return personagem.imagem;
+  }
+
+  if (!personagem?.nome) {
+    return 'assets/personagens/alisa-bosconovitch.png';
+  }
+
+  const slug = this.gerarSlug(personagem.nome);
+
+  return `assets/personagens/${slug}.png`;
+}
 }

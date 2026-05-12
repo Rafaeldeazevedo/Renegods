@@ -204,6 +204,8 @@ get isAdmin(): boolean {
   }
 }
 
+
+
   iniciarEdicao(mania: any): void {
     this.maniaEditandoId = mania.id;
     this.descricaoEditando = mania.descricao;

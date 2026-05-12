@@ -36,16 +36,15 @@
 
                 </div>
 
-                <div class="character-chip" *ngIf="personagem">
-                    <img [src]="getImagemProfilePersonagem(personagem)" [alt]="personagem.nome"
-                        (error)="usarImagemPadrao($event, personagem)" />
-
-                    <div>
-                        <span>Personagem atual</span>
-                        <strong>{{ personagem.nome }}</strong>
-                    </div>
+            <div class="character-chip" *ngIf="personagem">
+                <img [src]="getImagemPersonagem(personagem)" [alt]="personagem.nome"
+                    (error)="usarImagemPadrao($event, personagem)" />
+            
+                <div>
+                    <span>Personagem atual</span>
+                    <strong>{{ personagem.nome }}</strong>
                 </div>
-
+            </div>
             </div>
 
         </article>

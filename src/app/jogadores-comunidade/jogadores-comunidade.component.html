@@ -50,12 +50,12 @@
                 <div class="mini-character" *ngFor="let personagem of jogador.personagens.slice(0, 3)"
                     [class.selected]="jogadorSelecionado?.id === jogador.id && personagemSelecionado?.id === personagem.id"
                     (click)="selecionarPersonagemDoJogador(jogador, personagem)">
-
-                    <img [src]="getImagemProfilePersonagem(personagem)" [alt]="personagem.nome"
+                
+                    <img [src]="getImagemPersonagem(personagem)" [alt]="personagem.nome"
                         (error)="usarImagemPadrao($event, personagem)" />
-
+                
                     <span>{{ obterNomeCurto(personagem.nome) }}</span>
-
+                
                 </div>
 
             </div>
