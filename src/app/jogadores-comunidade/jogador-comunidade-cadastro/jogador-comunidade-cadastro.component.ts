@@ -238,7 +238,7 @@ export class JogadorComunidadeCadastroComponent implements OnInit {
         this.messageService.add({
           severity: 'success',
           summary: 'Jogador cadastrado',
-          detail: 'Jogador cadastrado com sucesso na comunidade.',
+          detail: 'Jogador cadastrado com sucesso no DataBase.',
           life: 2500
         });
 
